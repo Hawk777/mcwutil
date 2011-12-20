@@ -1,0 +1,66 @@
+#!/bin/bash
+for rgn in "$@"
+do
+	echo -n "Unpacking region $rgn..."
+	mkdir test &>/dev/null
+	rm -f test/* &>/dev/null
+	bin/mcwutil region-unpack "$rgn" test || exit
+	echo
+
+	rm -f test/metadata.xml
+
+	echo -n "Decompressing..."
+	i=0
+	for zlib in test/*.zlib
+	do
+		i=$((i + 1))
+		if [[ $i -eq 10 ]]
+		then
+			i=0
+			echo -n "."
+		fi
+		bin/mcwutil zlib-decompress $zlib test/$(basename $zlib .zlib) || exit
+	done
+	echo
+
+	rm -f test/*.zlib
+
+	echo -n "Hashing..."
+	md5sum -b test/*.nbt > test/sums.md5
+	echo
+
+	echo -n "Converting to XML..."
+	i=0
+	for nbt in test/*.nbt
+	do
+		i=$((i + 1))
+		if [[ $i -eq 10 ]]
+		then
+			i=0
+			echo -n "."
+		fi
+		bin/mcwutil nbt-to-xml $nbt test/$(basename $nbt .nbt).xml || exit
+	done
+	echo
+
+	rm -f test/*.nbt
+
+	echo -n "Converting back to NBT..."
+	i=0
+	for xml in test/*.xml
+	do
+		i=$((i + 1))
+		if [[ $i -eq 10 ]]
+		then
+			i=0
+			echo -n "."
+		fi
+		bin/mcwutil nbt-from-xml $xml test/$(basename $xml .xml).nbt || exit
+	done
+	echo
+
+	rm -f test/*.xml
+
+	echo "Checking hashes..."
+	md5sum -c --quiet test/sums.md5 || exit
+done

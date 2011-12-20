@@ -1,0 +1,3 @@
+<!ELEMENT minecraft-region-metadata (chunk)+>
+<!ELEMENT chunk EMPTY>
+<!ATTLIST chunk index CDATA #REQUIRED present CDATA #REQUIRED timestamp CDATA #IMPLIED>

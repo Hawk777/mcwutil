@@ -1,0 +1,60 @@
+#!/usr/bin/env python3
+
+import os.path
+import shutil
+import subprocess
+import sys
+import tempfile
+
+substitutions = [
+	(149, 238),
+	(151, 254),
+	(147, 251),
+	(150, 255),
+	(146, 252),
+	(145, 253),
+	(128, 149),
+	(117, 137),
+	(116, 136),
+	(126, 147),
+	(125, 146),
+	(118, 138),
+	(129, 150),
+	(130, 151),
+	(127, 148),
+	(124, 144),
+	(121, 141),
+	(123, 143),
+	(120, 140),
+	(119, 139),
+	(122, 142)]
+
+# Create a temporary directory to work in.
+tmpdir = tempfile.mkdtemp()
+try:
+	print("Working in {}...".format(tmpdir))
+	workgz = os.path.join(tmpdir, "work.nbt.gz")
+	worknbt = os.path.join(tmpdir, "work.nbt")
+	workxml = os.path.join(tmpdir, "work.xml")
+
+	# Iterate all the .dat files provided on the command line.
+	for player in sys.argv[1:]:
+		print("Processing {}...".format(player))
+		# Copy the file to the working directory.
+		shutil.copyfile(player, workgz)
+		# Decompress the file.
+		subprocess.check_call(["gunzip", workgz])
+		# Convert the NBT to XML.
+		subprocess.check_call(["bin/mcwutil", "nbt-to-xml", worknbt, workxml])
+		# Execute the ID substitutions in the player's inventory.
+		for sub in substitutions:
+			xpath = "/minecraft-nbt/named/compound/named[@name='Inventory']/list/compound/named[@name='id']/short[@value='{}']/@value".format(sub[0])
+			subprocess.check_call(["xmlstarlet", "ed", "-P", "-L", "-u", xpath, "-v", str(sub[1]), workxml])
+		# Convert the XML to NBT.
+		subprocess.check_call(["bin/mcwutil", "nbt-from-xml", workxml, worknbt])
+		# Compress the file.
+		subprocess.check_call(["gzip", worknbt])
+		# Copy the file back to its original location.
+		shutil.copyfile(workgz, player)
+finally:
+	shutil.rmtree(tmpdir)
