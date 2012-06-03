@@ -30,9 +30,9 @@ namespace {
 		input_left -= n;
 	}
 
-	void parse_name_and_data(const uint8_t *&input_ptr, std::size_t &input_left, uint8_t tag, xmlpp::Element *parent_elt);
+	void parse_name_and_data(const uint8_t *&input_ptr, std::size_t &input_left, NBT::Tag tag, xmlpp::Element *parent_elt);
 
-	void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, uint8_t tag, xmlpp::Element *parent_elt) {
+	void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, NBT::Tag tag, xmlpp::Element *parent_elt) {
 		switch (tag) {
 			case NBT::TAG_END:
 				throw std::runtime_error("Malformed NBT: unexpected TAG_END.");
@@ -154,7 +154,7 @@ namespace {
 			case NBT::TAG_LIST:
 				{
 					check_left(5, input_left);
-					uint8_t subtype = decode_u8(input_ptr);
+					NBT::Tag subtype = static_cast<NBT::Tag>(decode_u8(input_ptr));
 					eat(1, input_ptr, input_left);
 					int32_t len = decode_u32(input_ptr);
 					eat(4, input_ptr, input_left);
@@ -174,7 +174,7 @@ namespace {
 					xmlpp::Element *compound_elt = parent_elt->add_child(u8"compound");
 					for (;;) {
 						check_left(1, input_left);
-						uint8_t subtype = decode_u8(input_ptr);
+						NBT::Tag subtype = static_cast<NBT::Tag>(decode_u8(input_ptr));
 						eat(1, input_ptr, input_left);
 						if (subtype == NBT::TAG_END) {
 							break;
@@ -184,13 +184,12 @@ namespace {
 					}
 					return;
 				}
-
-			default:
-				throw std::runtime_error("Malformed NBT: unrecognized tag.");
 		}
+
+		throw std::runtime_error("Malformed NBT: unrecognized tag.");
 	}
 
-	void parse_name_and_data(const uint8_t *&input_ptr, std::size_t &input_left, uint8_t tag, xmlpp::Element *parent_elt) {
+	void parse_name_and_data(const uint8_t *&input_ptr, std::size_t &input_left, NBT::Tag tag, xmlpp::Element *parent_elt) {
 		check_left(2, input_left);
 		int16_t name_length = decode_u16(input_ptr);
 		eat(2, input_ptr, input_left);
@@ -234,7 +233,7 @@ int NBT::to_xml(const std::vector<std::string> &args) {
 	const uint8_t *input_ptr = input_buffer;
 	std::size_t input_left = sizeof(input_buffer);
 	check_left(1, input_left);
-	uint8_t outer_tag = decode_u8(input_ptr);
+	NBT::Tag outer_tag = static_cast<NBT::Tag>(decode_u8(input_ptr));
 	eat(1, input_ptr, input_left);
 	parse_name_and_data(input_ptr, input_left, outer_tag, nbt_root_elt);
 

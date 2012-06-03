@@ -29,9 +29,9 @@ namespace {
 		input_left -= n;
 	}
 
-	void handle_named(uint8_t tag, uint8_t *&input_ptr, std::size_t &input_left, const uint8_t *sub_table, const std::vector<Glib::ustring>::const_iterator path_first, const std::vector<Glib::ustring>::const_iterator path_last, bool path_ok);
+	void handle_named(NBT::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint8_t *sub_table, const std::vector<Glib::ustring>::const_iterator path_first, const std::vector<Glib::ustring>::const_iterator path_last, bool path_ok);
 
-	void handle_content(uint8_t tag, uint8_t *&input_ptr, std::size_t &input_left, const uint8_t *sub_table, const std::vector<Glib::ustring>::const_iterator path_first, const std::vector<Glib::ustring>::const_iterator path_last, bool path_ok) {
+	void handle_content(NBT::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint8_t *sub_table, const std::vector<Glib::ustring>::const_iterator path_first, const std::vector<Glib::ustring>::const_iterator path_last, bool path_ok) {
 		switch (tag) {
 			case NBT::TAG_BYTE:
 				check_left(1, input_left);
@@ -88,7 +88,7 @@ namespace {
 			case NBT::TAG_LIST:
 				{
 					check_left(5, input_left);
-					uint8_t subtype = decode_u8(input_ptr);
+					NBT::Tag subtype = static_cast<NBT::Tag>(decode_u8(input_ptr));
 					eat(1, input_ptr, input_left);
 					int32_t length = decode_u32(input_ptr);
 					eat(4, input_ptr, input_left);
@@ -133,7 +133,7 @@ namespace {
 				{
 					for (;;) {
 						check_left(1, input_left);
-						uint8_t subtype = decode_u8(input_ptr);
+						NBT::Tag subtype = static_cast<NBT::Tag>(decode_u8(input_ptr));
 						eat(1, input_ptr, input_left);
 						if (subtype == NBT::TAG_END) {
 							return;
@@ -141,13 +141,12 @@ namespace {
 						handle_named(subtype, input_ptr, input_left, sub_table, path_first, path_last, path_ok);
 					}
 				}
-
-			default:
-				throw std::runtime_error("Malformed NBT: unrecognized tag.");
 		}
+
+		throw std::runtime_error("Malformed NBT: unrecognized tag.");
 	}
 
-	void handle_named(uint8_t tag, uint8_t *&input_ptr, std::size_t &input_left, const uint8_t *sub_table, const std::vector<Glib::ustring>::const_iterator path_first, const std::vector<Glib::ustring>::const_iterator path_last, bool path_ok) {
+	void handle_named(NBT::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint8_t *sub_table, const std::vector<Glib::ustring>::const_iterator path_first, const std::vector<Glib::ustring>::const_iterator path_last, bool path_ok) {
 		// Read name length.
 		check_left(2, input_left);
 		int16_t name_len = decode_u16(input_ptr);
@@ -264,7 +263,7 @@ int NBT::patch_barray(const std::vector<std::string> &args) {
 	uint8_t *input_ptr = static_cast<uint8_t *>(nbt_mapped.data());
 	std::size_t input_left = nbt_mapped.size();
 	check_left(1, input_left);
-	uint8_t root_tag = decode_u8(input_ptr);
+	NBT::Tag root_tag = static_cast<NBT::Tag>(decode_u8(input_ptr));
 	eat(1, input_ptr, input_left);
 	handle_named(root_tag, input_ptr, input_left, sub_table, path_components.begin(), path_components.end(), true);
 

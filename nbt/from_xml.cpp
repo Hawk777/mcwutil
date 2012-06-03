@@ -25,7 +25,7 @@
 #include <sys/types.h>
 
 namespace {
-	uint8_t tag_for_child_of_named_or_list(const Glib::ustring &name, const char *message) {
+	NBT::Tag tag_for_child_of_named_or_list(const Glib::ustring &name, const char *message) {
 		if (name == u8"byte") return NBT::TAG_BYTE;
 		if (name == u8"short") return NBT::TAG_SHORT;
 		if (name == u8"int") return NBT::TAG_INT;
@@ -39,15 +39,15 @@ namespace {
 		throw std::runtime_error(message);
 	}
 
-	uint8_t tag_for_child_of_named(const Glib::ustring &name) {
+	NBT::Tag tag_for_child_of_named(const Glib::ustring &name) {
 		return tag_for_child_of_named_or_list(name, "Malformed NBT XML: child of named must be one of (byte|short|int|long|float|double|barray|string|list|compound).");
 	}
 
-	uint8_t tag_for_child_of_list(const Glib::ustring &name) {
+	NBT::Tag tag_for_child_of_list(const Glib::ustring &name) {
 		return tag_for_child_of_named_or_list(name, "Malformed NBT XML: child of list must be one of (byte|short|int|long|float|double|barray|string|list|compound).");
 	}
 
-	void check_list_subtype(unsigned int subtype) {
+	void check_list_subtype(NBT::Tag subtype) {
 		switch (subtype) {
 			case NBT::TAG_BYTE: return;
 			case NBT::TAG_SHORT: return;
@@ -59,15 +59,15 @@ namespace {
 			case NBT::TAG_STRING: return;
 			case NBT::TAG_LIST: return;
 			case NBT::TAG_COMPOUND: return;
-			default: throw std::runtime_error("Malformed NBT XML: list has bad subtype.");
 		}
+		throw std::runtime_error("Malformed NBT XML: list has bad subtype.");
 	}
 
 	void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 		if (elt->get_name() == u8"named") {
 			const xmlpp::Node::NodeList &children = elt->get_children();
 			const xmlpp::Element *relevant_child = 0;
-			uint8_t subtype = 0;
+			NBT::Tag subtype = NBT::TAG_END;
 			for (auto i = children.begin(), iend = children.end(); i != iend; ++i) {
 				const xmlpp::Element *elt = dynamic_cast<const xmlpp::Element *>(*i);
 				if (elt) {
@@ -236,8 +236,9 @@ namespace {
 			}
 			std::wistringstream iss(ustring2wstring(subtype_attr->get_value()));
 			iss.imbue(std::locale("C"));
-			unsigned int subtype;
-			iss >> subtype;
+			unsigned int subtype_int;
+			iss >> subtype_int;
+			NBT::Tag subtype = static_cast<NBT::Tag>(subtype_int);
 			check_list_subtype(subtype);
 			std::vector<const xmlpp::Element *> child_elts;
 			const xmlpp::Node::NodeList &children = elt->get_children();
