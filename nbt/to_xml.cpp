@@ -184,6 +184,38 @@ namespace {
 					}
 					return;
 				}
+
+			case NBT::TAG_INT_ARRAY:
+				{
+					check_left(4, input_left);
+					int32_t len = decode_u32(input_ptr);
+					eat(4, input_ptr, input_left);
+					if (len < 0) {
+						throw std::runtime_error("Malformed NBT: negative integer array length.");
+					}
+					if (len > std::numeric_limits<int32_t>::max() / 4) {
+						throw std::runtime_error("Unsupported NBT feature: integer array length too big.");
+					}
+					check_left(len, input_left * 4);
+					xmlpp::Element *iarray_elt = parent_elt->add_child(u8"iarray");
+					Glib::ustring ustr;
+					ustr.reserve(1 + len * 8 + len / 10 + 1);
+					ustr.append(u8"\n");
+					for (int32_t i = 0; i < len; ++i) {
+						static const char DIGITS[] = u8"0123456789ABCDEF";
+						uint32_t integer = decode_u32(input_ptr + i * 4);
+						for (int nybble = 7; nybble >= 0; --nybble) {
+							ustr.push_back(DIGITS[(integer >> (4 * nybble)) & 0x0F]);
+						}
+						if ((i % 10) == 9) {
+							ustr.append(u8"\n");
+						}
+					}
+					eat(len * 4, input_ptr, input_left);
+					ustr.append(u8"\n");
+					iarray_elt->add_child_text(ustr);
+					return;
+				}
 		}
 
 		throw std::runtime_error("Malformed NBT: unrecognized tag.");

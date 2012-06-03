@@ -36,15 +36,16 @@ namespace {
 		if (name == u8"string") return NBT::TAG_STRING;
 		if (name == u8"list") return NBT::TAG_LIST;
 		if (name == u8"compound") return NBT::TAG_COMPOUND;
+		if (name == u8"iarray") return NBT::TAG_INT_ARRAY;
 		throw std::runtime_error(message);
 	}
 
 	NBT::Tag tag_for_child_of_named(const Glib::ustring &name) {
-		return tag_for_child_of_named_or_list(name, "Malformed NBT XML: child of named must be one of (byte|short|int|long|float|double|barray|string|list|compound).");
+		return tag_for_child_of_named_or_list(name, "Malformed NBT XML: child of named must be one of (byte|short|int|long|float|double|barray|string|list|compound|iarray).");
 	}
 
 	NBT::Tag tag_for_child_of_list(const Glib::ustring &name) {
-		return tag_for_child_of_named_or_list(name, "Malformed NBT XML: child of list must be one of (byte|short|int|long|float|double|barray|string|list|compound).");
+		return tag_for_child_of_named_or_list(name, "Malformed NBT XML: child of list must be one of (byte|short|int|long|float|double|barray|string|list|compound|iarray).");
 	}
 
 	void check_list_subtype(NBT::Tag subtype) {
@@ -60,6 +61,7 @@ namespace {
 			case NBT::TAG_STRING: return;
 			case NBT::TAG_LIST: return;
 			case NBT::TAG_COMPOUND: return;
+			case NBT::TAG_INT_ARRAY: return;
 		}
 		throw std::runtime_error("Malformed NBT XML: list has bad subtype.");
 	}
@@ -276,6 +278,53 @@ namespace {
 			uint8_t footer[1];
 			encode_u8(&footer[0], NBT::TAG_END);
 			FileUtils::write(nbt_fd, footer, sizeof(footer));
+		} else if (elt->get_name() == u8"iarray") {
+			const xmlpp::TextNode *text_node = elt->get_child_text();
+			if (text_node) {
+				static const char DIGITS[] = u8"0123456789ABCDEF";
+				const Glib::ustring &value = text_node->get_content();
+				Glib::ustring filtered_value;
+				filtered_value.reserve(value.size());
+				for (auto i = value.begin(), iend = value.end(); i != iend; ++i) {
+					static const char SPACES[] = u8" \t\n\r";
+					if (std::find(DIGITS, DIGITS + sizeof(DIGITS), *i) != DIGITS + sizeof(DIGITS)) {
+						filtered_value.push_back(*i);
+					} else if (std::find(SPACES, SPACES + sizeof(SPACES), *i) == SPACES + sizeof(SPACES)) {
+						throw std::runtime_error("Malformed NBT XML: non-hex, non-whitespace character in iarray.");
+					}
+				}
+				if (filtered_value.size() % 8) {
+					throw std::runtime_error("Malformed NBT XML: number of hex digits in iarray is not a multiple of eight.");
+				}
+				std::vector<uint8_t> data;
+				data.reserve(filtered_value.size() / 2);
+				{
+					auto i = filtered_value.begin(), iend = filtered_value.end();
+					while (i != iend) {
+						uint32_t integer = 0;
+						for (unsigned int j = 0; j < 8; ++j) {
+							integer = static_cast<uint32_t>(integer << 4);
+							integer = static_cast<uint32_t>(integer | (std::find(DIGITS, DIGITS + sizeof(DIGITS), *i) - DIGITS));
+							++i;
+						}
+						data.push_back(static_cast<uint8_t>(integer >> 24));
+						data.push_back(static_cast<uint8_t>(integer >> 16));
+						data.push_back(static_cast<uint8_t>(integer >> 8));
+						data.push_back(static_cast<uint8_t>(integer));
+					}
+				}
+				if (static_cast<uintmax_t>(data.size() / 4) > static_cast<uintmax_t>(std::numeric_limits<int32_t>::max())) {
+					throw std::runtime_error("Malformed NBT XML: integer array too long.");
+				}
+				uint8_t header[4];
+				encode_u32(&header[0], static_cast<int32_t>(data.size() / 4));
+				FileUtils::write(nbt_fd, header, sizeof(header));
+				FileUtils::write(nbt_fd, &data[0], data.size());
+			} else {
+				uint8_t header[4];
+				encode_u32(&header[0], 0);
+				FileUtils::write(nbt_fd, header, sizeof(header));
+			}
 		} else {
 			throw std::runtime_error("Malformed NBT XML: unrecognized element.");
 		}

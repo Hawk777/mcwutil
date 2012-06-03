@@ -1,5 +1,5 @@
 <!ELEMENT minecraft-nbt (named)>
-<!ELEMENT named (byte|short|int|long|float|double|barray|string|list|compound)>
+<!ELEMENT named (byte|short|int|long|float|double|barray|string|list|compound|iarray)>
 <!ATTLIST named name CDATA #REQUIRED>
 <!ELEMENT byte EMPTY>
 <!ATTLIST byte value CDATA #REQUIRED>
@@ -17,7 +17,9 @@
 <!ATTLIST barray>
 <!ELEMENT string EMPTY>
 <!ATTLIST string value CDATA #REQUIRED>
-<!ELEMENT list (byte|short|int|long|float|double|barray|string|list|compound)*>
+<!ELEMENT list (byte|short|int|long|float|double|barray|string|list|compound|iarray)*>
 <!ATTLIST list subtype CDATA #REQUIRED>
 <!ELEMENT compound (named)*>
 <!ATTLIST compound>
+<!ELEMENT iarray (#PCDATA)>
+<!ATTLIST iarray>

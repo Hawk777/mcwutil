@@ -144,6 +144,21 @@ namespace {
 						handle_named(subtype, input_ptr, input_left, sub_table, path_first, path_last, path_ok);
 					}
 				}
+
+			case NBT::TAG_INT_ARRAY:
+				{
+					check_left(4, input_left);
+					int32_t length = decode_u32(input_ptr);
+					eat(4, input_ptr, input_left);
+					if (length < 0) {
+						throw std::runtime_error("Malformed NBT: negative integer array length.");
+					}
+					eat(length, input_ptr, input_left);
+					eat(length, input_ptr, input_left);
+					eat(length, input_ptr, input_left);
+					eat(length, input_ptr, input_left);
+					return;
+				}
 		}
 
 		throw std::runtime_error("Malformed NBT: unrecognized tag.");
