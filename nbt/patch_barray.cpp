@@ -33,6 +33,9 @@ namespace {
 
 	void handle_content(NBT::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint8_t *sub_table, const std::vector<Glib::ustring>::const_iterator path_first, const std::vector<Glib::ustring>::const_iterator path_last, bool path_ok) {
 		switch (tag) {
+			case NBT::TAG_END:
+				throw std::runtime_error("Malformed NBT: unexpected TAG_END.");
+
 			case NBT::TAG_BYTE:
 				check_left(1, input_left);
 				eat(1, input_ptr, input_left);
