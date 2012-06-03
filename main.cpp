@@ -19,8 +19,8 @@ namespace {
 		std::cerr << appname << " command [arguments...]\n";
 		std::cerr << '\n';
 		std::cerr << "Possible commands are:\n";
-		std::cerr << "  region-unpack - unpacks the chunks from a region file\n";
-		std::cerr << "  region-pack - packs chunks into a region file\n";
+		std::cerr << "  region-unpack - unpacks the chunks from a region file (.mca or .mcr)\n";
+		std::cerr << "  region-pack - packs chunks into a region file (.mca or .mcr)\n";
 		std::cerr << "  zlib-decompress - decompresses a ZLIB-format file\n";
 		std::cerr << "  zlib-compress - compresses a ZLIB-format file\n";
 		std::cerr << "  nbt-to-xml - converts an NBT file to an equivalent XML file\n";
