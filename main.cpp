@@ -23,6 +23,7 @@ namespace {
 		std::cerr << "  region-pack - packs chunks into a region file (.mca or .mcr)\n";
 		std::cerr << "  zlib-decompress - decompresses a ZLIB-format file\n";
 		std::cerr << "  zlib-compress - compresses a ZLIB-format file\n";
+		std::cerr << "  zlib-check - decompresses a ZLIB-format file, discarding the contents\n";
 		std::cerr << "  nbt-to-xml - converts an NBT file to an equivalent XML file\n";
 		std::cerr << "  nbt-from-xml - converts an NBT-equivalent XML file to an NBT file\n";
 		std::cerr << "  nbt-patch-barray - replaces specific byte values in NBT byte arrays with other values\n";
@@ -58,6 +59,8 @@ namespace {
 			return ZLib::decompress(args);
 		} else if (command == u8"zlib-compress") {
 			return ZLib::compress(args);
+		} else if (command == u8"zlib-check") {
+			return ZLib::check(args);
 		} else if (command == u8"nbt-to-xml") {
 			return NBT::to_xml(args);
 		} else if (command == u8"nbt-from-xml") {
