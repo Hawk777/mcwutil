@@ -83,7 +83,7 @@ int ZLib::decompress(const std::vector<std::string> &args) {
 				break;
 
 			case Z_MEM_ERROR:
-				throw SystemError("compress2", ENOMEM);
+				throw SystemError("uncompress", ENOMEM);
 
 			case Z_BUF_ERROR:
 				output_buffer.resize(output_buffer.size() * 2);
@@ -93,7 +93,7 @@ int ZLib::decompress(const std::vector<std::string> &args) {
 				throw std::runtime_error("uncompress: malformed zlib stream.");
 
 			default:
-				throw std::logic_error("Internal error: compress2 returned unknown error code.");
+				throw std::logic_error("Internal error: uncompress returned unknown error code.");
 		}
 	}
 
@@ -137,7 +137,7 @@ int ZLib::check(const std::vector<std::string> &args) {
 				break;
 
 			case Z_MEM_ERROR:
-				throw SystemError("compress2", ENOMEM);
+				throw SystemError("uncompress", ENOMEM);
 
 			case Z_BUF_ERROR:
 				output_buffer.resize(output_buffer.size() * 2);
@@ -147,7 +147,7 @@ int ZLib::check(const std::vector<std::string> &args) {
 				throw std::runtime_error("uncompress: malformed zlib stream.");
 
 			default:
-				throw std::logic_error("Internal error: compress2 returned unknown error code.");
+				throw std::logic_error("Internal error: uncompress returned unknown error code.");
 		}
 	}
 
