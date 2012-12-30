@@ -5,6 +5,7 @@
 #include "util/fd.h"
 #include "util/file_utils.h"
 #include "util/globals.h"
+#include "util/mapped_file.h"
 #include "util/string.h"
 #include <cassert>
 #include <fcntl.h>
@@ -251,19 +252,16 @@ int NBT::to_xml(const std::vector<std::string> &args) {
 		return 1;
 	}
 
-	// Read input file.
+	// Open and map NBT file.
 	FileDescriptor input_fd = FileDescriptor::create_open(args[0].c_str(), O_RDONLY, 0);
-	struct stat stbuf;
-	FileUtils::fstat(input_fd, stbuf);
-	uint8_t input_buffer[stbuf.st_size];
-	FileUtils::read(input_fd, input_buffer, sizeof(input_buffer));
+	MappedFile input_mapped(input_fd, PROT_READ);
 
 	// Construct document.
 	xmlpp::Document nbt_document;
 	nbt_document.set_internal_subset(u8"minecraft-nbt", u8"", u8"urn:uuid:25323dd6-2a7d-11e1-96b7-1c4bd68d068e");
 	xmlpp::Element *nbt_root_elt = nbt_document.create_root_node("minecraft-nbt");
-	const uint8_t *input_ptr = input_buffer;
-	std::size_t input_left = sizeof(input_buffer);
+	const uint8_t *input_ptr = static_cast<const uint8_t *>(input_mapped.data());
+	std::size_t input_left = input_mapped.size();
 	check_left(1, input_left);
 	NBT::Tag outer_tag = static_cast<NBT::Tag>(decode_u8(input_ptr));
 	eat(1, input_ptr, input_left);
