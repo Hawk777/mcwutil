@@ -7,6 +7,7 @@
 namespace NBT {
 	int to_xml(const std::vector<std::string> &args);
 	int from_xml(const std::vector<std::string> &args);
+	int block_substitute(const std::vector<std::string> &args);
 	int patch_barray(const std::vector<std::string> &args);
 }
 

@@ -28,6 +28,7 @@ namespace {
 		std::cerr << "  zlib-check - decompresses a ZLIB-format file, discarding the contents\n";
 		std::cerr << "  nbt-to-xml - converts an NBT file to an equivalent XML file\n";
 		std::cerr << "  nbt-from-xml - converts an NBT-equivalent XML file to an NBT file\n";
+		std::cerr << "  nbt-block-substitute - replaces block IDs in the terrain of an NBT file\n";
 		std::cerr << "  nbt-patch-barray - replaces specific byte values in NBT byte arrays with other values\n";
 	}
 
@@ -69,6 +70,8 @@ namespace {
 			return NBT::to_xml(args);
 		} else if (command == u8"nbt-from-xml") {
 			return NBT::from_xml(args);
+		} else if (command == u8"nbt-block-substitute") {
+			return NBT::block_substitute(args);
 		} else if (command == u8"nbt-patch-barray") {
 			return NBT::patch_barray(args);
 		} else {
