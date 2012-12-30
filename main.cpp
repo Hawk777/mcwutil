@@ -1,4 +1,5 @@
 #include "zlib_utils.h"
+#include "coord_calc/coord_calc.h"
 #include "nbt/nbt.h"
 #include "region/pack.h"
 #include "region/unpack.h"
@@ -19,6 +20,7 @@ namespace {
 		std::cerr << appname << " command [arguments...]\n";
 		std::cerr << '\n';
 		std::cerr << "Possible commands are:\n";
+		std::cerr << "  coord-calc - computes various useful numbers from a coordinate pair\n";
 		std::cerr << "  region-unpack - unpacks the chunks from a region file (.mca or .mcr)\n";
 		std::cerr << "  region-pack - packs chunks into a region file (.mca or .mcr)\n";
 		std::cerr << "  zlib-decompress - decompresses a ZLIB-format file\n";
@@ -51,7 +53,9 @@ namespace {
 		}
 
 		// Dispatch.
-		if (command == u8"region-unpack") {
+		if (command == u8"coord-calc") {
+			return CoordCalc::calc(args);
+		} else if (command == u8"region-unpack") {
 			return Region::unpack(args);
 		} else if (command == u8"region-pack") {
 			return Region::pack(args);
