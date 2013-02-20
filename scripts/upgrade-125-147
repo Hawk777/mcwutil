@@ -1,0 +1,150 @@
+#!/bin/env python3
+
+import remapper
+
+import buildcraft
+import computercraft
+import industrialcraft
+import ironchests
+import railcraft
+import redpower
+
+mcwutil_path = "mcwutil"
+
+vanilla_block_ranges = [(0, 124)]
+vanilla_item_ranges = [(256, 385), (2256, 2266)]
+
+mod_info = {
+	"buildcraft": {
+		"files": {
+			"old": ("hier-noprefix", "buildcraft/config/buildcraft.cfg"),
+			"new": ("hier-prefix", "config/buildcraft/main.conf"),
+		},
+		"block": {
+			"template.id": "architect.id",
+		},
+		"item": {
+			# I have NO CLUE why, but pipe waterproof (the green stuff you get from cacti) DOES NOT APPEAR in the Buildcraft 2 config file!
+			# The ID number appears to come from MAGIC.
+			4065: "pipeWaterproof.id",
+		},
+	},
+	"computercraft": {
+		"files": {
+			"old": ("ini", "config/mod_ComputerCraft.cfg"),
+			"new": ("hier-prefix", "config/ComputerCraft.cfg"),
+		},
+		"block": {
+			"computerBlockID": "computerBlockID",
+			"diskDriveBlockID": "peripheralBlockID",
+		},
+		"item": {
+			"diskItemID": "diskItemID",
+		},
+	},
+	"computercraft-turtle": {
+		"files": {
+			"old": ("ini", "config/mod_CCTurtle.cfg"),
+			"new": ("hier-prefix", "config/CCTurtle.cfg"),
+		},
+		"block": {
+			"turtleBlockID": "turtleBlockID",
+			"turtleUpgradedBlockID": "turtleUpgradedBlockID",
+		},
+	},
+	"industrialcraft": {
+		"files": {
+			"old": ("hier-noprefix", "config/IC2.cfg"),
+			"new": ("hier-prefix", "config/IC2.cfg"),
+		},
+		"item": {
+			"itemCellCoolant": "reactorCoolantSimple",
+			"itemCellUran": "reactorUraniumSimple",
+			"itemCellUranDepleted": "reactorIsotopeCell",
+			"itemReactorCooler": "reactorHeatSwitch",
+			"itemReactorPlating": "reactorPlating",
+		},
+	},
+	"ironchests": {
+		"files": {
+			"old": ("hier-noprefix", "config/IronChest.cfg"),
+			"new": ("hier-prefix", "config/IronChest.cfg"),
+		},
+	},
+	"railcraft": {
+		"files": {
+			"old": ("hier-noprefix", "config/railcraft/railcraft.cfg"),
+			"new": ("hier-prefix", "config/railcraft/railcraft.cfg"),
+		},
+		"block": {
+			"block.structure": "block.signal",
+			"block.utility": "block.machine.alpha",
+		},
+		"item": {
+			"cart.bore.head": "tool.bore.head",
+			"item.circuit": "part.circuit",
+			"item.coke": "fuel.coke",
+			"item.creosote": "liquid.creosote",
+			"item.crowbar": "tool.crowbar",
+			"item.ic2": "ic2",
+			"item.lamp": "part.signal.lamp",
+			"item.signal.tuner": "tool.signal.tuner",
+			"item.surveyor": "tool.surveyor",
+			"part.dust.obsidian": "dust",
+			("part.rail.standard", 0): ("part.rail", 0),
+			("part.rail.advanced", 0): ("part.rail", 1),
+			("part.rail.reinforced", 0): ("part.rail", 4),
+			("part.rail.speed", 0): ("part.rail", 3),
+			("part.railbed.wood", 0): ("part.railbed", 0),
+			("part.railbed.stone", 0): ("part.railbed", 1),
+			("part.tie.wood", 0): ("part.tie", 0),
+			("part.tie.stone", 0): ("part.tie", 1),
+			("structure.post.metal", 0): ("block.post", 2),
+			("structure.post.metal", 1): ("block.post.metal", 0),
+			("structure.post.metal", 2): ("block.post.metal", 1),
+			("structure.post.metal", 3): ("block.post.metal", 2),
+			("structure.post.metal", 4): ("block.post.metal", 3),
+			("structure.post.metal", 5): ("block.post.metal", 4),
+			("structure.post.metal", 6): ("block.post.metal", 5),
+			("structure.post.metal", 7): ("block.post.metal", 6),
+			("structure.post.metal", 8): ("block.post.metal", 7),
+			("structure.post.metal", 9): ("block.post.metal", 8),
+			("structure.post.metal", 10): ("block.post.metal", 9),
+			("structure.post.metal", 11): ("block.post.metal", 10),
+			("structure.post.metal", 12): ("block.post.metal", 11),
+			("structure.post.metal", 13): ("block.post.metal", 12),
+			("structure.post.metal", 14): ("block.post.metal", 13),
+			("structure.post.metal", 15): ("block.post.metal", 14),
+			("structure.post.metal", 16): ("block.post.metal", 15),
+		},
+	},
+	"redpower": {
+		"files": {
+			"old": ("hier-noprefix", "redpower/redpower.cfg"),
+			"new": ("hier-noprefix", "config/redpower/redpower.cfg"),
+		},
+		"block": {
+			"array.array.id": "logic.logic.id",
+		},
+		"item": {
+			"world/axeEmerald": "world/axeGreenSapphire",
+			"world/handsawEmerald": "world/handsawGreenSapphire",
+			"world/hoeEmerald": "world/hoeGreenSapphire",
+			"world/pickaxeEmerald": "world/pickaxeGreenSapphire",
+			"world/shovelEmerald": "world/shovelGreenSapphire",
+			"world/sickleEmerald": "world/sickleGreenSapphire",
+			"world/swordEmerald": "world/swordGreenSapphire",
+		},
+	},
+}
+
+mod_remappers = []
+mod_remappers += buildcraft.create_all_remappers()
+mod_remappers += computercraft.create_all_remappers()
+mod_remappers += industrialcraft.create_all_remappers()
+mod_remappers += ironchests.create_all_remappers()
+mod_remappers += railcraft.create_all_remappers()
+mod_remappers += redpower.create_all_remappers()
+mod_remappers.append(redpower.ProjectTablePlanSlotShifter())
+
+remapper.run(mcwutil_path, vanilla_block_ranges, vanilla_item_ranges, mod_info, mod_remappers)
