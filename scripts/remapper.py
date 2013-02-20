@@ -605,7 +605,7 @@ class FallingSandRemapper(EntityRemapper):
 				sys.exit(1)
 			if tile_named is not None:
 				entity_compound.remove(tile_named)
-			if tileid_named is None:
+			if tileid_named is not None:
 				entity_compound.remove(tileid_named)
 			tileid_named = xml.etree.ElementTree.SubElement(entity_compound, "named", {"name": "TileID"})
 			tileid_short = xml.etree.ElementTree.SubElement(tileid_named, "short")
