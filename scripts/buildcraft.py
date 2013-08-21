@@ -200,5 +200,21 @@ class ACTRemapper(remapper.SimpleItemContainerTERemapper):
 	def __init__(self):
 		remapper.SimpleItemContainerTERemapper.__init__(self, "AutoWorkbench", "stackList")
 
+class AssemblyTableRemapper(remapper.TERemapper):
+	def __init__(self):
+		remapper.TERemapper.__init__(self, "net.minecraft.src.buildcraft.factory.TileAssemblyTable")
+
+	def remap_te(self, te_compound, map_info):
+		# The assembly table stores both a collection of input items (in an "items" list) and also a collection of previously selected desired outputs (in a "planned" list).
+		# Remap both.
+		for items_list_name in "items", "planned":
+			items_named = remapper.find_named(te_compound, items_list_name)
+			if items_named is not None:
+				items_list = items_named[0]
+				assert items_list.tag == "list"
+				assert len(items_list) == 0 or items_list.get("subtype") == "10"
+				for item_compound in items_list:
+					remapper.remap_item_compound(item_compound, map_info)
+
 def create_all_remappers():
-	return [PipeRemapper("net.minecraft.src.buildcraft.transport.GenericPipe"), PipeRemapper("net.minecraft.src.buildcraft.GenericPipe"), TankRemapper(), EngineRemapper(), FillerRemapper(), RefineryRemapper(), ACTRemapper()]
+	return [PipeRemapper("net.minecraft.src.buildcraft.transport.GenericPipe"), PipeRemapper("net.minecraft.src.buildcraft.GenericPipe"), TankRemapper(), EngineRemapper(), FillerRemapper(), RefineryRemapper(), ACTRemapper(), AssemblyTableRemapper()]
