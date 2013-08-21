@@ -1,0 +1,70 @@
+#!/bin/env python3
+
+import remapper
+
+import buildcraft
+import computercraft
+import industrialcraft
+import ironchests
+import railcraft
+import redpower
+
+mcwutil_path = "mcwutil"
+
+vanilla_block_ranges = [(0, 145)]
+vanilla_item_ranges = [(256, 403), (2256, 2267)]
+
+mod_info = {
+	"buildcraft": {
+		"files": {
+			"old": ("hier-prefix", "config/buildcraft/main.conf"),
+			"new": ("hier-prefix", "config/buildcraft/main.conf"),
+		},
+	},
+	"computercraft": {
+		"files": {
+			"old": ("hier-prefix", "config/ComputerCraft.cfg"),
+			"new": ("hier-prefix", "config/ComputerCraft.cfg"),
+		},
+	},
+	"computercraft-turtle": {
+		"files": {
+			"old": ("hier-prefix", "config/CCTurtle.cfg"),
+			"new": ("hier-prefix", "config/CCTurtle.cfg"),
+		},
+	},
+	"industrialcraft": {
+		"files": {
+			"old": ("hier-prefix", "config/IC2.cfg"),
+			"new": ("hier-prefix", "config/IC2.cfg"),
+		},
+	},
+	"ironchests": {
+		"files": {
+			"old": ("hier-prefix", "config/IronChest.cfg"),
+			"new": ("hier-prefix", "config/IronChest.cfg"),
+		},
+	},
+	"railcraft": {
+		"files": {
+			"old": ("hier-prefix", "config/railcraft/railcraft.cfg"),
+			"new": ("hier-prefix", "config/railcraft/railcraft.cfg"),
+		},
+	},
+	"redpower": {
+		"files": {
+			"old": ("hier-noprefix", "config/redpower/redpower.cfg"),
+			"new": ("hier-noprefix", "config/redpower/redpower.cfg"),
+		},
+	},
+}
+
+mod_remappers = []
+mod_remappers += buildcraft.create_all_remappers()
+mod_remappers += computercraft.create_all_remappers()
+mod_remappers += industrialcraft.create_all_remappers()
+mod_remappers += ironchests.create_all_remappers()
+mod_remappers += railcraft.create_all_remappers()
+mod_remappers += redpower.create_all_remappers()
+
+remapper.run(mcwutil_path, vanilla_block_ranges, vanilla_item_ranges, mod_info, mod_remappers)
