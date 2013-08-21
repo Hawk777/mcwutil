@@ -104,6 +104,13 @@ class TankRemapper(remapper.TERemapper):
 		# Tanks identify liquids by an item ID, which needs to be remapped.
 		remap_liquid(te_compound, map_info)
 
+		# New tanks use an "Id" key in a "tank" compound instead of a top-level "liquidId" key.
+		tank_named = remapper.find_named(te_compound, "tank")
+		if tank_named is not None:
+			tank_compound = tank_named[0]
+			assert tank_compound.tag == "compound"
+			remap_liquid(tank_compound, map_info, "Id")
+
 class EngineRemapper(remapper.TERemapper):
 	def __init__(self):
 		remapper.TERemapper.__init__(self, "net.minecraft.src.buildcraft.energy.Engine")
@@ -119,6 +126,14 @@ class EngineRemapper(remapper.TERemapper):
 			itemInInventory_compound = itemInInventory_named[0]
 			assert itemInInventory_compound.tag == "compound"
 			remapper.remap_item_compound(itemInInventory_compound, map_info)
+
+		# New-style combustion engines use "fuelTank" and "coolantTank" compounds instead of top-level ID keys, with "Id" keys under them.
+		for tank_name in "fuelTank", "coolantTank":
+			tank_named = remapper.find_named(te_compound, tank_name)
+			if tank_named is not None:
+				tank_compound = tank_named[0]
+				assert tank_compound.tag == "compound"
+				remap_liquid(tank_compound, map_info, "Id")
 
 class FillerRemapper(remapper.TERemapper):
 	def __init__(self):
@@ -170,6 +185,16 @@ class RefineryRemapper(remapper.TERemapper):
 				slot_compound = slot_named[0]
 				assert slot_compound.tag == "compound"
 				remap_liquid(slot_compound, map_info)
+		# A refinery may alternatively have three tanks called "result", "ingredient1", and "ingredient2", each having and "Id" needing remapping.
+		for slot in "result", "ingredient1", "ingredient2":
+			slot_named = remapper.find_named(te_compound, slot)
+			if slot_named is not None:
+				slot_compound = slot_named[0]
+				assert slot_compound.tag == "compound"
+				remap_liquid(slot_compound, map_info, "Id")
+		# A refinery may also have keys "filters_0" and "filters_1" for the in-GUI filter settings, which are top-level and contain liquid IDs directly.
+		for key in "filters_0", "filters_1":
+			remap_liquid(te_compound, map_info, key)
 
 class ACTRemapper(remapper.SimpleItemContainerTERemapper):
 	def __init__(self):
