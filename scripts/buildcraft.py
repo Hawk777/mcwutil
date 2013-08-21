@@ -137,7 +137,7 @@ class EngineRemapper(remapper.TERemapper):
 
 class FillerRemapper(remapper.TERemapper):
 	def __init__(self):
-		remapper.SimpleItemContainerTERemapper.__init__(self, "Filler")
+		remapper.TERemapper.__init__(self, "Filler")
 
 	def remap_te(self, te_compound, map_info):
 		# BC2 fillers store their items in a variable-length list with each item having a Slot tag.
