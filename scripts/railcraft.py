@@ -30,7 +30,7 @@ def convert_liquid_to_tank(compound, old_type_key, old_qty_key, map_info):
 			assert tanks_list.get("subtype") == "10"
 			for tank_compound in tanks_list:
 				tank_byte = remapper.find_named_child(tank_compound, "tank")
-				if remapper.get_number_from_number(tank_byte) == 0:
+				if remapper.get_number_from_number(tank_byte, "byte") == 0:
 					id_short = remapper.find_named_child(tank_compound, "Id")
 					if id_short is not None:
 						liquid_id = remapper.get_number_from_number(id_short, "short")
