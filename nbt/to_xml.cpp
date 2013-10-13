@@ -10,6 +10,7 @@
 #include <cassert>
 #include <fcntl.h>
 #include <iostream>
+#include <limits>
 #include <locale>
 #include <sstream>
 #include <string>
