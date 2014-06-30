@@ -200,6 +200,21 @@ class EnergyLoaderRemapper(remapper.TERemapper):
 			te_compound.remove(remapper.find_named(te_compound, "facing"))
 
 
+# Random stuff changes in track once in a while.
+class TrackRemapper(remapper.TERemapper):
+	def __init__(self):
+		remapper.TERemapper.__init__(self, "RailcraftTrackTile")
+
+	def remap_te(self, te_compound, map_info):
+		trackId_int = remapper.find_named_child(te_compound, "trackId")
+		if trackId_int is not None:
+			# In Railcraft 6.17.0.0, coupler track was ID 22 and decoupler track was ID 23.
+			# In Railcraft 8.4.0.0, both are ID 22 and there is a "decouple" byte which is 0 or 1.
+			if trackId_int.get("value") == "23":
+				trackId_int.set("value", "22")
+				xml.etree.ElementTree.SubElement(xml.etree.ElementTree.SubElement(te_compound, "named", {"name": "decouple"}), "byte", {"value": "1"})
+
+
 def create_all_remappers():
 	ret = []
 	# Handle multiblock structures.
@@ -215,4 +230,6 @@ def create_all_remappers():
 	# Handle energy loaders and unloaders needing their contents remapped and some other tags changed.
 	ret.append(EnergyLoaderRemapper("RCLoaderTileEnergy"))
 	ret.append(EnergyLoaderRemapper("RCUnloaderTileEnergy"))
+	# Handle various crud changing in track tile entities.
+	ret.append(TrackRemapper())
 	return ret
