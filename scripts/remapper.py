@@ -67,40 +67,47 @@ class ConfigFileHierNoPrefix(ConfigFile):
 		self.itemSection = None
 		current_path = []
 		with open(filename, mode="rt") as fp:
+			in_angle_brackets = False
 			for line in fp:
 				line = line.strip()
 				if line != "" and not line.startswith("#"):
-					if line.endswith("{"):
-						section = line[0:-1].strip()
-						if len(current_path) == 0 and (section == "block" or section == "blocks"):
-							if self.blockSection is None:
-								self.blockSection = section
-							else:
-								print("Malformed hierarchical config file (multiple block sections)!")
-								sys.exit(1)
-						if len(current_path) == 0 and (section == "item" or section == "items"):
-							if self.itemSection is None:
-								self.itemSection = section
-							else:
-								print("Malformed hierarchical config file (multiple item sections)!")
-								sys.exit(1)
-						current_path.append(section)
-					elif line == "}":
-						current_path.pop()
+					if in_angle_brackets:
+						if line.endswith(">"):
+							in_angle_brackets = False
 					else:
-						parts = line.split("=")
-						if len(parts) == 2:
-							key = self.fix_key(parts[0].strip())
-							if key is not None:
-								key = "/".join(current_path) + "/" + key
-								try:
-									value = int(parts[1].strip())
-									self.__values[key] = value
-								except ValueError:
-									pass
+						if line.endswith("{"):
+							section = line[0:-1].strip()
+							if len(current_path) == 0 and (section == "block" or section == "blocks"):
+								if self.blockSection is None:
+									self.blockSection = section
+								else:
+									print("Malformed hierarchical config file (multiple block sections)!")
+									sys.exit(1)
+							if len(current_path) == 0 and (section == "item" or section == "items"):
+								if self.itemSection is None:
+									self.itemSection = section
+								else:
+									print("Malformed hierarchical config file (multiple item sections)!")
+									sys.exit(1)
+							current_path.append(section)
+						elif line == "}":
+							current_path.pop()
 						else:
-							print("Malformed hierarchical config file (too many equals signs): {}".format(line))
-							sys.exit(1)
+							parts = line.split("=")
+							if len(parts) == 2:
+								key = self.fix_key(parts[0].strip())
+								if key is not None:
+									key = "/".join(current_path) + "/" + key
+									try:
+										value = int(parts[1].strip())
+										self.__values[key] = value
+									except ValueError:
+										pass
+							elif len(parts) == 1 and line.endswith("<"):
+								in_angle_brackets = True
+							else:
+								print("Malformed hierarchical config file (too many equals signs): {}".format(line))
+								sys.exit(1)
 
 	def fix_key(self, key):
 		return key
@@ -406,6 +413,9 @@ class Remapper(object):
 	def remap_player(self, player, map_info):
 		pass
 
+	def remap_liquid(self, liquid, map_info):
+		return liquid
+
 
 class EntityRemapper(Remapper):
 	def __init__(self, entity_id):
@@ -692,7 +702,9 @@ def run(mcwutil_path, vanilla_block_ranges, vanilla_item_ranges, mod_info, remap
 		dimensions = ["region"]
 		for f in os.listdir(input_world_dir):
 			if f.startswith("DIM"):
-				dimensions.append(os.path.join(f, "region"))
+				region_dir = os.path.join(f, "region")
+				if os.path.isdir(region_dir):
+					dimensions.append(region_dir)
 
 		# Compile a regexp to match region filenames.
 		region_file_re = re.compile(r"^r\.-?[0-9]+\.-?[0-9]+\.mca$")
