@@ -1,6 +1,5 @@
 #!/bin/env python3
 
-import copy
 import xml.etree.ElementTree
 
 import remapper
@@ -15,40 +14,36 @@ import buildcraft
 def convert_liquid_to_tank(compound, old_type_key, old_qty_key, map_info):
 	liquid_id = 0;
 	liquid_qty = 0;
-	# Read liquid from the old structure.
-	liquid_int = remapper.find_named_child(compound, old_type_key)
-	if liquid_int is not None:
-		liquid_id = remapper.get_number_from_number(liquid_int, ("short", "int"))
-	tank_int = remapper.find_named_child(compound, old_qty_key)
-	if tank_int is not None:
-		liquid_qty = remapper.get_number_from_number(tank_int, "int")
-	# Read liquid from the new structure.
+	if remapper.find_named_child(compound, "tanks") is None:
+		# No new structure, so convert 1.2.5 to 1.4.7.
+		# Read liquid from the old structure.
+		liquid_int = remapper.find_named_child(compound, old_type_key)
+		if liquid_int is not None:
+			liquid_id = remapper.get_number_from_number(liquid_int, ("short", "int"))
+		tank_int = remapper.find_named_child(compound, old_qty_key)
+		if tank_int is not None:
+			liquid_qty = remapper.get_number_from_number(tank_int, "int")
+		if liquid_id != 0:
+			# Create new structure.
+			tank_compound = xml.etree.ElementTree.SubElement(xml.etree.ElementTree.SubElement(xml.etree.ElementTree.SubElement(compound, "named", {"name": "tanks"}), "list", {"subtype": "10"}), "compound")
+			xml.etree.ElementTree.SubElement(xml.etree.ElementTree.SubElement(tank_compound, "named", {"name": "tank"}), "byte", {"value": "0"})
+			xml.etree.ElementTree.SubElement(xml.etree.ElementTree.SubElement(tank_compound, "named", {"name": "Id"}), "short", {"value": str(liquid_id)})
+			xml.etree.ElementTree.SubElement(xml.etree.ElementTree.SubElement(tank_compound, "named", {"name": "Amount"}), "int", {"value": str(liquid_qty)})
+			# Delete old structure.
+			for name in (old_type_key, old_qty_key):
+				named = remapper.find_named(compound, name)
+				if named is not None:
+					compound.remove(named)
+	# If there is a 1.4.7-era tanks list, remap its IDs.
 	tanks_list = remapper.find_named_child(compound, "tanks")
 	if tanks_list is not None:
 		assert tanks_list.tag == "list"
 		if len(tanks_list) != 0:
 			assert tanks_list.get("subtype") == "10"
 			for tank_compound in tanks_list:
-				tank_byte = remapper.find_named_child(tank_compound, "tank")
-				if remapper.get_number_from_number(tank_byte, "byte") == 0:
-					id_short = remapper.find_named_child(tank_compound, "Id")
-					if id_short is not None:
-						liquid_id = remapper.get_number_from_number(id_short, "short")
-					amount_int = remapper.find_named_child(tank_compound, "Amount")
-					if amount_int is not None:
-						liquid_qty = remapper.get_number_from_number(amount_int, "int")
-	# Delete both liquid structures.
-	for name in (old_type_key, old_qty_key, "tanks"):
-		named = remapper.find_named(compound, name)
-		if named is not None:
-			compound.remove(named)
-	# If there is liquid, remap it and create the new structure.
-	if liquid_id != 0:
-		liquid_id = map_info.item_map[liquid_id]
-		tank_compound = xml.etree.ElementTree.SubElement(xml.etree.ElementTree.SubElement(xml.etree.ElementTree.SubElement(compound, "named", {"name": "tanks"}), "list", {"subtype": "10"}), "compound")
-		xml.etree.ElementTree.SubElement(xml.etree.ElementTree.SubElement(tank_compound, "named", {"name": "tank"}), "byte", {"value": "0"})
-		xml.etree.ElementTree.SubElement(xml.etree.ElementTree.SubElement(tank_compound, "named", {"name": "Id"}), "short", {"value": str(liquid_id)})
-		xml.etree.ElementTree.SubElement(xml.etree.ElementTree.SubElement(tank_compound, "named", {"name": "Amount"}), "int", {"value": str(liquid_qty)})
+				id_short = remapper.find_named_child(tank_compound, "Id")
+				if id_short is not None:
+					id_short.set("value", str(map_info.item_map[remapper.get_number_from_number(id_short, "short")]))
 
 
 # slot_mapping is a list.
@@ -58,17 +53,22 @@ def shuffle_inventory(compound, slot_mapping, map_info):
 	# We will gather the items.
 	items = [None] * len(slot_mapping)
 
-	# First try gathering items from the old "Items" list.
-	items_list = remapper.find_named_child(compound, "Items")
-	if items_list is not None:
-		assert items_list.tag == "list"
-		assert len(items_list) == 0 or items_list.get("subtype") == "10"
-		for item_compound in items_list:
-			slot_byte = remapper.find_named_child(item_compound, "Slot")
-			if slot_byte is not None:
-				slot = remapper.get_number_from_number(slot_byte, "byte")
-				if 0 <= slot < len(items):
-					items[slot] = item_compound
+	# First try gathering items from the old "Items" list, if the new stuff doesn’t exist.
+	new_exists = False
+	for elt in slot_mapping:
+		if remapper.find_named(compound, elt[0]) is not None:
+			new_exists = True
+	if not new_exists:
+		items_list = remapper.find_named_child(compound, "Items")
+		if items_list is not None:
+			assert items_list.tag == "list"
+			assert len(items_list) == 0 or items_list.get("subtype") == "10"
+			for item_compound in items_list:
+				slot_byte = remapper.find_named_child(item_compound, "Slot")
+				if slot_byte is not None:
+					slot = remapper.get_number_from_number(slot_byte, "byte")
+					if 0 <= slot < len(items):
+						items[slot] = item_compound
 
 	# Second try gathering items in the new named lists.
 	for slot_name, slot_number in slot_mapping:
@@ -111,20 +111,19 @@ def shuffle_inventory(compound, slot_mapping, map_info):
 
 
 # Some Railcraft structures used to have an inventory called "Items", which has now been renamed to something else (often "invStructure", but not always).
-# This remapper reads in the inventory layout from either structure and generates an output with both "Items" and the new name in it, after remapping the items in the inventory.
-# Occasionally leaving the old "Items" tree around causes weirdness (rolling machine), so optionally allow it to be removed.
+# This remapper reads in the inventory layout from either structure and generates an output with the new name in it, after remapping the items in the inventory.
 class InventoryRemapperAndRenamer(remapper.TERemapper):
-	def __init__(self, te_id, new_inventory_name="invStructure", delete_items=False):
+	def __init__(self, te_id, new_inventory_name="invStructure"):
 		remapper.TERemapper.__init__(self, te_id)
 		self.__new_inventory_name = new_inventory_name
-		self.__delete_items = delete_items
 
 	def remap_te(self, te_compound, map_info):
 		inv_names = (self.__new_inventory_name, "Items")
 		inv_lists = [remapper.find_named_child(te_compound, x) for x in inv_names]
-		items = []
+		items = None
 		for inv_list in inv_lists:
-			if inv_list is not None:
+			if inv_list is not None and items is None:
+				items = []
 				assert inv_list.tag == "list"
 				if len(inv_list) != 0:
 					assert inv_list.get("subtype") == "10"
@@ -132,26 +131,22 @@ class InventoryRemapperAndRenamer(remapper.TERemapper):
 						remapper.remap_item_compound(item_compound, map_info)
 						items.append(item_compound)
 					break
-		for i in range(0, len(inv_names)):
-			if inv_lists[i] is None:
-				inv_lists[i] = xml.etree.ElementTree.SubElement(xml.etree.ElementTree.SubElement(te_compound, "named", {"name": inv_names[i]}), "list")
-			inv_lists[i].clear()
-			inv_lists[i].set("subtype", "10")
-			for item_compound in items:
-				inv_lists[i].append(copy.deepcopy(item_compound))
-		if self.__delete_items:
-			items_named = remapper.find_named(te_compound, "Items")
-			if items_named is not None:
-				te_compound.remove(items_named)
+		for name in inv_names:
+			inv_named = remapper.find_named(te_compound, name)
+			if inv_named is not None:
+				te_compound.remove(inv_named)
+		inv_named = xml.etree.ElementTree.SubElement(te_compound, "named", {"name": self.__new_inventory_name})
+		inv_list = xml.etree.ElementTree.SubElement(inv_named, "list", {"subtype": "10"})
+		for item in items:
+			inv_list.append(item)
 
 
-# In old Railcraft, the coke oven had keys "liquidId" and "liquidQty" for its liquid.
-# In new Railcraft, it has a "tanks" list with a compound per tank, with "Id" and "Amount" elements, and a "tank" key set to byte zero.
-# We input whichever one we can find, preferring the new format.
-# We output both formats after remapping the liquid.
-class CokeOvenLiquidRemapper(remapper.TERemapper):
-	def __init__(self):
-		remapper.TERemapper.__init__(self, "RCCokeOvenTile")
+# In Railcraft for 1.2.5, the coke oven had keys "liquidId" and "liquidQty" for its liquid.
+# In Railcraft for 1.4.7, it had a "tanks" list with a compound per tank, with "Id" and "Amount" elements, and a "tank" key set to byte zero.
+# In Railcraft for 1.6.4, it has a "tanks" list using liquid names.
+class LiquidRemapper(remapper.TERemapper):
+	def __init__(self, id):
+		remapper.TERemapper.__init__(self, id)
 
 	def remap_te(self, te_compound, map_info):
 		convert_liquid_to_tank(te_compound, "liquidId", "liquidQty", map_info)
@@ -173,11 +168,16 @@ class MinecartRenamer(remapper.EntityRemapper):
 # They also used to have a three-slot Items list for input, output, and filter slots; they now have a two-slot invBucket list for buckets and a one-slot invFilter list for the filter.
 class TankCartRemapper(remapper.EntityRemapper):
 	def __init__(self):
-		remapper.EntityRemapper.__init__(self, "Railcraft.cart.tank")
+		remapper.EntityRemapper.__init__(self, "Railcraft.railcraft.cart.tank")
 
 	def remap_entity(self, entity_compound, map_info):
 		convert_liquid_to_tank(entity_compound, "Liquid", "Tank", map_info)
+		# These went from a single big Items list in 1.2.5 to an invFilter/invBucket group in 1.4.7.
 		shuffle_inventory(entity_compound, [("invFilter", 0), ("invBucket", 0), ("invBucket", 1)], map_info)
+		# Then invBucket went back to Items in 1.6.4, leaving invFilter separate!
+		invBucket_named = remapper.find_named(entity_compound, "invBucket")
+		if invBucket_named is not None:
+			invBucket_named.set("name", "Items")
 
 
 # Energy loaders and unloaders need a tag adjusting.
@@ -218,13 +218,17 @@ class TrackRemapper(remapper.TERemapper):
 def create_all_remappers():
 	ret = []
 	# Handle multiblock structures.
-	ret += [InventoryRemapperAndRenamer(id) for id in ("RCCokeOvenTile", "RCBlastFurnaceTile", "RCRockCrusherTile")]
-	ret.append(InventoryRemapperAndRenamer("RCRollingMachineTile", "Crafting", True))
-	ret.append(CokeOvenLiquidRemapper())
+	ret += [InventoryRemapperAndRenamer(id) for id in ("RCCokeOvenTile", "RCBlastFurnaceTile", "RCRockCrusherTile", "RCSteamOvenTile", "RCWaterTankTile")]
+	ret.append(InventoryRemapperAndRenamer("RCRollingMachineTile", "Crafting"))
+	ret += [InventoryRemapperAndRenamer(id, "inv") for id in ("RCIronTankWallTile", "RCIronTankGaugeTile", "RCIronTankValveTile", "RCBoilerFireboxLiquidTile", "RCBoilerFireboxSolidTile")]
+	ret.append(LiquidRemapper("RCCokeOvenTile"))
+	ret += [LiquidRemapper(id) for id in ("RCIronTankWallTile", "RCIronTankGaugeTile", "RCIronTankValveTile", "RCWaterTankTile")]
 	# Handle minecarts being renamed.
-	ret += [MinecartRenamer(old, new) for (old, new) in (("entity.cart.basic", "Railcraft.cart.basic"), ("entity.cart.furnace", "Railcraft.cart.furnace"), ("entity.cart.chest", "Railcraft.cart.chest"), ("Tankcart", "Railcraft.cart.tank"), ("EnergyCart", "Railcraft.cart.energy"), ("Workcart", "Railcraft.cart.work"), ("Anchorcart", "Railcraft.cart.anchor"), ("TNTcart", "Railcraft.cart.tnt"))]
+	ret += [MinecartRenamer(old, new) for (old, new) in (("entity.cart.basic", "Railcraft.cart.basic"), ("entity.cart.furnace", "Railcraft.cart.furnace"), ("entity.cart.chest", "railcraft.railcraft.cart.chest"), ("Railcraft.cart.chest", "Railcraft.railcraft.cart.chest"), ("Tankcart", "Railcraft.railcraft.cart.tank"), ("Railcraft.cart.tank", "Railcraft.railcraft.cart.tank"), ("EnergyCart", "Railcraft.cart.energy"), ("Workcart", "Railcraft.cart.work"), ("Anchorcart", "Railcraft.cart.anchor"), ("TNTcart", "Railcraft.cart.tnt"), ("Railcraft.cart.track.relayer", "Railcraft.railcraft.cart.track.relayer"), ("Railcraft.cart.undercutter", "Railcraft.railcraft.cart.undercutter"))]
 	# Handle various carts needing their contents remapped.
-	ret += [remapper.SimpleItemContainerEntityRemapper(x) for x in ("Railcraft.cart.chest", "Railcraft.cart.energy")]
+	ret += [remapper.SimpleItemContainerEntityRemapper(x) for x in ("Railcraft.railcraft.cart.chest", "Railcraft.railcraft.cart.tank", "Railcraft.railcraft.cart.energy", "Railcraft.railcraft.cart.track.relayer", "Railcraft.railcraft.cart.undercutter")]
+	ret.append(remapper.SimpleItemContainerEntityRemapper("Railcraft.railcraft.cart.track.relayer", "patternInv"))
+	ret.append(remapper.SimpleItemContainerEntityRemapper("Railcraft.railcraft.cart.undercutter", "patternInv"))
 	# Handle tank carts representing their contents differently and their contents needing remapping.
 	ret.append(TankCartRemapper())
 	# Handle energy loaders and unloaders needing their contents remapped and some other tags changed.
