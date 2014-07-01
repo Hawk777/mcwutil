@@ -715,7 +715,9 @@ def run(mcwutil_path, vanilla_block_ranges, vanilla_item_ranges, mod_info, remap
 			print("===== PROCESSING DIMENSION {} =====".format(dimension))
 			try:
 				# Create the dimension directory, in case it doesn’t yet exist.
-				os.makedirs(os.path.join(output_world_dir, dimension), exist_ok=True)
+				dim_dir = os.path.join(output_world_dir, dimension)
+				if not os.path.isdir(dim_dir):
+					os.makedirs(os.path.join(output_world_dir, dimension), exist_ok=True)
 
 				# Iterate the regions.
 				for region in os.listdir(os.path.join(input_world_dir, dimension)):
