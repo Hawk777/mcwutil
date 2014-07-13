@@ -48,6 +48,8 @@ def create_all_remappers():
 	ret += [remapper.SimpleItemContainerTERemapper(x, "Items") for x in ("forestry.Apiary", "forestry.Alveary", "forestry.AlvearyFan", "forestry.AlvearyHeater", "forestry.AlvearySwarmer")]
 	# Handle forestry machines in their 1.4.7 representation.
 	ret.append(ForestryMachineRemapper())
+	# Handle farms.
+	ret.append(remapper.SimpleItemContainerTERemapper("forestry.Farm", "Items"))
 	# Handle liquid tanks not using the same name for quantity from 1.4.7 to 1.6.4.
 	ret.append(TankFixer())
 	return ret
