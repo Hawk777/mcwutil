@@ -1,0 +1,174 @@
+#!/bin/env python3
+
+import remapper
+
+import buildcraft
+import forestry
+import ironchests
+import liquid147164
+import railcraft
+import thermalexpansion
+
+mcwutil_path = "mcwutil"
+
+vanilla_block_ranges = [(0, 145)]
+vanilla_item_ranges = [(256, 403), (2256, 2267)]
+
+mod_info = {
+	"buildcraft": {
+		"files": {
+			"old": ("hier-prefix", "config/buildcraft/main.conf"),
+			"new": ("hier-prefix", "config/buildcraft/main.conf"),
+		},
+		"block": {
+			"oilMoving.id": "oil.id",
+			"oilStill.id": "oil.id",
+		},
+		"item": {
+			"pipeLiquidsCobblestone.id": "pipeFluidsCobblestone.id",
+			"pipeLiquidsEmerald.id": "pipeFluidsEmerald.id",
+			"pipeLiquidsGold.id": "pipeFluidsGold.id",
+			"pipeLiquidsIron.id": "pipeFluidsIron.id",
+			"pipeLiquidsSandstone.id": "pipeFluidsSandstone.id",
+			"pipeLiquidsStone.id": "pipeFluidsStone.id",
+			"pipeLiquidsVoid.id": "pipeFluidsVoid.id",
+			"pipeLiquidsWood.id": "pipeFluidsWood.id",
+		},
+	},
+	"forestry": {
+		"files": {
+			"old": ("hier-prefix", "config/forestry/base.conf"),
+			"new": ("hier-prefix", "config/forestry/base.conf"),
+		},
+	},
+	"ironchests": {
+		"files": {
+			"old": ("hier-prefix", "config/IronChest.cfg"),
+			"new": ("hier-prefix", "config/IronChest.cfg"),
+		},
+	},
+	"railcraft": {
+		"files": {
+			"old": ("hier-prefix", "config/railcraft/railcraft.cfg"),
+			"new": ("hier-prefix", "config/railcraft/railcraft.cfg"),
+		},
+		"block": {
+			"block.detector": "None", # Code is not in place to convert these properly because I'm lazy. This makes the conversion explode and tell you where they are so you can remove them by hand.
+			"block.machine.gamma": "None", # Loaders and unloaders are in here, and I'm too lazy to write code for them.
+			"block.wall": "block.wall.alpha",
+		},
+		"item": {
+			"liquid.creosote.bottle": "fluid.creosote.bottle",
+			"liquid.creosote.bucket": "fluid.creosote.bucket",
+			"liquid.creosote.can": "fluid.creosote.can",
+			"liquid.creosote.liquid": "block.fluid.creosote",
+			"liquid.creosote.refactory": "fluid.creosote.refactory",
+			"liquid.creosote.wax": "fluid.creosote.wax",
+			"part.ingot.steel": "ingot",
+		},
+	},
+	"thermalexpansion": {
+		"files": {
+			"old": ("hier-prefix", "config/cofh/thermalexpansion.cfg"),
+			"new": ("hier-prefix", "config/cofh/ThermalExpansion.cfg"),
+		},
+		"block": {
+			"block.core.ore": "Ore",
+			"block.factory.glass": "Glass",
+			"block.factory.machine": "Machine",
+			"block.factory.tank": "Tank",
+			"block.factory.rockwool": "Rockwool",
+			"block.transport.conduit": "Conduit",
+		},
+		"item": {
+			("item.core.component", 32): ("Component", 0), # Machine Frame
+			("item.core.component", 64): ("Component", 72), # Energy Cell Frame (Empty) (becomes redstone energy cell frame)
+			("item.core.component", 65): ("Component", 73), # Energy Cell Frame (Full) (becomes redstone energy cell frame)
+			("item.core.component", 96): ("Component", 96), # Energy Conduit
+			("item.core.component", 128): ("Component", 128), # Tesseract Frame
+			("item.core.component", 129): ("Component", 129), # Unattuned Tesseract
+			("item.core.material", 0): ("Material", 0), # Pulverized Iron
+			("item.core.material", 1): ("Material", 1), # Pulverized Gold
+			("item.core.material", 3): ("Material", 3), # Pulverized Obsidian
+			("item.core.material", 32): ("Material", 32), # Pulverized Copper
+			("item.core.material", 33): ("Material", 33), # Pulverized Tin
+			("item.core.material", 34): ("Material", 34), # Pulverized Silver
+			("item.core.material", 35): ("Material", 35), # Pulverized Lead
+			#("item.core.material", 36): ("Material", ), # Bronze Blend (no replacement)
+			#("item.core.material", 37): ("Material", ), # Brass Blend (no replacement)
+			("item.core.material", 38): ("Material", 38), # Electrum Blend
+			("item.core.material", 39): ("Material", 39), # Invar Blend
+			("item.core.material", 40): ("Material", 36), # Pulverized Ferrous Metal
+			("item.core.material", 41): ("Material", 37), # Pulverized Shiny Metal
+			("item.core.material", 64): ("Material", 64), # Copper Ingot
+			("item.core.material", 65): ("Material", 65), # Tin Ingot
+			("item.core.material", 66): ("Material", 66), # Silver Ingot
+			("item.core.material", 67): ("Material", 67), # Lead Ingot
+			("item.core.material", 68): ("Material", 68), # Ferrous Ingot
+			("item.core.material", 69): ("Material", 69), # Shiny Ingot
+			("item.core.material", 70): ("Material", 70), # Electrum Ingot
+			("item.core.material", 71): ("Material", 71), # Invar Ingot
+			("item.core.material", 96): ("Material", 128), # Sulfer
+			("item.core.material", 97): ("Material", 129), # Niter
+			("item.core.material", 128): ("Material", 160), # Wood Chips
+			("item.core.material", 129): ("Material", 161), # Sawdust
+			("item.core.material", 130): ("Material", 162), # Compressed Sawdust
+			("item.core.material", 131): ("Material", 163), # Slag
+			("item.core.material", 132): ("Material", 164), # Rich Slag
+			("item.core.material", 160): ("Material", 192), # Pneumatic Servo
+			("item.core.material", 161): ("Material", 193), # Redstone Reception Coil
+			("item.core.material", 162): ("Material", 194), # Redstone Transmission Coil
+			("item.core.material", 163): ("Material", 195), # Redstone Conductance Coil
+			("item.core.material", 164): ("Material", 224), # Copper Gear
+			("item.core.material", 165): ("Material", 225), # Tin Gear
+			("item.core.material", 166): ("Material", 227), # Invar Gear
+			"item.core.wrench": "Tool.Wrench",
+			"item.transport.multimeter": "Tool.Multimeter",
+		},
+	},
+}
+
+liquid_map = {
+	9: "water",
+	11: "lava",
+	255: "oil",
+	4064: "fuel",
+	7773: "creosote",
+	7776: "steam",
+	13265: "juice",
+	13273: "bioethanol",
+	13274: "biomass",
+	13387: "honey",
+	13388: "ice",
+	13391: "seedoil",
+	20261: "teliquid",
+}
+
+
+class EntityBlacklist(remapper.EntityRemapper):
+	def __init__(self, id):
+		remapper.EntityRemapper.__init__(self, id)
+
+	def remap_entity(self, entity_compound, map_info):
+		assert False
+
+
+class TEBlacklist(remapper.TERemapper):
+	def __init__(self, id):
+		remapper.TERemapper.__init__(self, id)
+
+	def remap_te(self, te_compound, map_info):
+		assert False
+
+
+mod_remappers = []
+mod_remappers.append(EntityBlacklist("Railcraft.cart.bore")) # Tunnel bores are big and scary and I don’t feel like fixing them!
+mod_remappers.append(TEBlacklist("RCEngineSteamHobby")) # Hobbyist steam engines placed in the world seem to get into a state where they erase items placed in their fuel slot.
+mod_remappers += liquid147164.create_all_remappers(map=liquid_map)
+mod_remappers += buildcraft.create_all_remappers()
+mod_remappers += forestry.create_all_remappers()
+mod_remappers += ironchests.create_all_remappers()
+mod_remappers += railcraft.create_all_remappers()
+mod_remappers += thermalexpansion.create_all_remappers()
+
+remapper.run(mcwutil_path, vanilla_block_ranges, vanilla_item_ranges, mod_info, mod_remappers)
