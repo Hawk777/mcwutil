@@ -19,9 +19,10 @@ include project.mk
 #
 # Build a full CXXFLAGS, LDFLAGS, and LIBS.
 #
-override CXXFLAGS := $(PROJECT_CXXFLAGS) $(shell pkg-config --cflags $(PACKAGES) | sed 's/-I/-isystem /g') $(CXXFLAGS)
-override LDFLAGS := $(PROJECT_LDFLAGS) $(shell pkg-config --libs-only-other --libs-only-L $(PACKAGES)) $(LDFLAGS)
-override LIBS := $(PROJECT_LIBS) $(shell pkg-config --libs-only-l $(PACKAGES)) $(LIBS)
+PKG_CONFIG ?= pkg-config
+override CXXFLAGS := $(PROJECT_CXXFLAGS) $(shell $(PKG_CONFIG) --cflags $(PACKAGES) | sed 's/-I/-isystem /g') $(CXXFLAGS)
+override LDFLAGS := $(PROJECT_LDFLAGS) $(shell $(PKG_CONFIG) --libs-only-other --libs-only-L $(PACKAGES)) $(LDFLAGS)
+override LIBS := $(PROJECT_LIBS) $(shell $(PKG_CONFIG) --libs-only-l $(PACKAGES)) $(LIBS)
 
 #
 # The target to build everything.
@@ -34,6 +35,11 @@ world : $(addprefix bin/,$(filter-out $(EXECUTABLES_EXCLUDE_WORLD),$(EXECUTABLES
 # Prevent echoing of compilation commands.
 #
 .SILENT :
+
+#
+# Delete output files if the rule trying to build them fails.
+#
+.DELETE_ON_ERROR:
 
 #
 # Rule to build the documentation.
@@ -55,7 +61,7 @@ tags :
 $(addprefix bin/,$(EXECUTABLES)) : bin/% : $$(addprefix obj/,$$(subst .cc,.o,$$(subst .cpp,.o,$$(shell find $$(SOURCES_%) -name .svn -prune -o -name '*.cpp' -print))))
 	echo "  LD	$@"
 	mkdir -p bin
-	$(CXX) $(LDFLAGS) $(if $(PACKAGES_$(notdir $@)),$(shell pkg-config --libs-only-other --libs-only-L $(PACKAGES_$(notdir $@)))) -o$@ $+ $(LIBS) $(if $(PACKAGES_$(notdir $@)),$(shell pkg-config --libs-only-l $(PACKAGES_$(notdir $@))))
+	$(CXX) $(LDFLAGS) $(if $(PACKAGES_$(notdir $@)),$(shell $(PKG_CONFIG) --libs-only-other --libs-only-L $(PACKAGES_$(notdir $@)))) -o$@ $+ $(LIBS) $(if $(PACKAGES_$(notdir $@)),$(shell $(PKG_CONFIG) --libs-only-l $(PACKAGES_$(notdir $@))))
 
 #
 # Rule to make a .d file and a .o file from a .cpp file.
@@ -66,15 +72,8 @@ $(addprefix bin/,$(EXECUTABLES)) : bin/% : $$(addprefix obj/,$$(subst .cc,.o,$$(
 # (2) when a dependency is updated, both the .d and .o files will be rebuilt because the old .o file is out of date, and
 # (3) it's impossible to alter the set of dependencies without modifying the .cpp file or one of its includes, which makes the .o file out of date
 #
-# Protobuf interferes with normal automatic dependency calculation, because the
-# C++ header files corresponding to protobuf files do not exist when the
-# dependency-calculating rule is invoked, thus causing the C++ compiler to throw
-# an error on the #include line while trying to compute the dependencies. To
-# solve this, just make all ".d" files depend on the protobuf ".h" files, to
-# force protoc to be run before dependency calculation begins.
-#
-obj/%.o : %.cpp $(PROTOBUF_HS)
-	$(RM) $(@:.o=.d)
+obj/%.o : %.cpp
+	$(RM) $(@:.o=.d) $@
 	echo "  CXX   obj/$(<:.cpp=.o)"
 	mkdir -p $(dir obj/$(<:.cpp=.o))
 	$(CXX) $(CXXFLAGS) -o $@ -c -MT '$@' -MMD -MP $<
@@ -94,17 +93,9 @@ endif
 endif
 
 #
-# Rule to clean and format source with uncrustify.
-#
-.PHONY : uncrustify
-uncrustify :
-	find . \( -name .svn -prune \) -o \( -path ./proto -prune \) -o \( \( -name '*.cpp' -o -name '*.h' \) -exec uncrustify -c uncrustify.cfg --no-backup \{\} \+ \)
-	patch --no-backup-if-mismatch -i uncrustify-exceptions.patch -p0 -R -u
-
-#
 # Rule to clean generated files.
 #
 .PHONY : clean
 clean :
 	$(RM) -rf bin html obj
-	$(RM) -f $(PROTOBUF_CCS) $(PROTOBUF_HS) tags
+	$(RM) -f tags
