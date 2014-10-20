@@ -37,7 +37,7 @@ namespace {
 		std::locale::global(std::locale(""));
 
 		// Extract the application name.
-		appname = Glib::locale_to_utf8(argv[0]);
+		appname = argv[0];
 
 		// Extract the command name.
 		if (argc < 2) {

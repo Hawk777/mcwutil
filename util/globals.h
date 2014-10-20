@@ -1,9 +1,8 @@
 #ifndef UTIL_GLOBALS_H
 #define UTIL_GLOBALS_H
 
-#include <glibmm/ustring.h>
+#include <string_view>
 
-extern Glib::ustring appname;
+extern std::string_view appname;
 
 #endif
-

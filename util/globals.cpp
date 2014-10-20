@@ -1,4 +1,3 @@
 #include "util/globals.h"
 
-Glib::ustring appname;
-
+std::string_view appname;
