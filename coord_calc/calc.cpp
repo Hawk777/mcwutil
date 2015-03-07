@@ -30,6 +30,11 @@ namespace {
 	}
 }
 
+/**
+ * \brief Entry point for the \c coord-calc utility.
+ *
+ * \param[in] args the command-line arguments
+ */
 int CoordCalc::calc(const std::vector<std::string> &args) {
 	// Check and parse parameters.
 	if (args.size() != 2) {
