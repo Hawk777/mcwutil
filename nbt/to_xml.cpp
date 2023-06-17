@@ -260,7 +260,7 @@ int NBT::to_xml(const std::vector<std::string> &args) {
 	// Construct document.
 	xmlpp::Document nbt_document;
 	nbt_document.set_internal_subset(u8"minecraft-nbt", u8"", u8"urn:uuid:25323dd6-2a7d-11e1-96b7-1c4bd68d068e");
-	xmlpp::Element *nbt_root_elt = nbt_document.create_root_node("minecraft-nbt");
+	xmlpp::Element *nbt_root_elt = nbt_document.create_root_node(u8"minecraft-nbt");
 	const uint8_t *input_ptr = static_cast<const uint8_t *>(input_mapped.data());
 	std::size_t input_left = input_mapped.size();
 	check_left(1, input_left);

@@ -94,7 +94,7 @@ int Region::pack(const std::vector<std::string> &args) {
 
 		if (present) {
 			// Copy the chunk data into the region file.
-			const std::string &chunk_filename = input_directory + G_DIR_SEPARATOR + Glib::filename_from_utf8(Glib::ustring::compose("chunk-%1.nbt.zlib", todecu(index, 4)));
+			const std::string &chunk_filename = input_directory + G_DIR_SEPARATOR + Glib::filename_from_utf8(Glib::ustring::compose(u8"chunk-%1.nbt.zlib", todecu(index, 4)));
 			FileDescriptor chunk_fd = FileDescriptor::create_open(chunk_filename.c_str(), O_RDONLY, 0);
 			struct stat stbuf;
 			FileUtils::fstat(chunk_fd, stbuf);
