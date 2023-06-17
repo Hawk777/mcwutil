@@ -58,7 +58,7 @@ tags :
 #
 # Rule to link a final executable.
 #
-$(addprefix bin/,$(EXECUTABLES)) : bin/% : $$(sort $$(addprefix obj/,$$(subst .cc,.o,$$(subst .cpp,.o,$$(shell find $$(SOURCES_%) -path ./.git -prune -o -name '*.cpp' -print)))))
+$(addprefix bin/,$(EXECUTABLES)) : bin/% : $$(sort $$(addprefix obj/,$$(subst .cpp,.o,$$(shell find $$(SOURCES_%) -path ./.git -prune -o -name '*.cpp' -print))))
 	echo "  LD	$@"
 	mkdir -p bin
 	$(CXX) $(LDFLAGS) $(if $(PACKAGES_$(notdir $@)),$(shell $(PKG_CONFIG) --libs-only-other --libs-only-L $(PACKAGES_$(notdir $@)))) -o$@ $+ $(LIBS) $(if $(PACKAGES_$(notdir $@)),$(shell $(PKG_CONFIG) --libs-only-l $(PACKAGES_$(notdir $@))))
