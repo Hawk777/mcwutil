@@ -4,28 +4,28 @@
 #include <stdexcept>
 
 /**
- * An exception that indicates that an attempt to fetch an error message for an error code itself failed.
+ * \brief An exception that indicates that an attempt to fetch an error message for an error code itself failed.
  */
 class ErrorMessageError : public std::runtime_error {
 	public:
 		/**
-		 * Constructs a new ErrorMessageError.
+		 * \brief Constructs a new ErrorMessageError.
 		 */
 		ErrorMessageError();
 };
 
 /**
- * An exception that corresponds to a system call failure.
+ * \brief An exception that corresponds to a system call failure.
  */
 class SystemError : public std::runtime_error {
 	public:
 		/**
-		 * The error code.
+		 * \brief The error code.
 		 */
 		const int error_code;
 
 		/**
-		 * Constructs a new SystemError for a specific error code.
+		 * \brief Constructs a new SystemError for a specific error code.
 		 *
 		 * \param[in] call the system call that failed.
 		 *
@@ -35,12 +35,12 @@ class SystemError : public std::runtime_error {
 };
 
 /**
- * An exception that corresponds to an attempt to open a file that does not exist.
+ * \brief An exception that corresponds to an attempt to open a file that does not exist.
  */
 class FileNotFoundError : public SystemError {
 	public:
 		/**
-		 * Constructs a new FileNotFoundError.
+		 * \brief Constructs a new FileNotFoundError.
 		 */
 		FileNotFoundError();
 };

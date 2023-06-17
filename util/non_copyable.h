@@ -2,22 +2,22 @@
 #define UTIL_NON_COPYABLE_H
 
 /**
- * An object that should not be copied or assigned.
+ * \brief An object that should not be copied or assigned.
  */
 class NonCopyable {
 	protected:
 		/**
-		 * Noncopyable objects can still be constructed.
+		 * \brief Noncopyable objects can still be constructed.
 		 */
 		NonCopyable();
 
 		/**
-		 * Prevents objects from being copied.
+		 * \brief Prevents objects from being copied.
 		 */
 		NonCopyable(const NonCopyable &) = delete;
 
 		/**
-		 * Prevents objects from being assigned to one another.
+		 * \brief Prevents objects from being assigned to one another.
 		 */
 		NonCopyable &operator=(const NonCopyable &) = delete;
 };

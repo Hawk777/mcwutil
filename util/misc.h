@@ -4,14 +4,14 @@
 #include <cstddef>
 
 /**
- * Gets the value of the system constant \c MAP_FAILED without provoking warnings about old C-style casts.
+ * \brief Gets the value of the system constant \c MAP_FAILED without provoking warnings about old C-style casts.
  *
  * \return \c MAP_FAILED.
  */
 void *get_map_failed();
 
 /**
- * Executes the XSI version of the \c strerror_r function.
+ * \brief Executes the XSI version of the \c strerror_r function.
  *
  * \param[in] err the error code to translate.
  *
