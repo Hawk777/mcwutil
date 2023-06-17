@@ -82,6 +82,14 @@ namespace {
 	}
 }
 
+/**
+ * \brief The application entry point.
+ *
+ * \param[in] argc the number of command-line arguments, including the
+ * application name
+ *
+ * \param[in] argv the command-line arguments
+ */
 int main(int argc, char **argv) {
 	try {
 		return main_impl(argc, argv);
