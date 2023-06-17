@@ -32,6 +32,13 @@ namespace {
 	}
 }
 
+/**
+ * \brief Encodes a floating-point number in IEEE754 single-precision format.
+ *
+ * \param[in] x the value to encode.
+ *
+ * \return the encoded form.
+ */
 uint32_t encode_float_to_u32(float x) {
 	// Break down the number based on its coarse classification.
 	int classify = std::fpclassify(x);
@@ -99,6 +106,13 @@ uint32_t encode_float_to_u32(float x) {
 	}
 }
 
+/**
+ * \brief Decodes a floating-point number from IEEE754 single-precision format.
+ *
+ * \param[in] x the value to decode.
+ *
+ * \return the floating-point number.
+ */
 float decode_u32_to_float(uint32_t x) {
 	// Extract the sign bit, biased exponent, and significand.
 	bool sign = !!(x & UINT32_C(0x80000000));
@@ -147,6 +161,13 @@ float decode_u32_to_float(uint32_t x) {
 	}
 }
 
+/**
+ * \brief Encodes a floating-point number in IEEE754 double-precision format.
+ *
+ * \param[in] x the value to encode.
+ *
+ * \return the encoded form.
+ */
 uint64_t encode_double_to_u64(double x) {
 	// Break down the number based on its coarse classification.
 	int classify = std::fpclassify(x);
@@ -214,6 +235,13 @@ uint64_t encode_double_to_u64(double x) {
 	}
 }
 
+/**
+ * \brief Decodes a floating-point number from IEEE754 double-precision format.
+ *
+ * \param[in] x the value to decode.
+ *
+ * \return the floating-point number.
+ */
 double decode_u64_to_double(uint64_t x) {
 	// Extract the sign bit, biased exponent, and significand.
 	bool sign = !!(x & UINT64_C(0x8000000000000000));

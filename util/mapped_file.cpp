@@ -7,6 +7,15 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+/**
+ * \brief Maps in a file.
+ *
+ * \param[in] fd the file to map.
+ *
+ * \param[in] prot the protection mode to use.
+ *
+ * \param[in] flags the mapping flags to use.
+ */
 MappedFile::MappedFile(const FileDescriptor &fd, int prot, int flags) {
 	struct stat st;
 	if (fstat(fd.fd(), &st) < 0) {
@@ -26,6 +35,15 @@ MappedFile::MappedFile(const FileDescriptor &fd, int prot, int flags) {
 	}
 }
 
+/**
+ * \brief Maps in a file.
+ *
+ * \param[in] filename the file to map.
+ *
+ * \param[in] prot the protection mode to use.
+ *
+ * \param[in] flags the mapping flags to use.
+ */
 MappedFile::MappedFile(const std::string &filename, int prot, int flags) {
 	FileDescriptor fd = FileDescriptor::create_open(filename.c_str(), O_RDONLY, 0);
 	struct stat st;
@@ -46,12 +64,18 @@ MappedFile::MappedFile(const std::string &filename, int prot, int flags) {
 	}
 }
 
+/**
+ * \brief Unmaps the file.
+ */
 MappedFile::~MappedFile() {
 	if (data_) {
 		munmap(data_, size_);
 	}
 }
 
+/**
+ * \brief Forces changes made to a writable mapping back to the disk.
+ */
 void MappedFile::sync() {
 	msync(data_, size_, MS_SYNC | MS_INVALIDATE);
 }

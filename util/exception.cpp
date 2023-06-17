@@ -21,12 +21,25 @@ namespace {
 	}
 }
 
+/**
+ * \brief Constructs a new ErrorMessageError.
+ */
 ErrorMessageError::ErrorMessageError() : std::runtime_error("Error fetching error message") {
 }
 
+/**
+ * \brief Constructs a new SystemError for a specific error code.
+ *
+ * \param[in] call the system call that failed.
+ *
+ * \param[in] err the error code.
+ */
 SystemError::SystemError(const char *call, int err) : std::runtime_error(get_error_string(call, err)), error_code(err) {
 }
 
+/**
+ * \brief Constructs a new FileNotFoundError.
+ */
 FileNotFoundError::FileNotFoundError() : SystemError("open", ENOENT) {
 }
 

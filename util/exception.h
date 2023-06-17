@@ -8,9 +8,6 @@
  */
 class ErrorMessageError : public std::runtime_error {
 	public:
-		/**
-		 * \brief Constructs a new ErrorMessageError.
-		 */
 		ErrorMessageError();
 };
 
@@ -24,13 +21,6 @@ class SystemError : public std::runtime_error {
 		 */
 		const int error_code;
 
-		/**
-		 * \brief Constructs a new SystemError for a specific error code.
-		 *
-		 * \param[in] call the system call that failed.
-		 *
-		 * \param[in] err the error code.
-		 */
 		SystemError(const char *call, int err);
 };
 
@@ -39,9 +29,6 @@ class SystemError : public std::runtime_error {
  */
 class FileNotFoundError : public SystemError {
 	public:
-		/**
-		 * \brief Constructs a new FileNotFoundError.
-		 */
 		FileNotFoundError();
 };
 
