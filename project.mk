@@ -22,7 +22,7 @@ PACKAGES := glibmm-2.4 libxml++-2.6 zlib
 #
 # The flags to pass to the linker ahead of any object files.
 #
-PROJECT_LDFLAGS := -pthread -Wl,--as-needed -Wl,-O1 -g
+PROJECT_LDFLAGS := -Wl,--as-needed -Wl,-O1 -g
 
 #
 # The library flags to pass to the linker after all object files.
@@ -32,4 +32,4 @@ PROJECT_LIBS :=
 #
 # The flags to pass to the C++ compiler.
 #
-PROJECT_CXXFLAGS := -std=gnu++0x -pthread -Wall -Wextra -Wold-style-cast -Wconversion -Wundef -march=native -O2 -fomit-frame-pointer -g -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS=1 -DHAVE_INLINE -I.
+PROJECT_CXXFLAGS := -std=gnu++0x -Wall -Wextra -Wformat=2 -Wstrict-aliasing=2 -Wold-style-cast -Wconversion -Wundef -Wmissing-declarations -Wredundant-decls -march=native -O2 -fomit-frame-pointer -fstrict-aliasing -g -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS=1 -DHAVE_INLINE -I.
