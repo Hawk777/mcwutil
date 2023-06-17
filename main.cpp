@@ -8,11 +8,11 @@
 #include <locale>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <typeinfo>
 #include <vector>
 #include <glibmm/convert.h>
 #include <glibmm/exception.h>
-#include <glibmm/ustring.h>
 
 namespace {
 	void usage() {
@@ -44,7 +44,7 @@ namespace {
 			usage();
 			return 1;
 		}
-		const Glib::ustring &command = Glib::locale_to_utf8(argv[1]);
+		const std::string_view command = argv[1];
 
 		// Extract the remaining command-line arguments.
 		std::vector<std::string> args;
@@ -54,25 +54,25 @@ namespace {
 		}
 
 		// Dispatch.
-		if (command == u8"coord-calc") {
+		if (command == "coord-calc") {
 			return CoordCalc::calc(args);
-		} else if (command == u8"region-unpack") {
+		} else if (command == "region-unpack") {
 			return Region::unpack(args);
-		} else if (command == u8"region-pack") {
+		} else if (command == "region-pack") {
 			return Region::pack(args);
-		} else if (command == u8"zlib-decompress") {
+		} else if (command == "zlib-decompress") {
 			return ZLib::decompress(args);
-		} else if (command == u8"zlib-compress") {
+		} else if (command == "zlib-compress") {
 			return ZLib::compress(args);
-		} else if (command == u8"zlib-check") {
+		} else if (command == "zlib-check") {
 			return ZLib::check(args);
-		} else if (command == u8"nbt-to-xml") {
+		} else if (command == "nbt-to-xml") {
 			return NBT::to_xml(args);
-		} else if (command == u8"nbt-from-xml") {
+		} else if (command == "nbt-from-xml") {
 			return NBT::from_xml(args);
-		} else if (command == u8"nbt-block-substitute") {
+		} else if (command == "nbt-block-substitute") {
 			return NBT::block_substitute(args);
-		} else if (command == u8"nbt-patch-barray") {
+		} else if (command == "nbt-patch-barray") {
 			return NBT::patch_barray(args);
 		} else {
 			usage();
