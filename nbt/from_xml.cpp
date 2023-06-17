@@ -84,7 +84,7 @@ namespace {
 			if (!relevant_child) {
 				throw std::runtime_error("Malformed NBT XML: named must have a child.");
 			}
-			const xmlpp::Attribute *name_attr = elt->get_attribute(u8"name");
+			const xmlpp::Attribute *name_attr = elt->get_attribute(utf8_literal(u8"name"));
 			if (!name_attr) {
 				throw std::runtime_error("Malformed NBT XML: named must have a name.");
 			}
@@ -99,7 +99,7 @@ namespace {
 			FileUtils::write(nbt_fd, name_utf8.data(), name_utf8.size());
 			write_nbt(nbt_fd, relevant_child);
 		} else if (elt->get_name() == u8"byte") {
-			const xmlpp::Attribute *value_attr = elt->get_attribute(u8"value");
+			const xmlpp::Attribute *value_attr = elt->get_attribute(utf8_literal(u8"value"));
 			if (!value_attr) {
 				throw std::runtime_error("Malformed NBT XML: byte must have a value.");
 			}
@@ -114,7 +114,7 @@ namespace {
 			encode_u8(&buffer[0], static_cast<int8_t>(value));
 			FileUtils::write(nbt_fd, buffer, sizeof(buffer));
 		} else if (elt->get_name() == u8"short") {
-			const xmlpp::Attribute *value_attr = elt->get_attribute(u8"value");
+			const xmlpp::Attribute *value_attr = elt->get_attribute(utf8_literal(u8"value"));
 			if (!value_attr) {
 				throw std::runtime_error("Malformed NBT XML: short must have a value.");
 			}
@@ -126,7 +126,7 @@ namespace {
 			encode_u16(&buffer[0], value);
 			FileUtils::write(nbt_fd, buffer, sizeof(buffer));
 		} else if (elt->get_name() == u8"int") {
-			const xmlpp::Attribute *value_attr = elt->get_attribute(u8"value");
+			const xmlpp::Attribute *value_attr = elt->get_attribute(utf8_literal(u8"value"));
 			if (!value_attr) {
 				throw std::runtime_error("Malformed NBT XML: int must have a value.");
 			}
@@ -138,7 +138,7 @@ namespace {
 			encode_u32(&buffer[0], value);
 			FileUtils::write(nbt_fd, buffer, sizeof(buffer));
 		} else if (elt->get_name() == u8"long") {
-			const xmlpp::Attribute *value_attr = elt->get_attribute(u8"value");
+			const xmlpp::Attribute *value_attr = elt->get_attribute(utf8_literal(u8"value"));
 			if (!value_attr) {
 				throw std::runtime_error("Malformed NBT XML: long must have a value.");
 			}
@@ -150,7 +150,7 @@ namespace {
 			encode_u64(&buffer[0], value);
 			FileUtils::write(nbt_fd, buffer, sizeof(buffer));
 		} else if (elt->get_name() == u8"float") {
-			const xmlpp::Attribute *value_attr = elt->get_attribute(u8"value");
+			const xmlpp::Attribute *value_attr = elt->get_attribute(utf8_literal(u8"value"));
 			if (!value_attr) {
 				throw std::runtime_error("Malformed NBT XML: float must have a value.");
 			}
@@ -163,7 +163,7 @@ namespace {
 			encode_u32(&buffer[0], raw);
 			FileUtils::write(nbt_fd, buffer, sizeof(buffer));
 		} else if (elt->get_name() == u8"double") {
-			const xmlpp::Attribute *value_attr = elt->get_attribute(u8"value");
+			const xmlpp::Attribute *value_attr = elt->get_attribute(utf8_literal(u8"value"));
 			if (!value_attr) {
 				throw std::runtime_error("Malformed NBT XML: float must have a value.");
 			}
@@ -178,12 +178,12 @@ namespace {
 		} else if (elt->get_name() == u8"barray") {
 			const xmlpp::TextNode *text_node = elt->get_child_text();
 			if (text_node) {
-				static const char DIGITS[] = u8"0123456789ABCDEF";
+				static const char8_t DIGITS[] = u8"0123456789ABCDEF";
 				const Glib::ustring &value = text_node->get_content();
 				Glib::ustring filtered_value;
 				filtered_value.reserve(value.size());
 				for (auto i = value.begin(), iend = value.end(); i != iend; ++i) {
-					static const char SPACES[] = u8" \t\n\r";
+					static const char8_t SPACES[] = u8" \t\n\r";
 					if (std::find(DIGITS, DIGITS + sizeof(DIGITS), *i) != DIGITS + sizeof(DIGITS)) {
 						filtered_value.push_back(*i);
 					} else if (std::find(SPACES, SPACES + sizeof(SPACES), *i) == SPACES + sizeof(SPACES)) {
@@ -220,7 +220,7 @@ namespace {
 				FileUtils::write(nbt_fd, header, sizeof(header));
 			}
 		} else if (elt->get_name() == u8"string") {
-			const xmlpp::Attribute *value_attr = elt->get_attribute(u8"value");
+			const xmlpp::Attribute *value_attr = elt->get_attribute(utf8_literal(u8"value"));
 			if (!value_attr) {
 				throw std::runtime_error("Malformed NBT XML: string must have a value.");
 			}
@@ -233,7 +233,7 @@ namespace {
 			FileUtils::write(nbt_fd, header, sizeof(header));
 			FileUtils::write(nbt_fd, value_utf8.data(), value_utf8.size());
 		} else if (elt->get_name() == u8"list") {
-			const xmlpp::Attribute *subtype_attr = elt->get_attribute(u8"subtype");
+			const xmlpp::Attribute *subtype_attr = elt->get_attribute(utf8_literal(u8"subtype"));
 			if (!subtype_attr) {
 				throw std::runtime_error("Malformed NBT XML: list must have a subtype.");
 			}
@@ -281,12 +281,12 @@ namespace {
 		} else if (elt->get_name() == u8"iarray") {
 			const xmlpp::TextNode *text_node = elt->get_child_text();
 			if (text_node) {
-				static const char DIGITS[] = u8"0123456789ABCDEF";
+				static const char8_t DIGITS[] = u8"0123456789ABCDEF";
 				const Glib::ustring &value = text_node->get_content();
 				Glib::ustring filtered_value;
 				filtered_value.reserve(value.size());
 				for (auto i = value.begin(), iend = value.end(); i != iend; ++i) {
-					static const char SPACES[] = u8" \t\n\r";
+					static const char8_t SPACES[] = u8" \t\n\r";
 					if (std::find(DIGITS, DIGITS + sizeof(DIGITS), *i) != DIGITS + sizeof(DIGITS)) {
 						filtered_value.push_back(*i);
 					} else if (std::find(SPACES, SPACES + sizeof(SPACES), *i) == SPACES + sizeof(SPACES)) {

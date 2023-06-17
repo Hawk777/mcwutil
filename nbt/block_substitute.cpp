@@ -15,16 +15,19 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <vector>
 #include <sys/stat.h>
 #include <sys/types.h>
 
+using namespace std::literals::string_view_literals;
+
 namespace {
 	typedef std::array<uint16_t, 16 * 16 * 16> Section;
 
-	const std::vector<std::string> PATH_TO_SECTIONS = { u8"", u8"Level", u8"Sections" };
-	const std::vector<std::string> PATH_TO_BLOCKS = { u8"", u8"Level", u8"Sections", u8"Blocks" };
-	const std::vector<std::string> PATH_TO_ADD = { u8"", u8"Level", u8"Sections", u8"Add" };
+	const std::vector<std::u8string_view> PATH_TO_SECTIONS = { u8""sv, u8"Level"sv, u8"Sections"sv };
+	const std::vector<std::u8string_view> PATH_TO_BLOCKS = { u8""sv, u8"Level"sv, u8"Sections"sv, u8"Blocks"sv };
+	const std::vector<std::u8string_view> PATH_TO_ADD = { u8""sv, u8"Level"sv, u8"Sections"sv, u8"Add"sv };
 
 	void check_left(std::size_t needed, std::size_t left) {
 		if (left < needed) {
@@ -38,9 +41,9 @@ namespace {
 		input_left -= n;
 	}
 
-	void handle_named(NBT::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint16_t *sub_table, const FileDescriptor &output_fd, Section &section_blocks, std::vector<std::string> &path);
+	void handle_named(NBT::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint16_t *sub_table, const FileDescriptor &output_fd, Section &section_blocks, std::vector<std::u8string_view> &path);
 
-	void handle_content(NBT::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint16_t *sub_table, const FileDescriptor &output_fd, Section &section_blocks, std::vector<std::string> &path) {
+	void handle_content(NBT::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint16_t *sub_table, const FileDescriptor &output_fd, Section &section_blocks, std::vector<std::u8string_view> &path) {
 		switch (tag) {
 			case NBT::TAG_END:
 				throw std::runtime_error("Malformed NBT: unexpected TAG_END.");
@@ -222,7 +225,7 @@ namespace {
 		throw std::runtime_error("Malformed NBT: unrecognized tag.");
 	}
 
-	void handle_named(NBT::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint16_t *sub_table, const FileDescriptor &output_fd, Section &section_blocks, std::vector<std::string> &path) {
+	void handle_named(NBT::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint16_t *sub_table, const FileDescriptor &output_fd, Section &section_blocks, std::vector<std::u8string_view> &path) {
 		// Read name length.
 		check_left(2, input_left);
 		int16_t name_len = decode_u16(input_ptr);
@@ -233,9 +236,9 @@ namespace {
 
 		// Read name and add to path.
 		check_left(name_len, input_left);
-		const uint8_t *name_ptr = input_ptr;
+		const char8_t *name_ptr = reinterpret_cast<const char8_t *>(input_ptr);
 		eat(name_len, input_ptr, input_left);
-		path.emplace_back(reinterpret_cast<const char *>(name_ptr), name_len);
+		path.emplace_back(name_ptr, name_len);
 
 		// Write to output.
 		if (!(tag == NBT::TAG_BYTE_ARRAY && (path == PATH_TO_BLOCKS || path == PATH_TO_ADD))) {
@@ -319,7 +322,7 @@ int NBT::block_substitute(const std::vector<std::string> &args) {
 
 	// Do the thing.
 	Section section_blocks;
-	std::vector<std::string> path;
+	std::vector<std::u8string_view> path;
 	std::fill(section_blocks.begin(), section_blocks.end(), 0);
 	uint8_t *input_ptr = static_cast<uint8_t *>(input_mapped.data());
 	std::size_t input_left = input_mapped.size();

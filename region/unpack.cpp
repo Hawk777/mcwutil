@@ -47,8 +47,8 @@ int Region::unpack(const std::vector<std::string> &args) {
 
 	// Iterate the chunks, filling in the metadata document and extracting the chunks to files.
 	xmlpp::Document metadata_document;
-	metadata_document.set_internal_subset(u8"minecraft-region-metadata", u8"", u8"urn:uuid:5e7a5ee0-2a7b-11e1-9e08-1c4bd68d068e");
-	xmlpp::Element *metadata_root_elt = metadata_document.create_root_node(u8"minecraft-region-metadata");
+	metadata_document.set_internal_subset(utf8_literal(u8"minecraft-region-metadata"), utf8_literal(u8""), utf8_literal(u8"urn:uuid:5e7a5ee0-2a7b-11e1-9e08-1c4bd68d068e"));
+	xmlpp::Element *metadata_root_elt = metadata_document.create_root_node(utf8_literal(u8"minecraft-region-metadata"));
 	for (unsigned int i = 0; i < 1024; ++i) {
 		// Decode the header for this chunk.
 		uint32_t offset_sectors = decode_u24(&header[i * 4]);
@@ -61,13 +61,13 @@ int Region::unpack(const std::vector<std::string> &args) {
 		}
 
 		// Construct a metadata element.
-		xmlpp::Element *metadata_chunk_elt = metadata_root_elt->add_child(u8"chunk");
-		metadata_chunk_elt->set_attribute(u8"index", todecu(i));
+		xmlpp::Element *metadata_chunk_elt = metadata_root_elt->add_child(utf8_literal(u8"chunk"));
+		metadata_chunk_elt->set_attribute(utf8_literal(u8"index"), todecu(i));
 
 		if (offset_sectors) {
 			// Record the chunk's metadata.
-			metadata_chunk_elt->set_attribute(u8"present", u8"1");
-			metadata_chunk_elt->set_attribute(u8"timestamp", todecu(timestamp));
+			metadata_chunk_elt->set_attribute(utf8_literal(u8"present"), utf8_literal(u8"1"));
+			metadata_chunk_elt->set_attribute(utf8_literal(u8"timestamp"), todecu(timestamp));
 
 			// Compute the location and size of the chunk.
 			off_t offset_bytes = static_cast<off_t>(offset_sectors) * 4096;
@@ -93,17 +93,17 @@ int Region::unpack(const std::vector<std::string> &args) {
 			const void *payload = &chunk_data[5];
 
 			// Copy the chunk's data out to a file.
-			const std::string &chunk_filename = output_directory + G_DIR_SEPARATOR + Glib::filename_from_utf8(Glib::ustring::compose(u8"chunk-%1.nbt.zlib", todecu(i, 4)));
+			const std::string &chunk_filename = output_directory + G_DIR_SEPARATOR + Glib::filename_from_utf8(Glib::ustring::compose(utf8_literal(u8"chunk-%1.nbt.zlib"), todecu(i, 4)));
 			FileDescriptor chunk_fd = FileDescriptor::create_open(chunk_filename.c_str(), O_WRONLY | O_CREAT, 0666);
 			FileUtils::write(chunk_fd, payload, payload_size_bytes);
 		} else {
 			// Mark the chunk as non-present in the metadata document.
-			metadata_chunk_elt->set_attribute(u8"present", u8"0");
+			metadata_chunk_elt->set_attribute(utf8_literal(u8"present"), utf8_literal(u8"0"));
 		}
 	}
 
 	// Write out the metadata file.
-	metadata_document.write_to_file_formatted(output_directory + G_DIR_SEPARATOR + Glib::filename_from_utf8(u8"metadata.xml"));
+	metadata_document.write_to_file_formatted(output_directory + G_DIR_SEPARATOR + Glib::filename_from_utf8(utf8_literal(u8"metadata.xml")));
 
 	return 0;
 }

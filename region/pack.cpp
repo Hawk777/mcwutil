@@ -46,7 +46,7 @@ int Region::pack(const std::vector<std::string> &args) {
 	// Load the metadata document.
 	xmlpp::DomParser metadata_parser;
 	metadata_parser.set_substitute_entities();
-	metadata_parser.parse_file(input_directory + G_DIR_SEPARATOR + Glib::filename_from_utf8(u8"metadata.xml"));
+	metadata_parser.parse_file(input_directory + G_DIR_SEPARATOR + Glib::filename_from_utf8(utf8_literal(u8"metadata.xml")));
 	const xmlpp::Document *metadata_document = metadata_parser.get_document();
 	const xmlpp::Element *metadata_root_elt = metadata_document->get_root_node();
 	if (metadata_root_elt->get_name() != u8"minecraft-region-metadata") {
@@ -65,24 +65,24 @@ int Region::pack(const std::vector<std::string> &args) {
 	std::fill(seen_indices.begin(), seen_indices.end(), false);
 	std::array<uint8_t, 8192> header;
 	std::fill(header.begin(), header.end(), 0);
-	const xmlpp::Node::NodeList &chunk_elts = metadata_root_elt->get_children(u8"chunk");
+	const xmlpp::Node::NodeList &chunk_elts = metadata_root_elt->get_children(utf8_literal(u8"chunk"));
 	for (auto i = chunk_elts.begin(), iend = chunk_elts.end(); i != iend; ++i) {
 		const xmlpp::Element *chunk_elt = dynamic_cast<const xmlpp::Element *>(*i);
 		unsigned int index;
 		{
-			std::wistringstream iss(ustring2wstring(chunk_elt->get_attribute_value(u8"index")));
+			std::wistringstream iss(ustring2wstring(chunk_elt->get_attribute_value(utf8_literal(u8"index"))));
 			iss.imbue(std::locale("C"));
 			iss >> index;
 		}
 		unsigned int present;
 		{
-			std::wistringstream iss(ustring2wstring(chunk_elt->get_attribute_value(u8"present")));
+			std::wistringstream iss(ustring2wstring(chunk_elt->get_attribute_value(utf8_literal(u8"present"))));
 			iss.imbue(std::locale("C"));
 			iss >> present;
 		}
 		uint32_t timestamp;
 		{
-			std::wistringstream iss(ustring2wstring(chunk_elt->get_attribute_value(u8"timestamp")));
+			std::wistringstream iss(ustring2wstring(chunk_elt->get_attribute_value(utf8_literal(u8"timestamp"))));
 			iss.imbue(std::locale("C"));
 			iss >> timestamp;
 		}
@@ -94,7 +94,7 @@ int Region::pack(const std::vector<std::string> &args) {
 
 		if (present) {
 			// Copy the chunk data into the region file.
-			const std::string &chunk_filename = input_directory + G_DIR_SEPARATOR + Glib::filename_from_utf8(Glib::ustring::compose(u8"chunk-%1.nbt.zlib", todecu(index, 4)));
+			const std::string &chunk_filename = input_directory + G_DIR_SEPARATOR + Glib::filename_from_utf8(Glib::ustring::compose(utf8_literal(u8"chunk-%1.nbt.zlib"), todecu(index, 4)));
 			FileDescriptor chunk_fd = FileDescriptor::create_open(chunk_filename.c_str(), O_RDONLY, 0);
 			struct stat stbuf;
 			FileUtils::fstat(chunk_fd, stbuf);

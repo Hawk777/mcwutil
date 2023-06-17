@@ -2,6 +2,22 @@
 #include <locale>
 #include <sstream>
 
+Glib::ustring utf8_literal(const char8_t *s) {
+	return reinterpret_cast<const char *>(s);
+}
+
+std::u8string_view utf8_wrap(const Glib::ustring &s) {
+	return std::u8string_view(reinterpret_cast<const char8_t *>(s.data()), s.bytes());
+}
+
+bool operator==(const Glib::ustring &x, std::u8string_view y) {
+	return utf8_wrap(x) == y;
+}
+
+bool operator==(std::u8string_view x, const Glib::ustring &y) {
+	return x == utf8_wrap(y);
+}
+
 Glib::ustring todecu(uintmax_t value, unsigned int width) {
 	std::wostringstream oss;
 	oss.imbue(std::locale("C"));
