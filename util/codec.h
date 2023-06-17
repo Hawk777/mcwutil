@@ -1,7 +1,6 @@
 #ifndef UTIL_CODEC_H
 #define UTIL_CODEC_H
 
-#include <cmath>
 #include <cstddef>
 #include <stdint.h>
 

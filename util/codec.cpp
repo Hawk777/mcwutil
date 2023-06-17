@@ -1,4 +1,6 @@
 #include "util/codec.h"
+#include <cfloat>
+#include <cmath>
 
 namespace {
 	/**
@@ -56,11 +58,11 @@ uint32_t encode_float_to_u32(float x) {
 			x = -x;
 		}
 
-		// As-close-to-normalize-as-possible input (this value is 2^126).
-		x *= 85070591730234615865843651857942052864.0f;
+		// Remove the exponent (-126) and shift the result up into the integer part (23 bits).
+		x = std::ldexp(x, 126 + 23);
 
-		// Encode the significand by multiplying the input by 2^23 and converting the result to an integer.
-		uint32_t significand = static_cast<uint32_t>((x * (UINT32_C(1) << 23)) + 0.5);
+		// Encode the significand by converting the result to an integer.
+		uint32_t significand = static_cast<uint32_t>(x + 0.5f);
 
 		// Encode the number.
 		return pack_ses32(sign, 0x00, significand);
@@ -71,16 +73,12 @@ uint32_t encode_float_to_u32(float x) {
 			x = -x;
 		}
 
-		// Extract exponent and normalize input.
-		int16_t exponent = 0;
-		while (x >= 2.0) {
-			x /= 2.0f;
-			++exponent;
-		}
-		while (x < 1.0) {
-			x *= 2.0f;
-			--exponent;
-		}
+		// Extract exponent.
+#if FLT_RADIX == 2
+		int16_t exponent = static_cast<int16_t>(std::ilogb(x));
+#else
+		int16_t exponent = static_cast<int16_t>(std::floor(std::log2(x)));
+#endif
 
 		// If exponent is below minimum limit, encode a zero.
 		if (exponent < -126) {
@@ -92,11 +90,17 @@ uint32_t encode_float_to_u32(float x) {
 			return pack_ses32(sign, 0xFF, 0);
 		}
 
+		// Remove the exponent.
+		x = std::ldexp(x, -exponent);
+
 		// The leading 1 bit of the significand is implied; remove it.
 		x -= 1.0f;
 
-		// Encode the significand by multiplying the input by 2^23 and converting the result to an integer.
-		uint32_t significand = static_cast<uint32_t>((x * (UINT32_C(1) << 23)) + 0.5);
+		// Shift the value up into the integer part.
+		x = std::ldexp(x, 23);
+
+		// Encode the significand by converting the result to an integer.
+		uint32_t significand = static_cast<uint32_t>(x + 0.5f);
 
 		// Bias the exponent.
 		exponent = static_cast<int16_t>(exponent + 127);
@@ -130,12 +134,8 @@ float decode_u32_to_float(uint32_t x) {
 			return INFINITY;
 		}
 	} else if (!exponent) {
-		// Exponent 0x00 encodes zeroes and subnormals.
-		// Shift the significand down into the fraction part.
-		float value = static_cast<float>(significand) / (UINT32_C(1) << 23);
-
-		// Apply the exponent (this value is 2^126).
-		value /= 85070591730234615865843651857942052864.0f;
+		// Shift the significand down into the fraction part (23 bits) plus apply the exponent (-126).
+		float value = std::ldexp(static_cast<float>(significand), -(23 + 126));
 
 		// Apply the sign bit.
 		return sign ? -value : value;
@@ -144,20 +144,13 @@ float decode_u32_to_float(uint32_t x) {
 		exponent = static_cast<int8_t>(static_cast<uint8_t>(exponent) - 127);
 
 		// Shift the significand down into the fraction part and re-add the implicit leading 1 bit.
-		double value = 1.0 + static_cast<double>(significand) / (UINT32_C(1) << 23);
+		float value = 1.0f + std::ldexp(static_cast<float>(significand), -23);
 
 		// Apply the exponent.
-		while (exponent > 0) {
-			value *= 2.0;
-			--exponent;
-		}
-		while (exponent < 0) {
-			value /= 2.0;
-			++exponent;
-		}
+		value = std::ldexp(value, exponent);
 
 		// Apply the sign bit.
-		return static_cast<float>(sign ? -value : value);
+		return sign ? -value : value;
 	}
 }
 
@@ -185,11 +178,11 @@ uint64_t encode_double_to_u64(double x) {
 			x = -x;
 		}
 
-		// As-close-to-normalize-as-possible input (this value is 2^1022).
-		x *= 44942328371557897693232629769725618340449424473557664318357520289433168951375240783177119330601884005280028469967848339414697442203604155623211857659868531094441973356216371319075554900311523529863270738021251442209537670585615720368478277635206809290837627671146574559986811484619929076208839082406056034304.0;
+		// Remove the exponent (-1022) and shift the result up into the integer part (52 bits).
+		x = std::ldexp(x, 1022 + 52);
 
-		// Encode the significand by multiplying the input by 2^52 and converting the result to an integer.
-		uint64_t significand = static_cast<uint64_t>((x * (UINT64_C(1) << 52)) + 0.5);
+		// Encode the significand by converting the result to an integer.
+		uint64_t significand = static_cast<uint64_t>(x + 0.5);
 
 		// Encode the number.
 		return pack_ses64(sign, 0x000, significand);
@@ -200,16 +193,12 @@ uint64_t encode_double_to_u64(double x) {
 			x = -x;
 		}
 
-		// Extract exponent and normalize input.
-		int16_t exponent = 0;
-		while (x >= 2.0) {
-			x /= 2.0;
-			++exponent;
-		}
-		while (x < 1.0) {
-			x *= 2.0;
-			--exponent;
-		}
+		// Extract exponent.
+#if FLT_RADIX == 2
+		int16_t exponent = static_cast<int16_t>(std::ilogb(x));
+#else
+		int16_t exponent = static_cast<int16_t>(std::floor(std::log2(x)));
+#endif
 
 		// If exponent is below minimum limit, encode a zero.
 		if (exponent < -1022) {
@@ -221,11 +210,17 @@ uint64_t encode_double_to_u64(double x) {
 			return pack_ses64(sign, 0x7FF, 0);
 		}
 
+		// Remove the exponent.
+		x = std::ldexp(x, -exponent);
+
 		// The leading 1 bit of the significand is implied; remove it.
 		x -= 1.0;
 
-		// Encode the significand by multiplying the input by 2^52 and converting the result to an integer.
-		uint64_t significand = static_cast<uint64_t>((x * (UINT64_C(1) << 52)) + 0.5);
+		// Shift the value up into the integer part.
+		x = std::ldexp(x, 52);
+
+		// Encode the significand by converting the result to an integer.
+		uint64_t significand = static_cast<uint64_t>(x + 0.5);
 
 		// Bias the exponent.
 		exponent = static_cast<int16_t>(exponent + 1023);
@@ -259,12 +254,8 @@ double decode_u64_to_double(uint64_t x) {
 			return INFINITY;
 		}
 	} else if (!exponent) {
-		// Exponent 0x000 encodes zeroes and subnormals.
-		// Shift the significand down into the fraction part.
-		double value = static_cast<double>(significand) / (UINT64_C(1) << 52);
-
-		// Apply the exponent (this value is 2^1022).
-		value /= 44942328371557897693232629769725618340449424473557664318357520289433168951375240783177119330601884005280028469967848339414697442203604155623211857659868531094441973356216371319075554900311523529863270738021251442209537670585615720368478277635206809290837627671146574559986811484619929076208839082406056034304.0;
+		// Shift the significand down into the fraction part (52 bits) plus apply the exponent (-1022).
+		double value = std::ldexp(static_cast<double>(significand), -(52 + 1022));
 
 		// Apply the sign bit.
 		return sign ? -value : value;
@@ -273,17 +264,10 @@ double decode_u64_to_double(uint64_t x) {
 		exponent = static_cast<int16_t>(exponent - 1023);
 
 		// Shift the significand down into the fraction part and re-add the implicit leading 1 bit.
-		double value = 1.0 + static_cast<double>(significand) / (UINT64_C(1) << 52);
+		double value = 1.0 + std::ldexp(static_cast<double>(significand), -52);
 
 		// Apply the exponent.
-		while (exponent > 0) {
-			value *= 2.0;
-			--exponent;
-		}
-		while (exponent < 0) {
-			value /= 2.0;
-			++exponent;
-		}
+		value = std::ldexp(value, exponent);
 
 		// Apply the sign bit.
 		return sign ? -value : value;
