@@ -218,6 +218,38 @@ namespace {
 					iarray_elt->add_child_text(ustr);
 					return;
 				}
+
+			case NBT::TAG_LONG_ARRAY:
+				{
+					check_left(4, input_left);
+					int32_t len = decode_u32(input_ptr);
+					eat(4, input_ptr, input_left);
+					if (len < 0) {
+						throw std::runtime_error("Malformed NBT: negative long array length.");
+					}
+					if (len > std::numeric_limits<int32_t>::max() / 8) {
+						throw std::runtime_error("Unsupported NBT feature: long array length too big.");
+					}
+					check_left(len, input_left * 8);
+					xmlpp::Element *larray_elt = parent_elt->add_child(utf8_literal(u8"larray"));
+					Glib::ustring ustr;
+					ustr.reserve(1 + len * 16 + len / 10 + 1);
+					ustr.append(utf8_literal(u8"\n"));
+					for (int32_t i = 0; i < len; ++i) {
+						static const char8_t DIGITS[] = u8"0123456789ABCDEF";
+						uint64_t integer = decode_u64(input_ptr + i * 8);
+						for (int nybble = 15; nybble >= 0; --nybble) {
+							ustr.push_back(static_cast<char>(DIGITS[(integer >> (4 * nybble)) & 0x0F]));
+						}
+						if ((i % 10) == 9) {
+							ustr.append(utf8_literal(u8"\n"));
+						}
+					}
+					eat(len * 8, input_ptr, input_left);
+					ustr.append(utf8_literal(u8"\n"));
+					larray_elt->add_child_text(ustr);
+					return;
+				}
 		}
 
 		throw std::runtime_error("Malformed NBT: unrecognized tag.");

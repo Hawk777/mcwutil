@@ -15,6 +15,7 @@ namespace NBT {
 		TAG_LIST,
 		TAG_COMPOUND,
 		TAG_INT_ARRAY,
+		TAG_LONG_ARRAY,
 	};
 }
 

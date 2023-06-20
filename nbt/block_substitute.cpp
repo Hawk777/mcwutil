@@ -220,6 +220,38 @@ namespace {
 					eat(length, input_ptr, input_left);
 					return;
 				}
+
+			case NBT::TAG_LONG_ARRAY:
+				{
+					check_left(4, input_left);
+					int32_t length = decode_u32(input_ptr);
+					eat(4, input_ptr, input_left);
+					if (length < 0) {
+						throw std::runtime_error("Malformed NBT: negative long array length.");
+					}
+
+					uint8_t header[4];
+					encode_u32(&header[0], length);
+					FileUtils::write(output_fd, header, sizeof(header));
+
+					FileUtils::write(output_fd, input_ptr, length);
+					eat(length, input_ptr, input_left);
+					FileUtils::write(output_fd, input_ptr, length);
+					eat(length, input_ptr, input_left);
+					FileUtils::write(output_fd, input_ptr, length);
+					eat(length, input_ptr, input_left);
+					FileUtils::write(output_fd, input_ptr, length);
+					eat(length, input_ptr, input_left);
+					FileUtils::write(output_fd, input_ptr, length);
+					eat(length, input_ptr, input_left);
+					FileUtils::write(output_fd, input_ptr, length);
+					eat(length, input_ptr, input_left);
+					FileUtils::write(output_fd, input_ptr, length);
+					eat(length, input_ptr, input_left);
+					FileUtils::write(output_fd, input_ptr, length);
+					eat(length, input_ptr, input_left);
+					return;
+				}
 		}
 
 		throw std::runtime_error("Malformed NBT: unrecognized tag.");
