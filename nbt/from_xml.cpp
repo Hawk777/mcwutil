@@ -51,7 +51,7 @@ namespace {
 
 	void check_list_subtype(NBT::Tag subtype) {
 		switch (subtype) {
-			case NBT::TAG_END: throw std::runtime_error("Malformed NBT XML: list should never have subtype TAG_END.");
+			case NBT::TAG_END: return;
 			case NBT::TAG_BYTE: return;
 			case NBT::TAG_SHORT: return;
 			case NBT::TAG_INT: return;
