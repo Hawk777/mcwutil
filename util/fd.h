@@ -9,10 +9,7 @@
  */
 class FileDescriptor {
 	public:
-	static FileDescriptor create_from_fd(int fd);
 	static FileDescriptor create_open(const char *file, int flags, mode_t mode);
-	static FileDescriptor create_socket(int pf, int type, int proto);
-	static FileDescriptor create_temp(const char *pattern);
 
 	explicit FileDescriptor();
 	explicit FileDescriptor(FileDescriptor &&moveref);
@@ -23,15 +20,11 @@ class FileDescriptor {
 	void close();
 	int fd() const;
 	bool is() const;
-	void set_blocking(bool block) const;
 
 	private:
 	int fd_;
 
-	explicit FileDescriptor(int fd);
 	explicit FileDescriptor(const char *file, int flags, mode_t mode);
-	explicit FileDescriptor(int pf, int type, int proto);
-	explicit FileDescriptor(const char *pattern);
 };
 
 namespace std {

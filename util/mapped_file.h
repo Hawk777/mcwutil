@@ -2,7 +2,6 @@
 #define UTIL_MAPPED_FILE_H
 
 #include "util/fd.h"
-#include <string>
 #include <sys/mman.h>
 
 /**
@@ -11,7 +10,6 @@
 class MappedFile {
 	public:
 	explicit MappedFile(const FileDescriptor &fd, int prot = PROT_READ, int flags = MAP_SHARED | MAP_FILE);
-	explicit MappedFile(const std::string &filename, int prot = PROT_READ, int flags = MAP_SHARED | MAP_FILE);
 	~MappedFile();
 
 	// This class is not copyable.
