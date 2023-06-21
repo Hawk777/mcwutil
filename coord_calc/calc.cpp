@@ -18,6 +18,22 @@ int real_mod(int num, int den) {
 	return num;
 }
 
+/**
+ * \brief Converts a user-provided string to an integer.
+ *
+ * \param[in] s the string to parse.
+ *
+ * \return the integer value.
+ */
+int parse_int(const std::string &s) {
+	std::size_t consumed;
+	int value = std::stoi(s, &consumed);
+	if(consumed != s.size()) {
+		throw std::invalid_argument("non-integer characters following integer");
+	}
+	return value;
+}
+
 void usage() {
 	std::cerr << "Usage:\n";
 	std::cerr << appname << " coord-calc X Z\n";
@@ -43,8 +59,8 @@ int CoordCalc::calc(const std::vector<std::string> &args) {
 	}
 	int x, z;
 	try {
-		std::size_t xend, zend;
-		x = std::stoi(args[0], &xend), z = std::stoi(args[1], &zend);
+		x = parse_int(args[0]);
+		z = parse_int(args[1]);
 	} catch(const std::invalid_argument &) {
 		usage();
 		return 1;
