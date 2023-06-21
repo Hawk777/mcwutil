@@ -1,14 +1,13 @@
 #ifndef NBT_NBT_H
 #define NBT_NBT_H
 
-#include <string>
-#include <vector>
+#include <ranges>
 
 namespace NBT {
-int to_xml(const std::vector<std::string> &args);
-int from_xml(const std::vector<std::string> &args);
-int block_substitute(const std::vector<std::string> &args);
-int patch_barray(const std::vector<std::string> &args);
+int to_xml(std::ranges::subrange<char **> args);
+int from_xml(std::ranges::subrange<char **> args);
+int block_substitute(std::ranges::subrange<char **> args);
+int patch_barray(std::ranges::subrange<char **> args);
 }
 
 #endif

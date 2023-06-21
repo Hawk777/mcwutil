@@ -17,7 +17,6 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
-#include <vector>
 
 namespace {
 void check_left(std::size_t needed, std::size_t left) {
@@ -259,7 +258,7 @@ void parse_name_and_data(const uint8_t *&input_ptr, std::size_t &input_left, NBT
 }
 }
 
-int NBT::to_xml(const std::vector<std::string> &args) {
+int NBT::to_xml(std::ranges::subrange<char **> args) {
 	// Check parameters.
 	if(args.size() != 2) {
 		std::cerr << "Usage:\n";
@@ -274,7 +273,7 @@ int NBT::to_xml(const std::vector<std::string> &args) {
 	}
 
 	// Open and map NBT file.
-	FileDescriptor input_fd = FileDescriptor::create_open(args[0].c_str(), O_RDONLY, 0);
+	FileDescriptor input_fd = FileDescriptor::create_open(args[0], O_RDONLY, 0);
 	MappedFile input_mapped(input_fd, PROT_READ);
 
 	// Construct document.
@@ -289,7 +288,7 @@ int NBT::to_xml(const std::vector<std::string> &args) {
 	parse_name_and_data(input_ptr, input_left, outer_tag, nbt_root_elt);
 
 	// Write output file.
-	nbt_document.write_to_file_formatted(args[1].c_str());
+	nbt_document.write_to_file_formatted(args[1]);
 
 	return 0;
 }

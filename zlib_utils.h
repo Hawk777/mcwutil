@@ -1,13 +1,12 @@
 #ifndef ZLIB_UTILS_H
 #define ZLIB_UTILS_H
 
-#include <string>
-#include <vector>
+#include <ranges>
 
 namespace ZLib {
-int compress(const std::vector<std::string> &args);
-int decompress(const std::vector<std::string> &args);
-int check(const std::vector<std::string> &args);
+int compress(std::ranges::subrange<char **> args);
+int decompress(std::ranges::subrange<char **> args);
+int check(std::ranges::subrange<char **> args);
 }
 
 #endif

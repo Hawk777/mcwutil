@@ -9,11 +9,10 @@
 #include <glibmm/exception.h>
 #include <iostream>
 #include <locale>
+#include <ranges>
 #include <stdexcept>
-#include <string>
 #include <string_view>
 #include <typeinfo>
-#include <vector>
 
 namespace {
 void usage() {
@@ -37,22 +36,20 @@ int main_impl(int argc, char **argv) {
 	// Set the current locale from environment variables.
 	std::locale::global(std::locale(""));
 
+	// Wrap the command-line parameters in a view.
+	std::ranges::subrange<char **> args(argv, argv + argc);
+
 	// Extract the application name.
-	appname = argv[0];
+	appname = args.front();
+	args.advance(1);
 
 	// Extract the command name.
-	if(argc < 2) {
+	if(args.empty()) {
 		usage();
 		return 1;
 	}
-	const std::string_view command = argv[1];
-
-	// Extract the remaining command-line arguments.
-	std::vector<std::string> args;
-	args.reserve(argc - 2);
-	for(int i = 2; i < argc; ++i) {
-		args.push_back(argv[i]);
-	}
+	std::string_view command = args.front();
+	args.advance(1);
 
 	// Dispatch.
 	if(command == "coord-calc") {

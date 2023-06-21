@@ -18,9 +18,8 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <vector>
 
-int Region::unpack(const std::vector<std::string> &args) {
+int Region::unpack(std::ranges::subrange<char **> args) {
 	// Check parameters.
 	if(args.size() != 2) {
 		std::cerr << "Usage:\n";
@@ -35,11 +34,11 @@ int Region::unpack(const std::vector<std::string> &args) {
 	}
 
 	// Extract provided pathnames.
-	const std::string &region_filename = args[0];
+	const char *region_filename = args[0];
 	const std::string &output_directory = args[1];
 
 	// Open the region file.
-	FileDescriptor region_fd = FileDescriptor::create_open(region_filename.c_str(), O_RDONLY, 0);
+	FileDescriptor region_fd = FileDescriptor::create_open(region_filename, O_RDONLY, 0);
 
 	// Read the header.
 	uint8_t header[8192];

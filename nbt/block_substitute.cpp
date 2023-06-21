@@ -14,7 +14,6 @@
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
-#include <string>
 #include <string_view>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -298,7 +297,7 @@ void usage() {
 }
 }
 
-int NBT::block_substitute(const std::vector<std::string> &args) {
+int NBT::block_substitute(std::ranges::subrange<char **> args) {
 	// Check parameters.
 	if(args.size() < 4 || (args.size() % 2) != 0) {
 		usage();
@@ -311,14 +310,14 @@ int NBT::block_substitute(const std::vector<std::string> &args) {
 		sub_table[i] = static_cast<uint16_t>(i);
 	}
 	for(std::size_t i = 2; i < args.size(); i += 2) {
-		if(!args[i].size() || !args[i + 1].size()) {
+		if(!args[i][0] || !args[i + 1][0]) {
 			usage();
 			return 1;
 		}
 		unsigned long from, to;
 		{
 			char *end;
-			from = std::strtoul(args[i].data(), &end, 10);
+			from = std::strtoul(args[i], &end, 10);
 			if(*end) {
 				usage();
 				return 1;
@@ -326,7 +325,7 @@ int NBT::block_substitute(const std::vector<std::string> &args) {
 		}
 		{
 			char *end;
-			to = std::strtoul(args[i + 1].data(), &end, 10);
+			to = std::strtoul(args[i + 1], &end, 10);
 			if(*end) {
 				usage();
 				return 1;
@@ -340,11 +339,11 @@ int NBT::block_substitute(const std::vector<std::string> &args) {
 	}
 
 	// Open and map input NBT file.
-	FileDescriptor input_fd = FileDescriptor::create_open(args[0].c_str(), O_RDONLY, 0);
+	FileDescriptor input_fd = FileDescriptor::create_open(args[0], O_RDONLY, 0);
 	MappedFile input_mapped(input_fd, PROT_READ);
 
 	// Open the output file.
-	FileDescriptor output_fd = FileDescriptor::create_open(args[1].c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0666);
+	FileDescriptor output_fd = FileDescriptor::create_open(args[1], O_WRONLY | O_CREAT | O_TRUNC, 0666);
 
 	// Do the thing.
 	Section section_blocks;

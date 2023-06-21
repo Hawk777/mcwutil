@@ -6,11 +6,10 @@
 #include <iostream>
 #include <new>
 #include <stdexcept>
-#include <string>
 #include <vector>
 #include <zlib.h>
 
-int ZLib::compress(const std::vector<std::string> &args) {
+int ZLib::compress(std::ranges::subrange<char **> args) {
 	// Check parameters.
 	if(args.size() != 2) {
 		std::cerr << "Usage:\n";
@@ -25,7 +24,7 @@ int ZLib::compress(const std::vector<std::string> &args) {
 	}
 
 	// Read input file.
-	FileDescriptor input_fd = FileDescriptor::create_open(args[0].c_str(), O_RDONLY, 0);
+	FileDescriptor input_fd = FileDescriptor::create_open(args[0], O_RDONLY, 0);
 	struct stat stbuf;
 	FileUtils::fstat(input_fd, stbuf);
 	unsigned char input_buffer[stbuf.st_size];
@@ -49,13 +48,13 @@ int ZLib::compress(const std::vector<std::string> &args) {
 	}
 
 	// Write output file.
-	FileDescriptor output_fd = FileDescriptor::create_open(args[1].c_str(), O_WRONLY | O_TRUNC | O_CREAT, 0666);
+	FileDescriptor output_fd = FileDescriptor::create_open(args[1], O_WRONLY | O_TRUNC | O_CREAT, 0666);
 	FileUtils::write(output_fd, output_buffer, output_length);
 
 	return 0;
 }
 
-int ZLib::decompress(const std::vector<std::string> &args) {
+int ZLib::decompress(std::ranges::subrange<char **> args) {
 	// Check parameters.
 	if(args.size() != 2) {
 		std::cerr << "Usage:\n";
@@ -70,7 +69,7 @@ int ZLib::decompress(const std::vector<std::string> &args) {
 	}
 
 	// Read input file.
-	FileDescriptor input_fd = FileDescriptor::create_open(args[0].c_str(), O_RDONLY, 0);
+	FileDescriptor input_fd = FileDescriptor::create_open(args[0], O_RDONLY, 0);
 	struct stat stbuf;
 	FileUtils::fstat(input_fd, stbuf);
 	unsigned char input_buffer[stbuf.st_size];
@@ -104,13 +103,13 @@ int ZLib::decompress(const std::vector<std::string> &args) {
 	}
 
 	// Write output file.
-	FileDescriptor output_fd = FileDescriptor::create_open(args[1].c_str(), O_WRONLY | O_TRUNC | O_CREAT, 0666);
+	FileDescriptor output_fd = FileDescriptor::create_open(args[1], O_WRONLY | O_TRUNC | O_CREAT, 0666);
 	FileUtils::write(output_fd, &output_buffer[0], output_buffer.size());
 
 	return 0;
 }
 
-int ZLib::check(const std::vector<std::string> &args) {
+int ZLib::check(std::ranges::subrange<char **> args) {
 	// Check parameters.
 	if(args.size() != 1) {
 		std::cerr << "Usage:\n";
@@ -124,7 +123,7 @@ int ZLib::check(const std::vector<std::string> &args) {
 	}
 
 	// Read input file.
-	FileDescriptor input_fd = FileDescriptor::create_open(args[0].c_str(), O_RDONLY, 0);
+	FileDescriptor input_fd = FileDescriptor::create_open(args[0], O_RDONLY, 0);
 	struct stat stbuf;
 	FileUtils::fstat(input_fd, stbuf);
 	unsigned char input_buffer[stbuf.st_size];

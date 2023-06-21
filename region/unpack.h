@@ -1,11 +1,10 @@
 #ifndef REGION_UNPACK_H
 #define REGION_UNPACK_H
 
-#include <string>
-#include <vector>
+#include <ranges>
 
 namespace Region {
-int unpack(const std::vector<std::string> &args);
+int unpack(std::ranges::subrange<char **> args);
 }
 
 #endif

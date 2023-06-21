@@ -23,9 +23,8 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <vector>
 
-int Region::pack(const std::vector<std::string> &args) {
+int Region::pack(std::ranges::subrange<char **> args) {
 	// Check parameters.
 	if(args.size() != 2) {
 		std::cerr << "Usage:\n";
@@ -41,7 +40,7 @@ int Region::pack(const std::vector<std::string> &args) {
 
 	// Extract provided pathnames.
 	const std::string &input_directory = args[0];
-	const std::string &region_filename = args[1];
+	const char *region_filename = args[1];
 
 	// Load the metadata document.
 	xmlpp::DomParser metadata_parser;
@@ -54,7 +53,7 @@ int Region::pack(const std::vector<std::string> &args) {
 	}
 
 	// Open the region file.
-	FileDescriptor region_fd = FileDescriptor::create_open(region_filename.c_str(), O_WRONLY | O_TRUNC | O_CREAT, 0666);
+	FileDescriptor region_fd = FileDescriptor::create_open(region_filename, O_WRONLY | O_TRUNC | O_CREAT, 0666);
 	off_t region_write_ptr = 8192;
 
 	// Iterate the chunk elements in the metadata file.

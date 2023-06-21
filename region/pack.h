@@ -1,11 +1,10 @@
 #ifndef REGION_PACK_H
 #define REGION_PACK_H
 
-#include <string>
-#include <vector>
+#include <ranges>
 
 namespace Region {
-int pack(const std::vector<std::string> &args);
+int pack(std::ranges::subrange<char **> args);
 }
 
 #endif

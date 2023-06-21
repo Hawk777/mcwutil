@@ -1,11 +1,10 @@
 #ifndef COORD_CALC_COORD_CALC_H
 #define COORD_CALC_COORD_CALC_H
 
-#include <string>
-#include <vector>
+#include <ranges>
 
 namespace CoordCalc {
-int calc(const std::vector<std::string> &args);
+int calc(std::ranges::subrange<char **> args);
 }
 
 #endif

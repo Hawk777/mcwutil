@@ -3,7 +3,6 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
-#include <vector>
 
 namespace {
 int divfloor(int num, int den) {
@@ -51,7 +50,7 @@ void usage() {
  *
  * \param[in] args the command-line arguments
  */
-int CoordCalc::calc(const std::vector<std::string> &args) {
+int CoordCalc::calc(std::ranges::subrange<char **> args) {
 	// Check and parse parameters.
 	if(args.size() != 2) {
 		usage();

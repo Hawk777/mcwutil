@@ -231,7 +231,7 @@ void usage() {
 }
 }
 
-int NBT::patch_barray(const std::vector<std::string> &args) {
+int NBT::patch_barray(std::ranges::subrange<char **> args) {
 	// Check parameters.
 	if(args.size() < 4 || (args.size() % 2) != 0) {
 		usage();
@@ -244,14 +244,14 @@ int NBT::patch_barray(const std::vector<std::string> &args) {
 		sub_table[i] = static_cast<uint8_t>(i);
 	}
 	for(std::size_t i = 2; i < args.size(); i += 2) {
-		if(!args[i].size() || !args[i + 1].size()) {
+		if(!args[i][0] || !args[i + 1][0]) {
 			usage();
 			return 1;
 		}
 		unsigned long from, to;
 		{
 			char *end;
-			from = std::strtoul(args[i].data(), &end, 10);
+			from = std::strtoul(args[i], &end, 10);
 			if(*end) {
 				usage();
 				return 1;
@@ -259,7 +259,7 @@ int NBT::patch_barray(const std::vector<std::string> &args) {
 		}
 		{
 			char *end;
-			to = std::strtoul(args[i + 1].data(), &end, 10);
+			to = std::strtoul(args[i + 1], &end, 10);
 			if(*end) {
 				usage();
 				return 1;
@@ -276,7 +276,7 @@ int NBT::patch_barray(const std::vector<std::string> &args) {
 	std::vector<Glib::ustring> path_components;
 	{
 		Glib::ustring current_component;
-		for(auto i = args[1].begin(), iend = args[1].end(); i != iend; ++i) {
+		for(const char *i = args[1]; *i; ++i) {
 			if(*i == '/') {
 				path_components.push_back(current_component);
 				current_component.clear();
@@ -288,7 +288,7 @@ int NBT::patch_barray(const std::vector<std::string> &args) {
 	}
 
 	// Open and map NBT file.
-	FileDescriptor nbt_fd = FileDescriptor::create_open(args[0].c_str(), O_RDWR, 0);
+	FileDescriptor nbt_fd = FileDescriptor::create_open(args[0], O_RDWR, 0);
 	MappedFile nbt_mapped(nbt_fd, PROT_READ | PROT_WRITE);
 
 	// Do the thing.

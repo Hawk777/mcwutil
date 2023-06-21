@@ -423,7 +423,7 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Document *doc) {
 }
 }
 
-int NBT::from_xml(const std::vector<std::string> &args) {
+int NBT::from_xml(std::ranges::subrange<char **> args) {
 	// Check parameters.
 	if(args.size() != 2) {
 		std::cerr << "Usage:\n";
@@ -443,7 +443,7 @@ int NBT::from_xml(const std::vector<std::string> &args) {
 	parser.parse_file(args[0]);
 
 	// Write output file.
-	FileDescriptor nbt_fd = FileDescriptor::create_open(args[1].c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0666);
+	FileDescriptor nbt_fd = FileDescriptor::create_open(args[1], O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	write_nbt(nbt_fd, parser.get_document());
 
 	return 0;
