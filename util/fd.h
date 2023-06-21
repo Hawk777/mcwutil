@@ -15,8 +15,8 @@ class FileDescriptor : public NonCopyable {
 	static FileDescriptor create_socket(int pf, int type, int proto);
 	static FileDescriptor create_temp(const char *pattern);
 
-	FileDescriptor();
-	FileDescriptor(FileDescriptor &&moveref);
+	explicit FileDescriptor();
+	explicit FileDescriptor(FileDescriptor &&moveref);
 	~FileDescriptor();
 	FileDescriptor &operator=(FileDescriptor &&moveref);
 
@@ -29,10 +29,10 @@ class FileDescriptor : public NonCopyable {
 	private:
 	int fd_;
 
-	FileDescriptor(int fd);
-	FileDescriptor(const char *file, int flags, mode_t mode);
-	FileDescriptor(int pf, int type, int proto);
-	FileDescriptor(const char *pattern);
+	explicit FileDescriptor(int fd);
+	explicit FileDescriptor(const char *file, int flags, mode_t mode);
+	explicit FileDescriptor(int pf, int type, int proto);
+	explicit FileDescriptor(const char *pattern);
 };
 
 namespace std {

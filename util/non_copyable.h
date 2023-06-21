@@ -9,12 +9,12 @@ class NonCopyable {
 	/**
 	 * \brief Noncopyable objects can still be constructed.
 	 */
-	NonCopyable();
+	explicit NonCopyable();
 
 	/**
 	 * \brief Prevents objects from being copied.
 	 */
-	NonCopyable(const NonCopyable &) = delete;
+	explicit NonCopyable(const NonCopyable &) = delete;
 
 	/**
 	 * \brief Prevents objects from being assigned to one another.

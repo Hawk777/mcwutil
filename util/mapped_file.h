@@ -11,8 +11,8 @@
  */
 class MappedFile : public NonCopyable {
 	public:
-	MappedFile(const FileDescriptor &fd, int prot = PROT_READ, int flags = MAP_SHARED | MAP_FILE);
-	MappedFile(const std::string &filename, int prot = PROT_READ, int flags = MAP_SHARED | MAP_FILE);
+	explicit MappedFile(const FileDescriptor &fd, int prot = PROT_READ, int flags = MAP_SHARED | MAP_FILE);
+	explicit MappedFile(const std::string &filename, int prot = PROT_READ, int flags = MAP_SHARED | MAP_FILE);
 	~MappedFile();
 
 	/**
