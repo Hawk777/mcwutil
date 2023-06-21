@@ -1,6 +1,6 @@
 #include "util/codec.h"
-#include <cfloat>
 #include <cmath>
+#include <limits>
 
 namespace {
 /**
@@ -74,11 +74,12 @@ uint32_t encode_float_to_u32(float x) {
 		}
 
 		// Extract exponent.
-#if FLT_RADIX == 2
-		int16_t exponent = static_cast<int16_t>(std::ilogb(x));
-#else
-		int16_t exponent = static_cast<int16_t>(std::floor(std::log2(x)));
-#endif
+		int16_t exponent;
+		if constexpr(std::numeric_limits<float>::radix == 2) {
+			exponent = static_cast<int16_t>(std::ilogb(x));
+		} else {
+			exponent = static_cast<int16_t>(std::floor(std::log2(x)));
+		}
 
 		// If exponent is below minimum limit, encode a zero.
 		if(exponent < -126) {
@@ -194,11 +195,12 @@ uint64_t encode_double_to_u64(double x) {
 		}
 
 		// Extract exponent.
-#if FLT_RADIX == 2
-		int16_t exponent = static_cast<int16_t>(std::ilogb(x));
-#else
-		int16_t exponent = static_cast<int16_t>(std::floor(std::log2(x)));
-#endif
+		int16_t exponent;
+		if constexpr(std::numeric_limits<double>::radix == 2) {
+			exponent = static_cast<int16_t>(std::ilogb(x));
+		} else {
+			exponent = static_cast<int16_t>(std::floor(std::log2(x)));
+		}
 
 		// If exponent is below minimum limit, encode a zero.
 		if(exponent < -1022) {
