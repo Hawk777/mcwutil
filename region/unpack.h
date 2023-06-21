@@ -5,8 +5,7 @@
 #include <vector>
 
 namespace Region {
-	int unpack(const std::vector<std::string> &args);
+int unpack(const std::vector<std::string> &args);
 }
 
 #endif
-

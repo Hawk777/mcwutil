@@ -134,4 +134,3 @@ std::wstring ustring2wstring(const Glib::ustring &ustr) {
 	oss << ustr;
 	return oss.str();
 }
-

@@ -11,7 +11,7 @@
 
 int ZLib::compress(const std::vector<std::string> &args) {
 	// Check parameters.
-	if (args.size() != 2) {
+	if(args.size() != 2) {
 		std::cerr << "Usage:\n";
 		std::cerr << appname << " zlib-compress inputfile outputfile\n";
 		std::cerr << '\n';
@@ -34,12 +34,17 @@ int ZLib::compress(const std::vector<std::string> &args) {
 	unsigned char output_buffer[compressBound(sizeof(input_buffer))];
 	unsigned long output_length = sizeof(output_buffer);
 	int zlib_rc = compress2(output_buffer, &output_length, input_buffer, sizeof(input_buffer), 9);
-	switch (zlib_rc) {
-		case Z_OK: break;
-		case Z_MEM_ERROR: throw SystemError("compress2", ENOMEM);
-		case Z_BUF_ERROR: throw std::logic_error("Internal error: supposedly-sufficient compression buffer was insufficient.");
-		case Z_STREAM_ERROR: throw std::logic_error("Internal error: known-valid compression level was invalid.");
-		default: throw std::logic_error("Internal error: compress2 returned unknown error code.");
+	switch(zlib_rc) {
+		case Z_OK:
+			break;
+		case Z_MEM_ERROR:
+			throw SystemError("compress2", ENOMEM);
+		case Z_BUF_ERROR:
+			throw std::logic_error("Internal error: supposedly-sufficient compression buffer was insufficient.");
+		case Z_STREAM_ERROR:
+			throw std::logic_error("Internal error: known-valid compression level was invalid.");
+		default:
+			throw std::logic_error("Internal error: compress2 returned unknown error code.");
 	}
 
 	// Write output file.
@@ -51,7 +56,7 @@ int ZLib::compress(const std::vector<std::string> &args) {
 
 int ZLib::decompress(const std::vector<std::string> &args) {
 	// Check parameters.
-	if (args.size() != 2) {
+	if(args.size() != 2) {
 		std::cerr << "Usage:\n";
 		std::cerr << appname << " zlib-decompress inputfile outputfile\n";
 		std::cerr << '\n';
@@ -73,10 +78,10 @@ int ZLib::decompress(const std::vector<std::string> &args) {
 	// Decompress data.
 	std::vector<unsigned char> output_buffer(sizeof(input_buffer) * 4);
 	bool done = false;
-	while (!done) {
+	while(!done) {
 		unsigned long output_length = output_buffer.size();
 		int zlib_rc = uncompress(&output_buffer[0], &output_length, input_buffer, sizeof(input_buffer));
-		switch (zlib_rc) {
+		switch(zlib_rc) {
 			case Z_OK:
 				output_buffer.resize(output_length);
 				done = true;
@@ -106,7 +111,7 @@ int ZLib::decompress(const std::vector<std::string> &args) {
 
 int ZLib::check(const std::vector<std::string> &args) {
 	// Check parameters.
-	if (args.size() != 1) {
+	if(args.size() != 1) {
 		std::cerr << "Usage:\n";
 		std::cerr << appname << " zlib-check inputfile\n";
 		std::cerr << '\n';
@@ -127,10 +132,10 @@ int ZLib::check(const std::vector<std::string> &args) {
 	// Decompress data.
 	std::vector<unsigned char> output_buffer(sizeof(input_buffer) * 4);
 	bool done = false;
-	while (!done) {
+	while(!done) {
 		unsigned long output_length = output_buffer.size();
 		int zlib_rc = uncompress(&output_buffer[0], &output_length, input_buffer, sizeof(input_buffer));
-		switch (zlib_rc) {
+		switch(zlib_rc) {
 			case Z_OK:
 				output_buffer.resize(output_length);
 				done = true;
@@ -153,4 +158,3 @@ int ZLib::check(const std::vector<std::string> &args) {
 
 	return 0;
 }
-

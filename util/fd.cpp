@@ -2,12 +2,12 @@
 #include "util/exception.h"
 #include <cstdlib>
 #include <fcntl.h>
-#include <string>
-#include <unistd.h>
-#include <vector>
 #include <glibmm/miscutils.h>
+#include <string>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <unistd.h>
+#include <vector>
 
 /**
  * \brief Constructs a new FileDescriptor with a descriptor.
@@ -64,7 +64,8 @@ FileDescriptor FileDescriptor::create_temp(const char *pattern) {
 /**
  * \brief Constructs a FileDescriptor with no associated descriptor.
  */
-FileDescriptor::FileDescriptor() : fd_(-1) {
+FileDescriptor::FileDescriptor() :
+		fd_(-1) {
 }
 
 /**
@@ -72,7 +73,8 @@ FileDescriptor::FileDescriptor() : fd_(-1) {
  *
  * \param[in] moveref the descriptor to move from.
  */
-FileDescriptor::FileDescriptor(FileDescriptor &&moveref) : fd_(moveref.fd_) {
+FileDescriptor::FileDescriptor(FileDescriptor &&moveref) :
+		fd_(moveref.fd_) {
 	moveref.fd_ = -1;
 }
 
@@ -82,7 +84,7 @@ FileDescriptor::FileDescriptor(FileDescriptor &&moveref) : fd_(moveref.fd_) {
 FileDescriptor::~FileDescriptor() {
 	try {
 		close();
-	} catch (...) {
+	} catch(...) {
 		// Swallow.
 	}
 }
@@ -114,8 +116,8 @@ void FileDescriptor::swap(FileDescriptor &other) {
  * \brief Closes the descriptor.
  */
 void FileDescriptor::close() {
-	if (fd_ >= 0) {
-		if (::close(fd_) < 0) {
+	if(fd_ >= 0) {
+		if(::close(fd_) < 0) {
 			throw SystemError("close", errno);
 		}
 		fd_ = -1;
@@ -147,28 +149,30 @@ bool FileDescriptor::is() const {
  */
 void FileDescriptor::set_blocking(bool block) const {
 	long flags = fcntl(fd_, F_GETFL);
-	if (flags < 0) {
+	if(flags < 0) {
 		throw SystemError("fcntl", errno);
 	}
-	if (block) {
+	if(block) {
 		flags &= ~O_NONBLOCK;
 	} else {
 		flags |= O_NONBLOCK;
 	}
-	if (fcntl(fd_, F_SETFL, flags) < 0) {
+	if(fcntl(fd_, F_SETFL, flags) < 0) {
 		throw SystemError("fcntl", errno);
 	}
 }
 
-FileDescriptor::FileDescriptor(int fd) : fd_(fd) {
-	if (fd_ < 0) {
+FileDescriptor::FileDescriptor(int fd) :
+		fd_(fd) {
+	if(fd_ < 0) {
 		throw std::invalid_argument("Invalid file descriptor");
 	}
 }
 
-FileDescriptor::FileDescriptor(const char *file, int flags, mode_t mode) : fd_(open(file, flags, mode)) {
-	if (fd_ < 0) {
-		if (errno == ENOENT) {
+FileDescriptor::FileDescriptor(const char *file, int flags, mode_t mode) :
+		fd_(open(file, flags, mode)) {
+	if(fd_ < 0) {
+		if(errno == ENOENT) {
 			throw FileNotFoundError();
 		} else {
 			throw SystemError("open", errno);
@@ -176,8 +180,9 @@ FileDescriptor::FileDescriptor(const char *file, int flags, mode_t mode) : fd_(o
 	}
 }
 
-FileDescriptor::FileDescriptor(int af, int type, int proto) : fd_(socket(af, type, proto)) {
-	if (fd_ < 0) {
+FileDescriptor::FileDescriptor(int af, int type, int proto) :
+		fd_(socket(af, type, proto)) {
+	if(fd_ < 0) {
 		throw SystemError("socket", errno);
 	}
 }
@@ -186,15 +191,15 @@ FileDescriptor::FileDescriptor(const char *pattern) {
 	const std::string &tmpdir = Glib::get_tmp_dir();
 	std::vector<char> filename(tmpdir.begin(), tmpdir.end());
 	filename.push_back('/');
-	for (const char *ptr = pattern; *ptr; ++ptr) {
+	for(const char *ptr = pattern; *ptr; ++ptr) {
 		filename.push_back(*ptr);
 	}
 	filename.push_back('\0');
 	fd_ = mkstemp(&filename[0]);
-	if (fd_ < 0) {
+	if(fd_ < 0) {
 		throw SystemError("mkstemp", errno);
 	}
-	if (unlink(&filename[0]) < 0) {
+	if(unlink(&filename[0]) < 0) {
 		int saved_errno = errno;
 		::close(fd_);
 		throw SystemError("unlink", saved_errno);
@@ -204,4 +209,3 @@ FileDescriptor::FileDescriptor(const char *pattern) {
 void std::swap(FileDescriptor &x, FileDescriptor &y) {
 	x.swap(y);
 }
-

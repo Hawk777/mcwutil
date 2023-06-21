@@ -11,23 +11,23 @@
 #include <cstddef>
 #include <cstdio>
 #include <fcntl.h>
-#include <iostream>
-#include <locale>
-#include <sstream>
-#include <string>
-#include <unistd.h>
-#include <vector>
 #include <glibmm/convert.h>
+#include <iostream>
 #include <libxml++/document.h>
 #include <libxml++/nodes/element.h>
 #include <libxml++/nodes/node.h>
 #include <libxml++/parsers/domparser.h>
+#include <locale>
+#include <sstream>
+#include <string>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <unistd.h>
+#include <vector>
 
 int Region::pack(const std::vector<std::string> &args) {
 	// Check parameters.
-	if (args.size() != 2) {
+	if(args.size() != 2) {
 		std::cerr << "Usage:\n";
 		std::cerr << appname << " region-pack indir regionfile\n";
 		std::cerr << '\n';
@@ -49,7 +49,7 @@ int Region::pack(const std::vector<std::string> &args) {
 	metadata_parser.parse_file(input_directory + G_DIR_SEPARATOR + Glib::filename_from_utf8(utf8_literal(u8"metadata.xml")));
 	const xmlpp::Document *metadata_document = metadata_parser.get_document();
 	const xmlpp::Element *metadata_root_elt = metadata_document->get_root_node();
-	if (metadata_root_elt->get_name() != u8"minecraft-region-metadata") {
+	if(metadata_root_elt->get_name() != u8"minecraft-region-metadata") {
 		throw std::runtime_error("Malformed metadata.xml: improper root node name.");
 	}
 
@@ -66,7 +66,7 @@ int Region::pack(const std::vector<std::string> &args) {
 	std::array<uint8_t, 8192> header;
 	std::fill(header.begin(), header.end(), 0);
 	const xmlpp::Node::NodeList &chunk_elts = metadata_root_elt->get_children(utf8_literal(u8"chunk"));
-	for (auto i = chunk_elts.begin(), iend = chunk_elts.end(); i != iend; ++i) {
+	for(auto i = chunk_elts.begin(), iend = chunk_elts.end(); i != iend; ++i) {
 		const xmlpp::Element *chunk_elt = dynamic_cast<const xmlpp::Element *>(*i);
 		unsigned int index;
 		{
@@ -87,12 +87,12 @@ int Region::pack(const std::vector<std::string> &args) {
 			iss >> timestamp;
 		}
 
-		if (seen_indices[index]) {
+		if(seen_indices[index]) {
 			throw std::runtime_error("Malformed metadata.xml: repeated chunk index.");
 		}
 		seen_indices[index] = true;
 
-		if (present) {
+		if(present) {
 			// Copy the chunk data into the region file.
 			const std::string &chunk_filename = input_directory + G_DIR_SEPARATOR + Glib::filename_from_utf8(Glib::ustring::compose(utf8_literal(u8"chunk-%1.nbt.zlib"), todecu(index, 4)));
 			FileDescriptor chunk_fd = FileDescriptor::create_open(chunk_filename.c_str(), O_RDONLY, 0);
@@ -113,7 +113,7 @@ int Region::pack(const std::vector<std::string> &args) {
 	}
 
 	// Check if all values have been seen.
-	if (std::find(seen_indices.begin(), seen_indices.end(), false) != seen_indices.end()) {
+	if(std::find(seen_indices.begin(), seen_indices.end(), false) != seen_indices.end()) {
 		throw std::runtime_error("Malformed metadata.xml: not every chunk index is present.");
 	}
 
@@ -125,4 +125,3 @@ int Region::pack(const std::vector<std::string> &args) {
 
 	return 0;
 }
-

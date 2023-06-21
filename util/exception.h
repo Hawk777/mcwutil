@@ -8,7 +8,7 @@
  */
 class ErrorMessageError : public std::runtime_error {
 	public:
-		ErrorMessageError();
+	ErrorMessageError();
 };
 
 /**
@@ -16,12 +16,12 @@ class ErrorMessageError : public std::runtime_error {
  */
 class SystemError : public std::runtime_error {
 	public:
-		/**
-		 * \brief The error code.
-		 */
-		const int error_code;
+	/**
+	 * \brief The error code.
+	 */
+	const int error_code;
 
-		SystemError(const char *call, int err);
+	SystemError(const char *call, int err);
 };
 
 /**
@@ -29,8 +29,7 @@ class SystemError : public std::runtime_error {
  */
 class FileNotFoundError : public SystemError {
 	public:
-		FileNotFoundError();
+	FileNotFoundError();
 };
 
 #endif
-

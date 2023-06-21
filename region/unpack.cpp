@@ -9,20 +9,20 @@
 #include <cstddef>
 #include <cstdio>
 #include <fcntl.h>
-#include <iostream>
-#include <string>
-#include <unistd.h>
-#include <vector>
 #include <glibmm/convert.h>
+#include <iostream>
 #include <libxml++/document.h>
 #include <libxml++/nodes/element.h>
 #include <libxml++/nodes/node.h>
+#include <string>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <unistd.h>
+#include <vector>
 
 int Region::unpack(const std::vector<std::string> &args) {
 	// Check parameters.
-	if (args.size() != 2) {
+	if(args.size() != 2) {
 		std::cerr << "Usage:\n";
 		std::cerr << appname << " region-unpack regionfile outdir\n";
 		std::cerr << '\n';
@@ -49,14 +49,14 @@ int Region::unpack(const std::vector<std::string> &args) {
 	xmlpp::Document metadata_document;
 	metadata_document.set_internal_subset(utf8_literal(u8"minecraft-region-metadata"), utf8_literal(u8""), utf8_literal(u8"urn:uuid:5e7a5ee0-2a7b-11e1-9e08-1c4bd68d068e"));
 	xmlpp::Element *metadata_root_elt = metadata_document.create_root_node(utf8_literal(u8"minecraft-region-metadata"));
-	for (unsigned int i = 0; i < 1024; ++i) {
+	for(unsigned int i = 0; i < 1024; ++i) {
 		// Decode the header for this chunk.
 		uint32_t offset_sectors = decode_u24(&header[i * 4]);
 		uint8_t size_sectors = decode_u8(&header[i * 4 + 3]);
 		uint32_t timestamp = decode_u32(&header[4096 + i * 4]);
 
 		// Sanity check.
-		if ((offset_sectors && !size_sectors) || (size_sectors && !offset_sectors)) {
+		if((offset_sectors && !size_sectors) || (size_sectors && !offset_sectors)) {
 			throw std::runtime_error("Malformed region header: chunk is half-present.");
 		}
 
@@ -64,7 +64,7 @@ int Region::unpack(const std::vector<std::string> &args) {
 		xmlpp::Element *metadata_chunk_elt = metadata_root_elt->add_child(utf8_literal(u8"chunk"));
 		metadata_chunk_elt->set_attribute(utf8_literal(u8"index"), todecu(i));
 
-		if (offset_sectors) {
+		if(offset_sectors) {
 			// Record the chunk's metadata.
 			metadata_chunk_elt->set_attribute(utf8_literal(u8"present"), utf8_literal(u8"1"));
 			metadata_chunk_elt->set_attribute(utf8_literal(u8"timestamp"), todecu(timestamp));
@@ -79,14 +79,14 @@ int Region::unpack(const std::vector<std::string> &args) {
 
 			// Extract and sanity-check the chunk's header.
 			uint32_t precise_size_bytes = decode_u32(&chunk_data[0]);
-			if (precise_size_bytes < 1) {
+			if(precise_size_bytes < 1) {
 				throw std::runtime_error("Malformed chunk: precise size < 1.");
 			}
-			if (precise_size_bytes > rough_size_bytes) {
+			if(precise_size_bytes > rough_size_bytes) {
 				throw std::runtime_error("Malformed chunk: precise size > rough size.");
 			}
 			uint8_t compression_type = decode_u8(&chunk_data[4]);
-			if (compression_type != 2) {
+			if(compression_type != 2) {
 				throw std::runtime_error("Malformed chunk: unrecognized compression type.");
 			}
 			std::size_t payload_size_bytes = precise_size_bytes - 1;
@@ -107,4 +107,3 @@ int Region::unpack(const std::vector<std::string> &args) {
 
 	return 0;
 }
-

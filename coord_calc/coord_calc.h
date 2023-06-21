@@ -5,8 +5,7 @@
 #include <vector>
 
 namespace CoordCalc {
-	int calc(const std::vector<std::string> &args);
+int calc(const std::vector<std::string> &args);
 }
 
 #endif
-

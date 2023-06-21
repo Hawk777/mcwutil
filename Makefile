@@ -99,3 +99,10 @@ endif
 clean :
 	$(RM) -rf bin html obj
 	$(RM) -f tags
+
+#
+# Rule to check formatting of source files.
+#
+.PHONY : check-format
+check-format :
+	clang-format --Werror --dry-run --style=file $(shell find $(SOURCES_%) -path ./.git -prune -o \( -name '*.cpp' -o -name '*.h' \) -print)

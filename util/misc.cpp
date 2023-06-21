@@ -31,4 +31,3 @@ void *get_map_failed() {
 int xsi_strerror_r(int err, char *buf, size_t buflen) {
 	return strerror_r(err, buf, buflen);
 }
-

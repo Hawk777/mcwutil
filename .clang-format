@@ -1,0 +1,37 @@
+---
+BasedOnStyle: WebKit
+AccessModifierOffset: 0
+AlwaysBreakTemplateDeclarations: true
+BreakBeforeBinaryOperators: NonAssignment
+BreakBeforeBraces: Attach
+BreakConstructorInitializers: AfterColon
+ColumnLimit: 0
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+ConstructorInitializerIndentWidth: 8
+Cpp11BracedListStyle: true
+FixNamespaceComments: false
+IncludeBlocks: Merge
+IncludeCategories:
+  # local includes (with quotation marks) should be second (after the module’s
+  # own header)
+  - Regex: '^"'
+    Priority: 2
+  # system includes (with angle brackets) should be third
+  - Regex: '^<'
+    Priority: 3
+IndentCaseLabels: true
+IndentWrappedFunctionNames: true
+KeepEmptyLinesAtTheStartOfBlocks: false
+MaxEmptyLinesToKeep: 3
+NamespaceIndentation: None
+PointerAlignment: Right
+QualifierAlignment: Left
+SpaceAfterTemplateKeyword: false
+SpaceBeforeCpp11BracedList: false
+SpaceBeforeParens: Never
+SpacesInContainerLiterals: false
+SpaceInEmptyBlock: false
+TabWidth: 4
+UseTab: ForContinuationAndIndentation
+
+...

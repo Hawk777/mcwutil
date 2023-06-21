@@ -6,23 +6,22 @@
  */
 class NonCopyable {
 	protected:
-		/**
-		 * \brief Noncopyable objects can still be constructed.
-		 */
-		NonCopyable();
+	/**
+	 * \brief Noncopyable objects can still be constructed.
+	 */
+	NonCopyable();
 
-		/**
-		 * \brief Prevents objects from being copied.
-		 */
-		NonCopyable(const NonCopyable &) = delete;
+	/**
+	 * \brief Prevents objects from being copied.
+	 */
+	NonCopyable(const NonCopyable &) = delete;
 
-		/**
-		 * \brief Prevents objects from being assigned to one another.
-		 */
-		NonCopyable &operator=(const NonCopyable &) = delete;
+	/**
+	 * \brief Prevents objects from being assigned to one another.
+	 */
+	NonCopyable &operator=(const NonCopyable &) = delete;
 };
 
 inline NonCopyable::NonCopyable() = default;
 
 #endif
-

@@ -6,28 +6,28 @@
 #include <vector>
 
 namespace {
-	int divfloor(int num, int den) {
-		return (num < 0 ? num - (den - 1) : num) / den;
-	}
+int divfloor(int num, int den) {
+	return (num < 0 ? num - (den - 1) : num) / den;
+}
 
-	int real_mod(int num, int den) {
-		num %= den;
-		if (num < 0) {
-			num += den;
-		}
-		return num;
+int real_mod(int num, int den) {
+	num %= den;
+	if(num < 0) {
+		num += den;
 	}
+	return num;
+}
 
-	void usage() {
-		std::cerr << "Usage:\n";
-		std::cerr << appname << " coord-calc X Z\n";
-		std::cerr << '\n';
-		std::cerr << "Calculates chunk numbers, region numbers, and chunk offsets from coordinate pairs.\n";
-		std::cerr << '\n';
-		std::cerr << "Arguments:\n";
-		std::cerr << "  X - the integer floor of the X coordinate of the point\n";
-		std::cerr << "  Z - the integer floor of the Y coordinate of the point\n";
-	}
+void usage() {
+	std::cerr << "Usage:\n";
+	std::cerr << appname << " coord-calc X Z\n";
+	std::cerr << '\n';
+	std::cerr << "Calculates chunk numbers, region numbers, and chunk offsets from coordinate pairs.\n";
+	std::cerr << '\n';
+	std::cerr << "Arguments:\n";
+	std::cerr << "  X - the integer floor of the X coordinate of the point\n";
+	std::cerr << "  Z - the integer floor of the Y coordinate of the point\n";
+}
 }
 
 /**
@@ -37,7 +37,7 @@ namespace {
  */
 int CoordCalc::calc(const std::vector<std::string> &args) {
 	// Check and parse parameters.
-	if (args.size() != 2) {
+	if(args.size() != 2) {
 		usage();
 		return 1;
 	}
@@ -45,7 +45,7 @@ int CoordCalc::calc(const std::vector<std::string> &args) {
 	try {
 		std::size_t xend, zend;
 		x = std::stoi(args[0], &xend), z = std::stoi(args[1], &zend);
-	} catch (const std::invalid_argument &) {
+	} catch(const std::invalid_argument &) {
 		usage();
 		return 1;
 	}
@@ -61,4 +61,3 @@ int CoordCalc::calc(const std::vector<std::string> &args) {
 	std::cout << "The pointer to the chunk data is found at index " << offset << " within the pointer array in the anvil file header.\n";
 	return 0;
 }
-

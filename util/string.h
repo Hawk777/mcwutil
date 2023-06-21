@@ -1,10 +1,10 @@
 #ifndef UTIL_STRING_H
 #define UTIL_STRING_H
 
+#include <glibmm/ustring.h>
 #include <stdint.h>
 #include <string>
 #include <string_view>
-#include <glibmm/ustring.h>
 
 Glib::ustring utf8_literal(const char8_t *s);
 std::u8string_view utf8_wrap(const Glib::ustring &s);
@@ -17,4 +17,3 @@ Glib::ustring wstring2ustring(const std::wstring &wstr);
 std::wstring ustring2wstring(const Glib::ustring &ustr);
 
 #endif
-
