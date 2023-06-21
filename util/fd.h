@@ -1,14 +1,13 @@
 #ifndef UTIL_FD_H
 #define UTIL_FD_H
 
-#include "util/non_copyable.h"
 #include <algorithm>
 #include <sys/types.h>
 
 /**
  * \brief A file descriptor that is safely closed on destruction.
  */
-class FileDescriptor : public NonCopyable {
+class FileDescriptor {
 	public:
 	static FileDescriptor create_from_fd(int fd);
 	static FileDescriptor create_open(const char *file, int flags, mode_t mode);
