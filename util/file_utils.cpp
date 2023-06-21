@@ -1,10 +1,11 @@
 #include "util/file_utils.h"
-#include "util/exception.h"
 #include "util/fd.h"
 #include <cerrno>
 #include <cstddef>
+#include <stdexcept>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <system_error>
 #include <unistd.h>
 
 void FileUtils::read(const FileDescriptor &fd, void *buf, std::size_t count) {
@@ -12,7 +13,7 @@ void FileUtils::read(const FileDescriptor &fd, void *buf, std::size_t count) {
 	while(count) {
 		ssize_t rc = ::read(fd.fd(), pc, count);
 		if(rc < 0) {
-			throw SystemError("read", errno);
+			throw std::system_error(errno, std::system_category(), "read");
 		} else if(!rc) {
 			throw std::runtime_error("read: unexpected EOF");
 		} else {
@@ -27,7 +28,7 @@ void FileUtils::write(const FileDescriptor &fd, const void *buf, std::size_t cou
 	while(count) {
 		ssize_t rc = ::write(fd.fd(), pc, count);
 		if(rc < 0) {
-			throw SystemError("write", errno);
+			throw std::system_error(errno, std::system_category(), "write");
 		} else {
 			pc += rc;
 			count -= rc;
@@ -40,7 +41,7 @@ void FileUtils::pread(const FileDescriptor &fd, void *buf, std::size_t count, of
 	while(count) {
 		ssize_t rc = ::pread(fd.fd(), pc, count, offset);
 		if(rc < 0) {
-			throw SystemError("pread", errno);
+			throw std::system_error(errno, std::system_category(), "pread");
 		} else if(!rc) {
 			throw std::runtime_error("pread: unexpected EOF");
 		} else {
@@ -56,7 +57,7 @@ void FileUtils::pwrite(const FileDescriptor &fd, const void *buf, std::size_t co
 	while(count) {
 		ssize_t rc = ::pwrite(fd.fd(), pc, count, offset);
 		if(rc < 0) {
-			throw SystemError("pwrite", errno);
+			throw std::system_error(errno, std::system_category(), "pwrite");
 		} else {
 			pc += rc;
 			count -= rc;
@@ -67,12 +68,12 @@ void FileUtils::pwrite(const FileDescriptor &fd, const void *buf, std::size_t co
 
 void FileUtils::fstat(const FileDescriptor &fd, struct stat &stbuf) {
 	if(::fstat(fd.fd(), &stbuf) < 0) {
-		throw SystemError("fstat", errno);
+		throw std::system_error(errno, std::system_category(), "fstat");
 	}
 }
 
 void FileUtils::ftruncate(const FileDescriptor &fd, off_t length) {
 	if(::ftruncate(fd.fd(), length) < 0) {
-		throw SystemError("ftruncate", errno);
+		throw std::system_error(errno, std::system_category(), "ftruncate");
 	}
 }

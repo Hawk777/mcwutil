@@ -1,10 +1,10 @@
 #include "util/mapped_file.h"
-#include "util/exception.h"
 #include "util/misc.h"
 #include <fcntl.h>
 #include <limits>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <system_error>
 #include <unistd.h>
 
 /**
@@ -19,7 +19,7 @@
 MappedFile::MappedFile(const FileDescriptor &fd, int prot, int flags) {
 	struct stat st;
 	if(fstat(fd.fd(), &st) < 0) {
-		throw SystemError("fstat", errno);
+		throw std::system_error(errno, std::system_category(), "fstat");
 	}
 	if(static_cast<uintmax_t>(st.st_size) > std::numeric_limits<std::size_t>::max()) {
 		throw std::runtime_error("File too large to map into virtual address space");
@@ -28,7 +28,7 @@ MappedFile::MappedFile(const FileDescriptor &fd, int prot, int flags) {
 	if(size_) {
 		data_ = mmap(0, size_, prot, flags, fd.fd(), 0);
 		if(data_ == get_map_failed()) {
-			throw SystemError("mmap", errno);
+			throw std::system_error(errno, std::system_category(), "mmap");
 		}
 	} else {
 		data_ = 0;

@@ -1,10 +1,11 @@
 #include "zlib_utils.h"
-#include "util/exception.h"
 #include "util/fd.h"
 #include "util/file_utils.h"
 #include "util/globals.h"
 #include <fcntl.h>
 #include <iostream>
+#include <new>
+#include <stdexcept>
 #include <string>
 #include <vector>
 #include <zlib.h>
@@ -38,7 +39,7 @@ int ZLib::compress(const std::vector<std::string> &args) {
 		case Z_OK:
 			break;
 		case Z_MEM_ERROR:
-			throw SystemError("compress2", ENOMEM);
+			throw std::bad_alloc();
 		case Z_BUF_ERROR:
 			throw std::logic_error("Internal error: supposedly-sufficient compression buffer was insufficient.");
 		case Z_STREAM_ERROR:
@@ -88,7 +89,7 @@ int ZLib::decompress(const std::vector<std::string> &args) {
 				break;
 
 			case Z_MEM_ERROR:
-				throw SystemError("uncompress", ENOMEM);
+				throw std::bad_alloc();
 
 			case Z_BUF_ERROR:
 				output_buffer.resize(output_buffer.size() * 2);
@@ -142,7 +143,7 @@ int ZLib::check(const std::vector<std::string> &args) {
 				break;
 
 			case Z_MEM_ERROR:
-				throw SystemError("uncompress", ENOMEM);
+				throw std::bad_alloc();
 
 			case Z_BUF_ERROR:
 				output_buffer.resize(output_buffer.size() * 2);

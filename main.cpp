@@ -4,6 +4,7 @@
 #include "region/unpack.h"
 #include "util/globals.h"
 #include "zlib_utils.h"
+#include <exception>
 #include <glibmm/convert.h>
 #include <glibmm/exception.h>
 #include <iostream>

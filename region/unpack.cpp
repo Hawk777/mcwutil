@@ -1,6 +1,5 @@
 #include "region/unpack.h"
 #include "util/codec.h"
-#include "util/exception.h"
 #include "util/fd.h"
 #include "util/file_utils.h"
 #include "util/globals.h"
@@ -14,6 +13,7 @@
 #include <libxml++/document.h>
 #include <libxml++/nodes/element.h>
 #include <libxml++/nodes/node.h>
+#include <stdexcept>
 #include <string>
 #include <sys/stat.h>
 #include <sys/types.h>

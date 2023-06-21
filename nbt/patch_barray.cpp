@@ -1,7 +1,6 @@
 #include "nbt/nbt.h"
 #include "nbt/tags.h"
 #include "util/codec.h"
-#include "util/exception.h"
 #include "util/fd.h"
 #include "util/globals.h"
 #include "util/mapped_file.h"
@@ -12,6 +11,7 @@
 #include <iostream>
 #include <limits>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 #include <sys/stat.h>
 #include <sys/types.h>

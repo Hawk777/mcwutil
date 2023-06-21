@@ -1,13 +1,16 @@
 #include "util/fd.h"
-#include "util/exception.h"
 #include <cstdlib>
 #include <fcntl.h>
 #include <glibmm/miscutils.h>
+#include <sstream>
 #include <string>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <system_error>
 #include <unistd.h>
 #include <vector>
+
+using namespace std::literals::string_literals;
 
 /**
  * \brief Constructs a new FileDescriptor by calling \c open(2).
@@ -81,7 +84,7 @@ void FileDescriptor::swap(FileDescriptor &other) {
 void FileDescriptor::close() {
 	if(fd_ >= 0) {
 		if(::close(fd_) < 0) {
-			throw SystemError("close", errno);
+			throw std::system_error(errno, std::system_category(), "close"s);
 		}
 		fd_ = -1;
 	}
@@ -108,11 +111,9 @@ bool FileDescriptor::is() const {
 FileDescriptor::FileDescriptor(const char *file, int flags, mode_t mode) :
 		fd_(open(file, flags, mode)) {
 	if(fd_ < 0) {
-		if(errno == ENOENT) {
-			throw FileNotFoundError();
-		} else {
-			throw SystemError("open", errno);
-		}
+		std::ostringstream msg;
+		msg << "open(" << file << ")";
+		throw std::system_error(errno, std::system_category(), msg.str());
 	}
 }
 
