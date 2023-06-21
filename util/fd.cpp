@@ -102,7 +102,9 @@ int FileDescriptor::fd() const {
 /**
  * \brief Checks whether the file descriptor is valid.
  *
- * \return \c true if the descriptor is valid, or \c false if it has been closed or has not been initialized.
+ * \retval true if the file descriptor is valid.
+ * \retval false if the file descriptor has been closed or has not been
+ * initialized.
  */
 bool FileDescriptor::is() const {
 	return fd_ >= 0;
