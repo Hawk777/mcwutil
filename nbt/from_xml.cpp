@@ -64,29 +64,17 @@ NBT::Tag tag_for_child_of_list(const Glib::ustring &name) {
 void check_list_subtype(NBT::Tag subtype) {
 	switch(subtype) {
 		case NBT::TAG_END:
-			return;
 		case NBT::TAG_BYTE:
-			return;
 		case NBT::TAG_SHORT:
-			return;
 		case NBT::TAG_INT:
-			return;
 		case NBT::TAG_LONG:
-			return;
 		case NBT::TAG_FLOAT:
-			return;
 		case NBT::TAG_DOUBLE:
-			return;
 		case NBT::TAG_BYTE_ARRAY:
-			return;
 		case NBT::TAG_STRING:
-			return;
 		case NBT::TAG_LIST:
-			return;
 		case NBT::TAG_COMPOUND:
-			return;
 		case NBT::TAG_INT_ARRAY:
-			return;
 		case NBT::TAG_LONG_ARRAY:
 			return;
 	}
