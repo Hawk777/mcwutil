@@ -1,4 +1,5 @@
 #include "util/mapped_file.h"
+#include "util/file_descriptor.h"
 #include <fcntl.h>
 #include <limits>
 #include <sys/stat.h>

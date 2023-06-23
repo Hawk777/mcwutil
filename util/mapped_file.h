@@ -1,11 +1,12 @@
 #ifndef UTIL_MAPPED_FILE_H
 #define UTIL_MAPPED_FILE_H
 
-#include "util/file_descriptor.h"
 #include <cstddef>
 #include <sys/mman.h>
 
 namespace mcwutil {
+class FileDescriptor;
+
 /**
  * \brief A memory-mapped view of a file.
  */
