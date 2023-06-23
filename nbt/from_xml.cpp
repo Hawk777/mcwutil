@@ -23,7 +23,7 @@
 #include <sys/types.h>
 #include <vector>
 
-namespace mcwutil {
+namespace mcwutil::nbt {
 namespace {
 nbt::Tag tag_for_child_of_named_or_list(const Glib::ustring &name, const char *message) {
 	if(name == u8"byte")

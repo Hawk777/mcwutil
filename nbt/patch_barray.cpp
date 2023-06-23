@@ -17,7 +17,7 @@
 #include <sys/types.h>
 #include <vector>
 
-namespace mcwutil {
+namespace mcwutil::nbt {
 namespace {
 void check_left(std::size_t needed, std::size_t left) {
 	if(left < needed) {

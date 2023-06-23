@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <string>
 
-namespace mcwutil {
+namespace mcwutil::coord_calc {
 namespace {
 int divfloor(int num, int den) {
 	return (num < 0 ? num - (den - 1) : num) / den;

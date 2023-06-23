@@ -20,7 +20,7 @@
 
 using namespace std::literals::string_view_literals;
 
-namespace mcwutil {
+namespace mcwutil::nbt {
 namespace {
 typedef std::array<uint16_t, 16 * 16 * 16> Section;
 
