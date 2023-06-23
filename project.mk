@@ -12,7 +12,7 @@ EXECUTABLES_EXCLUDE_WORLD :=
 # The source files for each executable.
 # Directories will be searched recursively for source files.
 #
-SOURCES_mcwutil := coord_calc main.cpp nbt region util zlib_utils.cpp
+SOURCES_mcwutil := calc.cpp main.cpp nbt region util zlib_utils.cpp
 
 #
 # All the pkg-config packages used.

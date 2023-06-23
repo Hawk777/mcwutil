@@ -1,10 +1,10 @@
-#include "coord_calc/coord_calc.h"
+#include "calc.h"
 #include "util/globals.h"
 #include <iostream>
 #include <stdexcept>
 #include <string>
 
-namespace mcwutil::coord_calc {
+namespace mcwutil::calc {
 namespace {
 int divfloor(int num, int den) {
 	return (num < 0 ? num - (den - 1) : num) / den;
@@ -52,7 +52,7 @@ void usage() {
  *
  * \param[in] args the command-line arguments
  */
-int mcwutil::coord_calc::calc(std::ranges::subrange<char **> args) {
+int mcwutil::calc::coord(std::ranges::subrange<char **> args) {
 	// Check and parse parameters.
 	if(args.size() != 2) {
 		usage();

@@ -1,4 +1,4 @@
-#include "coord_calc/coord_calc.h"
+#include "calc.h"
 #include "nbt/nbt.h"
 #include "region/pack.h"
 #include "region/unpack.h"
@@ -53,7 +53,7 @@ int main_impl(int argc, char **argv) {
 
 	// Dispatch.
 	if(command == "coord-calc") {
-		return coord_calc::calc(args);
+		return calc::coord(args);
 	} else if(command == "region-unpack") {
 		return region::unpack(args);
 	} else if(command == "region-pack") {
