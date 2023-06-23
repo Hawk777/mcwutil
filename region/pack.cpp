@@ -24,6 +24,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+using mcwutil::string::operator==;
 using namespace std::literals::string_literals;
 using namespace std::literals::string_view_literals;
 
@@ -71,24 +72,24 @@ int mcwutil::region::pack(std::ranges::subrange<char **> args) {
 	std::fill(seen_indices.begin(), seen_indices.end(), false);
 	std::array<uint8_t, 8192> header;
 	std::fill(header.begin(), header.end(), 0);
-	const xmlpp::Node::NodeList &chunk_elts = metadata_root_elt->get_children(utf8_literal(u8"chunk"));
+	const xmlpp::Node::NodeList &chunk_elts = metadata_root_elt->get_children(string::utf8_literal(u8"chunk"));
 	for(auto i = chunk_elts.begin(), iend = chunk_elts.end(); i != iend; ++i) {
 		const xmlpp::Element *chunk_elt = dynamic_cast<const xmlpp::Element *>(*i);
 		unsigned int index;
 		{
-			std::wistringstream iss(ustring2wstring(chunk_elt->get_attribute_value(utf8_literal(u8"index"))));
+			std::wistringstream iss(string::ustring2wstring(chunk_elt->get_attribute_value(string::utf8_literal(u8"index"))));
 			iss.imbue(std::locale("C"));
 			iss >> index;
 		}
 		unsigned int present;
 		{
-			std::wistringstream iss(ustring2wstring(chunk_elt->get_attribute_value(utf8_literal(u8"present"))));
+			std::wistringstream iss(string::ustring2wstring(chunk_elt->get_attribute_value(string::utf8_literal(u8"present"))));
 			iss.imbue(std::locale("C"));
 			iss >> present;
 		}
 		uint32_t timestamp;
 		{
-			std::wistringstream iss(ustring2wstring(chunk_elt->get_attribute_value(utf8_literal(u8"timestamp"))));
+			std::wistringstream iss(string::ustring2wstring(chunk_elt->get_attribute_value(string::utf8_literal(u8"timestamp"))));
 			iss.imbue(std::locale("C"));
 			iss >> timestamp;
 		}
@@ -102,7 +103,7 @@ int mcwutil::region::pack(std::ranges::subrange<char **> args) {
 			// Copy the chunk data into the region file.
 			std::filesystem::path chunk_filename(input_directory);
 			std::string file_part("chunk-"s);
-			file_part += todecu(index, 4);
+			file_part += string::todecu(index, 4);
 			file_part += ".nbt.zlib"sv;
 			chunk_filename /= file_part;
 			FileDescriptor chunk_fd = FileDescriptor::create_open(chunk_filename, O_RDONLY, 0);

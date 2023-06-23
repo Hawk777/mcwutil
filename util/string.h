@@ -7,6 +7,7 @@
 #include <string_view>
 
 namespace mcwutil {
+namespace string {
 Glib::ustring utf8_literal(const char8_t *s);
 bool operator==(const Glib::ustring &x, std::u8string_view y);
 bool operator==(std::u8string_view x, const Glib::ustring &y);
@@ -14,6 +15,7 @@ Glib::ustring todecu(uintmax_t value, unsigned int width = 0);
 Glib::ustring todecs(intmax_t value, unsigned int width = 0);
 Glib::ustring wstring2ustring(const std::wstring &wstr);
 std::wstring ustring2wstring(const Glib::ustring &ustr);
+}
 }
 
 #endif

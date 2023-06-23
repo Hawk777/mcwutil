@@ -23,6 +23,8 @@
 #include <sys/types.h>
 #include <vector>
 
+using mcwutil::string::operator==;
+
 namespace mcwutil::nbt {
 namespace {
 nbt::tag tag_for_child_of_named_or_list(const Glib::ustring &name, const char *message) {
@@ -99,7 +101,7 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 		if(!relevant_child) {
 			throw std::runtime_error("Malformed NBT XML: named must have a child.");
 		}
-		const xmlpp::Attribute *name_attr = elt->get_attribute(utf8_literal(u8"name"));
+		const xmlpp::Attribute *name_attr = elt->get_attribute(string::utf8_literal(u8"name"));
 		if(!name_attr) {
 			throw std::runtime_error("Malformed NBT XML: named must have a name.");
 		}
@@ -114,11 +116,11 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 		nbt_fd.write(name_utf8.data(), name_utf8.size());
 		write_nbt(nbt_fd, relevant_child);
 	} else if(elt->get_name() == u8"byte") {
-		const xmlpp::Attribute *value_attr = elt->get_attribute(utf8_literal(u8"value"));
+		const xmlpp::Attribute *value_attr = elt->get_attribute(string::utf8_literal(u8"value"));
 		if(!value_attr) {
 			throw std::runtime_error("Malformed NBT XML: byte must have a value.");
 		}
-		std::wistringstream iss(ustring2wstring(value_attr->get_value()));
+		std::wistringstream iss(string::ustring2wstring(value_attr->get_value()));
 		iss.imbue(std::locale("C"));
 		int value;
 		iss >> value;
@@ -129,11 +131,11 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 		codec::encode_u8(&buffer[0], static_cast<int8_t>(value));
 		nbt_fd.write(buffer, sizeof(buffer));
 	} else if(elt->get_name() == u8"short") {
-		const xmlpp::Attribute *value_attr = elt->get_attribute(utf8_literal(u8"value"));
+		const xmlpp::Attribute *value_attr = elt->get_attribute(string::utf8_literal(u8"value"));
 		if(!value_attr) {
 			throw std::runtime_error("Malformed NBT XML: short must have a value.");
 		}
-		std::wistringstream iss(ustring2wstring(value_attr->get_value()));
+		std::wistringstream iss(string::ustring2wstring(value_attr->get_value()));
 		iss.imbue(std::locale("C"));
 		int16_t value;
 		iss >> value;
@@ -141,11 +143,11 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 		codec::encode_u16(&buffer[0], value);
 		nbt_fd.write(buffer, sizeof(buffer));
 	} else if(elt->get_name() == u8"int") {
-		const xmlpp::Attribute *value_attr = elt->get_attribute(utf8_literal(u8"value"));
+		const xmlpp::Attribute *value_attr = elt->get_attribute(string::utf8_literal(u8"value"));
 		if(!value_attr) {
 			throw std::runtime_error("Malformed NBT XML: int must have a value.");
 		}
-		std::wistringstream iss(ustring2wstring(value_attr->get_value()));
+		std::wistringstream iss(string::ustring2wstring(value_attr->get_value()));
 		iss.imbue(std::locale("C"));
 		int32_t value;
 		iss >> value;
@@ -153,11 +155,11 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 		codec::encode_u32(&buffer[0], value);
 		nbt_fd.write(buffer, sizeof(buffer));
 	} else if(elt->get_name() == u8"long") {
-		const xmlpp::Attribute *value_attr = elt->get_attribute(utf8_literal(u8"value"));
+		const xmlpp::Attribute *value_attr = elt->get_attribute(string::utf8_literal(u8"value"));
 		if(!value_attr) {
 			throw std::runtime_error("Malformed NBT XML: long must have a value.");
 		}
-		std::wistringstream iss(ustring2wstring(value_attr->get_value()));
+		std::wistringstream iss(string::ustring2wstring(value_attr->get_value()));
 		iss.imbue(std::locale("C"));
 		int64_t value;
 		iss >> value;
@@ -165,11 +167,11 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 		codec::encode_u64(&buffer[0], value);
 		nbt_fd.write(buffer, sizeof(buffer));
 	} else if(elt->get_name() == u8"float") {
-		const xmlpp::Attribute *value_attr = elt->get_attribute(utf8_literal(u8"value"));
+		const xmlpp::Attribute *value_attr = elt->get_attribute(string::utf8_literal(u8"value"));
 		if(!value_attr) {
 			throw std::runtime_error("Malformed NBT XML: float must have a value.");
 		}
-		std::wistringstream iss(ustring2wstring(value_attr->get_value()));
+		std::wistringstream iss(string::ustring2wstring(value_attr->get_value()));
 		iss.imbue(std::locale("C"));
 		float value;
 		iss >> value;
@@ -178,11 +180,11 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 		codec::encode_u32(&buffer[0], raw);
 		nbt_fd.write(buffer, sizeof(buffer));
 	} else if(elt->get_name() == u8"double") {
-		const xmlpp::Attribute *value_attr = elt->get_attribute(utf8_literal(u8"value"));
+		const xmlpp::Attribute *value_attr = elt->get_attribute(string::utf8_literal(u8"value"));
 		if(!value_attr) {
 			throw std::runtime_error("Malformed NBT XML: float must have a value.");
 		}
-		std::wistringstream iss(ustring2wstring(value_attr->get_value()));
+		std::wistringstream iss(string::ustring2wstring(value_attr->get_value()));
 		iss.imbue(std::locale("C"));
 		double value;
 		iss >> value;
@@ -235,7 +237,7 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 			nbt_fd.write(header, sizeof(header));
 		}
 	} else if(elt->get_name() == u8"string") {
-		const xmlpp::Attribute *value_attr = elt->get_attribute(utf8_literal(u8"value"));
+		const xmlpp::Attribute *value_attr = elt->get_attribute(string::utf8_literal(u8"value"));
 		if(!value_attr) {
 			throw std::runtime_error("Malformed NBT XML: string must have a value.");
 		}
@@ -248,11 +250,11 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 		nbt_fd.write(header, sizeof(header));
 		nbt_fd.write(value_utf8.data(), value_utf8.size());
 	} else if(elt->get_name() == u8"list") {
-		const xmlpp::Attribute *subtype_attr = elt->get_attribute(utf8_literal(u8"subtype"));
+		const xmlpp::Attribute *subtype_attr = elt->get_attribute(string::utf8_literal(u8"subtype"));
 		if(!subtype_attr) {
 			throw std::runtime_error("Malformed NBT XML: list must have a subtype.");
 		}
-		std::wistringstream iss(ustring2wstring(subtype_attr->get_value()));
+		std::wistringstream iss(string::ustring2wstring(subtype_attr->get_value()));
 		iss.imbue(std::locale("C"));
 		unsigned int subtype_int;
 		iss >> subtype_int;

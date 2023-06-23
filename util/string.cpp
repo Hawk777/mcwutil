@@ -2,7 +2,7 @@
 #include <locale>
 #include <sstream>
 
-namespace mcwutil {
+namespace mcwutil::string {
 namespace {
 /**
  * \brief Wraps a Glib UTF-8 string in a C++ UTF-8 string view.
@@ -25,7 +25,7 @@ std::u8string_view utf8_wrap(const Glib::ustring &s) {
  *
  * \return the converted string.
  */
-Glib::ustring mcwutil::utf8_literal(const char8_t *s) {
+Glib::ustring mcwutil::string::utf8_literal(const char8_t *s) {
 	return reinterpret_cast<const char *>(s);
 }
 
@@ -39,7 +39,7 @@ Glib::ustring mcwutil::utf8_literal(const char8_t *s) {
  * \retval true \p x and \p y are equal.
  * \retval false \p x and \p y are unequal.
  */
-bool mcwutil::operator==(const Glib::ustring &x, std::u8string_view y) {
+bool mcwutil::string::operator==(const Glib::ustring &x, std::u8string_view y) {
 	return utf8_wrap(x) == y;
 }
 
@@ -53,7 +53,7 @@ bool mcwutil::operator==(const Glib::ustring &x, std::u8string_view y) {
  * \retval true \p x and \p y are equal.
  * \retval false \p x and \p y are unequal.
  */
-bool mcwutil::operator==(std::u8string_view x, const Glib::ustring &y) {
+bool mcwutil::string::operator==(std::u8string_view x, const Glib::ustring &y) {
 	return x == utf8_wrap(y);
 }
 
@@ -66,7 +66,7 @@ bool mcwutil::operator==(std::u8string_view x, const Glib::ustring &y) {
  *
  * \return the decimal string.
  */
-Glib::ustring mcwutil::todecu(uintmax_t value, unsigned int width) {
+Glib::ustring mcwutil::string::todecu(uintmax_t value, unsigned int width) {
 	std::wostringstream oss;
 	oss.imbue(std::locale("C"));
 	oss.flags(std::ios::uppercase | std::ios::dec | std::ios::right);
@@ -85,7 +85,7 @@ Glib::ustring mcwutil::todecu(uintmax_t value, unsigned int width) {
  *
  * \return the decimal string.
  */
-Glib::ustring mcwutil::todecs(intmax_t value, unsigned int width) {
+Glib::ustring mcwutil::string::todecs(intmax_t value, unsigned int width) {
 	std::wostringstream oss;
 	oss.imbue(std::locale("C"));
 	oss.flags(std::ios::uppercase | std::ios::dec | std::ios::right);
@@ -102,7 +102,7 @@ Glib::ustring mcwutil::todecs(intmax_t value, unsigned int width) {
  *
  * \return the converted string.
  */
-Glib::ustring mcwutil::wstring2ustring(const std::wstring &wstr) {
+Glib::ustring mcwutil::string::wstring2ustring(const std::wstring &wstr) {
 	return Glib::ustring::format(wstr);
 }
 
@@ -113,7 +113,7 @@ Glib::ustring mcwutil::wstring2ustring(const std::wstring &wstr) {
  *
  * \return the converted string.
  */
-std::wstring mcwutil::ustring2wstring(const Glib::ustring &ustr) {
+std::wstring mcwutil::string::ustring2wstring(const Glib::ustring &ustr) {
 	std::wostringstream oss;
 	oss.imbue(std::locale("C"));
 	oss << ustr;
