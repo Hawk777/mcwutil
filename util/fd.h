@@ -18,8 +18,8 @@ class FileDescriptor {
 	~FileDescriptor();
 	FileDescriptor &operator=(FileDescriptor &&moveref);
 
-	void close();
 	int fd() const;
+	void close();
 
 	private:
 	int fd_;

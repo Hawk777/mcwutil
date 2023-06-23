@@ -82,6 +82,15 @@ FileDescriptor &FileDescriptor::operator=(FileDescriptor &&moveref) {
 }
 
 /**
+ * \brief Gets the actual file descriptor.
+ *
+ * \return the descriptor.
+ */
+int FileDescriptor::fd() const {
+	return fd_;
+}
+
+/**
  * \brief Closes the descriptor.
  */
 void FileDescriptor::close() {
@@ -91,15 +100,6 @@ void FileDescriptor::close() {
 		}
 		fd_ = -1;
 	}
-}
-
-/**
- * \brief Gets the actual file descriptor.
- *
- * \return the descriptor.
- */
-int FileDescriptor::fd() const {
-	return fd_;
 }
 
 FileDescriptor::FileDescriptor(const char *file, int flags, mode_t mode) :
