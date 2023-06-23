@@ -53,25 +53,25 @@ int main_impl(int argc, char **argv) {
 
 	// Dispatch.
 	if(command == "coord-calc") {
-		return CoordCalc::calc(args);
+		return coord_calc::calc(args);
 	} else if(command == "region-unpack") {
-		return Region::unpack(args);
+		return region::unpack(args);
 	} else if(command == "region-pack") {
-		return Region::pack(args);
+		return region::pack(args);
 	} else if(command == "zlib-decompress") {
-		return ZLib::decompress(args);
+		return zlib::decompress(args);
 	} else if(command == "zlib-compress") {
-		return ZLib::compress(args);
+		return zlib::compress(args);
 	} else if(command == "zlib-check") {
-		return ZLib::check(args);
+		return zlib::check(args);
 	} else if(command == "nbt-to-xml") {
-		return NBT::to_xml(args);
+		return nbt::to_xml(args);
 	} else if(command == "nbt-from-xml") {
-		return NBT::from_xml(args);
+		return nbt::from_xml(args);
 	} else if(command == "nbt-block-substitute") {
-		return NBT::block_substitute(args);
+		return nbt::block_substitute(args);
 	} else if(command == "nbt-patch-barray") {
-		return NBT::patch_barray(args);
+		return nbt::patch_barray(args);
 	} else {
 		usage();
 	}

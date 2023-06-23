@@ -25,57 +25,57 @@
 
 namespace mcwutil {
 namespace {
-NBT::Tag tag_for_child_of_named_or_list(const Glib::ustring &name, const char *message) {
+nbt::Tag tag_for_child_of_named_or_list(const Glib::ustring &name, const char *message) {
 	if(name == u8"byte")
-		return NBT::TAG_BYTE;
+		return nbt::TAG_BYTE;
 	if(name == u8"short")
-		return NBT::TAG_SHORT;
+		return nbt::TAG_SHORT;
 	if(name == u8"int")
-		return NBT::TAG_INT;
+		return nbt::TAG_INT;
 	if(name == u8"long")
-		return NBT::TAG_LONG;
+		return nbt::TAG_LONG;
 	if(name == u8"float")
-		return NBT::TAG_FLOAT;
+		return nbt::TAG_FLOAT;
 	if(name == u8"double")
-		return NBT::TAG_DOUBLE;
+		return nbt::TAG_DOUBLE;
 	if(name == u8"barray")
-		return NBT::TAG_BYTE_ARRAY;
+		return nbt::TAG_BYTE_ARRAY;
 	if(name == u8"string")
-		return NBT::TAG_STRING;
+		return nbt::TAG_STRING;
 	if(name == u8"list")
-		return NBT::TAG_LIST;
+		return nbt::TAG_LIST;
 	if(name == u8"compound")
-		return NBT::TAG_COMPOUND;
+		return nbt::TAG_COMPOUND;
 	if(name == u8"iarray")
-		return NBT::TAG_INT_ARRAY;
+		return nbt::TAG_INT_ARRAY;
 	if(name == u8"larray")
-		return NBT::TAG_LONG_ARRAY;
+		return nbt::TAG_LONG_ARRAY;
 	throw std::runtime_error(message);
 }
 
-NBT::Tag tag_for_child_of_named(const Glib::ustring &name) {
+nbt::Tag tag_for_child_of_named(const Glib::ustring &name) {
 	return tag_for_child_of_named_or_list(name, "Malformed NBT XML: child of named must be one of (byte|short|int|long|float|double|barray|string|list|compound|iarray).");
 }
 
-NBT::Tag tag_for_child_of_list(const Glib::ustring &name) {
+nbt::Tag tag_for_child_of_list(const Glib::ustring &name) {
 	return tag_for_child_of_named_or_list(name, "Malformed NBT XML: child of list must be one of (byte|short|int|long|float|double|barray|string|list|compound|iarray).");
 }
 
-void check_list_subtype(NBT::Tag subtype) {
+void check_list_subtype(nbt::Tag subtype) {
 	switch(subtype) {
-		case NBT::TAG_END:
-		case NBT::TAG_BYTE:
-		case NBT::TAG_SHORT:
-		case NBT::TAG_INT:
-		case NBT::TAG_LONG:
-		case NBT::TAG_FLOAT:
-		case NBT::TAG_DOUBLE:
-		case NBT::TAG_BYTE_ARRAY:
-		case NBT::TAG_STRING:
-		case NBT::TAG_LIST:
-		case NBT::TAG_COMPOUND:
-		case NBT::TAG_INT_ARRAY:
-		case NBT::TAG_LONG_ARRAY:
+		case nbt::TAG_END:
+		case nbt::TAG_BYTE:
+		case nbt::TAG_SHORT:
+		case nbt::TAG_INT:
+		case nbt::TAG_LONG:
+		case nbt::TAG_FLOAT:
+		case nbt::TAG_DOUBLE:
+		case nbt::TAG_BYTE_ARRAY:
+		case nbt::TAG_STRING:
+		case nbt::TAG_LIST:
+		case nbt::TAG_COMPOUND:
+		case nbt::TAG_INT_ARRAY:
+		case nbt::TAG_LONG_ARRAY:
 			return;
 	}
 	throw std::runtime_error("Malformed NBT XML: list has bad subtype.");
@@ -85,7 +85,7 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 	if(elt->get_name() == u8"named") {
 		const xmlpp::Node::NodeList &children = elt->get_children();
 		const xmlpp::Element *relevant_child = 0;
-		NBT::Tag subtype = NBT::TAG_END;
+		nbt::Tag subtype = nbt::TAG_END;
 		for(auto i = children.begin(), iend = children.end(); i != iend; ++i) {
 			const xmlpp::Element *elt = dynamic_cast<const xmlpp::Element *>(*i);
 			if(elt) {
@@ -256,7 +256,7 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 		iss.imbue(std::locale("C"));
 		unsigned int subtype_int;
 		iss >> subtype_int;
-		NBT::Tag subtype = static_cast<NBT::Tag>(subtype_int);
+		nbt::Tag subtype = static_cast<nbt::Tag>(subtype_int);
 		check_list_subtype(subtype);
 		std::vector<const xmlpp::Element *> child_elts;
 		const xmlpp::Node::NodeList &children = elt->get_children();
@@ -291,7 +291,7 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 			}
 		}
 		uint8_t footer[1];
-		encode_u8(&footer[0], NBT::TAG_END);
+		encode_u8(&footer[0], nbt::TAG_END);
 		nbt_fd.write(footer, sizeof(footer));
 	} else if(elt->get_name() == u8"iarray") {
 		const xmlpp::TextNode *text_node = elt->get_child_text();
@@ -424,7 +424,7 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Document *doc) {
 }
 }
 
-int mcwutil::NBT::from_xml(std::ranges::subrange<char **> args) {
+int mcwutil::nbt::from_xml(std::ranges::subrange<char **> args) {
 	// Check parameters.
 	if(args.size() != 2) {
 		std::cerr << "Usage:\n";

@@ -22,7 +22,7 @@
 using namespace std::literals::string_literals;
 using namespace std::literals::string_view_literals;
 
-int mcwutil::Region::unpack(std::ranges::subrange<char **> args) {
+int mcwutil::region::unpack(std::ranges::subrange<char **> args) {
 	// Check parameters.
 	if(args.size() != 2) {
 		std::cerr << "Usage:\n";

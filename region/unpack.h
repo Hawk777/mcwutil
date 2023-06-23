@@ -4,7 +4,7 @@
 #include <ranges>
 
 namespace mcwutil {
-namespace Region {
+namespace region {
 int unpack(std::ranges::subrange<char **> args);
 }
 }

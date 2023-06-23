@@ -40,40 +40,40 @@ void eat(std::size_t n, uint8_t *&input_ptr, std::size_t &input_left) {
 	input_left -= n;
 }
 
-void handle_named(NBT::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint16_t *sub_table, const FileDescriptor &output_fd, Section &section_blocks, std::vector<std::u8string_view> &path);
+void handle_named(nbt::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint16_t *sub_table, const FileDescriptor &output_fd, Section &section_blocks, std::vector<std::u8string_view> &path);
 
-void handle_content(NBT::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint16_t *sub_table, const FileDescriptor &output_fd, Section &section_blocks, std::vector<std::u8string_view> &path) {
+void handle_content(nbt::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint16_t *sub_table, const FileDescriptor &output_fd, Section &section_blocks, std::vector<std::u8string_view> &path) {
 	switch(tag) {
-		case NBT::TAG_END:
+		case nbt::TAG_END:
 			throw std::runtime_error("Malformed NBT: unexpected TAG_END.");
 
-		case NBT::TAG_BYTE:
+		case nbt::TAG_BYTE:
 			check_left(1, input_left);
 			output_fd.write(input_ptr, 1);
 			eat(1, input_ptr, input_left);
 			return;
 
-		case NBT::TAG_SHORT:
+		case nbt::TAG_SHORT:
 			check_left(2, input_left);
 			output_fd.write(input_ptr, 2);
 			eat(2, input_ptr, input_left);
 			return;
 
-		case NBT::TAG_INT:
-		case NBT::TAG_FLOAT:
+		case nbt::TAG_INT:
+		case nbt::TAG_FLOAT:
 			check_left(4, input_left);
 			output_fd.write(input_ptr, 4);
 			eat(4, input_ptr, input_left);
 			return;
 
-		case NBT::TAG_LONG:
-		case NBT::TAG_DOUBLE:
+		case nbt::TAG_LONG:
+		case nbt::TAG_DOUBLE:
 			check_left(8, input_left);
 			output_fd.write(input_ptr, 8);
 			eat(8, input_ptr, input_left);
 			return;
 
-		case NBT::TAG_BYTE_ARRAY: {
+		case nbt::TAG_BYTE_ARRAY: {
 			check_left(4, input_left);
 			int32_t length = decode_u32(input_ptr);
 			eat(4, input_ptr, input_left);
@@ -101,7 +101,7 @@ void handle_content(NBT::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 			return;
 		}
 
-		case NBT::TAG_STRING: {
+		case nbt::TAG_STRING: {
 			check_left(2, input_left);
 			int16_t length = decode_u16(input_ptr);
 			eat(2, input_ptr, input_left);
@@ -119,9 +119,9 @@ void handle_content(NBT::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 			return;
 		}
 
-		case NBT::TAG_LIST: {
+		case nbt::TAG_LIST: {
 			check_left(5, input_left);
-			NBT::Tag subtype = static_cast<NBT::Tag>(decode_u8(input_ptr));
+			nbt::Tag subtype = static_cast<nbt::Tag>(decode_u8(input_ptr));
 			eat(1, input_ptr, input_left);
 			int32_t length = decode_u32(input_ptr);
 			eat(4, input_ptr, input_left);
@@ -140,16 +140,16 @@ void handle_content(NBT::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 			return;
 		}
 
-		case NBT::TAG_COMPOUND: {
+		case nbt::TAG_COMPOUND: {
 			if(path == PATH_TO_SECTIONS) {
 				std::fill(section_blocks.begin(), section_blocks.end(), 0);
 			}
 			for(;;) {
 				check_left(1, input_left);
-				NBT::Tag subtype = static_cast<NBT::Tag>(decode_u8(input_ptr));
+				nbt::Tag subtype = static_cast<nbt::Tag>(decode_u8(input_ptr));
 				eat(1, input_ptr, input_left);
 
-				if(subtype == NBT::TAG_END) {
+				if(subtype == nbt::TAG_END) {
 					if(path == PATH_TO_SECTIONS) {
 						bool any_extended = false;
 						for(auto i = section_blocks.begin(), iend = section_blocks.end(); i != iend; ++i) {
@@ -159,7 +159,7 @@ void handle_content(NBT::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 							}
 						}
 						uint8_t header[4];
-						encode_u8(&header[0], NBT::TAG_BYTE_ARRAY);
+						encode_u8(&header[0], nbt::TAG_BYTE_ARRAY);
 						encode_u16(&header[1], sizeof(u8"Blocks") - 1);
 						output_fd.write(header, 3);
 						output_fd.write(u8"Blocks", sizeof(u8"Blocks") - 1);
@@ -171,7 +171,7 @@ void handle_content(NBT::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 						}
 						output_fd.write(buffer, 16 * 16 * 16);
 						if(any_extended) {
-							encode_u8(&header[0], NBT::TAG_BYTE_ARRAY);
+							encode_u8(&header[0], nbt::TAG_BYTE_ARRAY);
 							encode_u16(&header[1], sizeof(u8"Add") - 1);
 							output_fd.write(header, 3);
 							output_fd.write(u8"Add", sizeof(u8"Add") - 1);
@@ -184,7 +184,7 @@ void handle_content(NBT::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 						}
 					}
 					uint8_t footer;
-					encode_u8(&footer, NBT::TAG_END);
+					encode_u8(&footer, nbt::TAG_END);
 					output_fd.write(&footer, sizeof(footer));
 					return;
 				}
@@ -192,7 +192,7 @@ void handle_content(NBT::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 			}
 		}
 
-		case NBT::TAG_INT_ARRAY: {
+		case nbt::TAG_INT_ARRAY: {
 			check_left(4, input_left);
 			int32_t length = decode_u32(input_ptr);
 			eat(4, input_ptr, input_left);
@@ -215,7 +215,7 @@ void handle_content(NBT::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 			return;
 		}
 
-		case NBT::TAG_LONG_ARRAY: {
+		case nbt::TAG_LONG_ARRAY: {
 			check_left(4, input_left);
 			int32_t length = decode_u32(input_ptr);
 			eat(4, input_ptr, input_left);
@@ -250,7 +250,7 @@ void handle_content(NBT::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 	throw std::runtime_error("Malformed NBT: unrecognized tag.");
 }
 
-void handle_named(NBT::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint16_t *sub_table, const FileDescriptor &output_fd, Section &section_blocks, std::vector<std::u8string_view> &path) {
+void handle_named(nbt::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint16_t *sub_table, const FileDescriptor &output_fd, Section &section_blocks, std::vector<std::u8string_view> &path) {
 	// Read name length.
 	check_left(2, input_left);
 	int16_t name_len = decode_u16(input_ptr);
@@ -266,7 +266,7 @@ void handle_named(NBT::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, co
 	path.emplace_back(name_ptr, name_len);
 
 	// Write to output.
-	if(!(tag == NBT::TAG_BYTE_ARRAY && (path == PATH_TO_BLOCKS || path == PATH_TO_ADD))) {
+	if(!(tag == nbt::TAG_BYTE_ARRAY && (path == PATH_TO_BLOCKS || path == PATH_TO_ADD))) {
 		uint8_t header[3];
 		encode_u8(&header[0], tag);
 		encode_u16(&header[1], name_len);
@@ -298,7 +298,7 @@ void usage() {
 }
 }
 
-int mcwutil::NBT::block_substitute(std::ranges::subrange<char **> args) {
+int mcwutil::nbt::block_substitute(std::ranges::subrange<char **> args) {
 	// Check parameters.
 	if(args.size() < 4 || (args.size() % 2) != 0) {
 		usage();
@@ -353,7 +353,7 @@ int mcwutil::NBT::block_substitute(std::ranges::subrange<char **> args) {
 	uint8_t *input_ptr = static_cast<uint8_t *>(input_mapped.data());
 	std::size_t input_left = input_mapped.size();
 	check_left(1, input_left);
-	NBT::Tag root_tag = static_cast<NBT::Tag>(decode_u8(input_ptr));
+	nbt::Tag root_tag = static_cast<nbt::Tag>(decode_u8(input_ptr));
 	eat(1, input_ptr, input_left);
 	handle_named(root_tag, input_ptr, input_left, sub_table, output_fd, section_blocks, path);
 

@@ -31,14 +31,14 @@ void eat(std::size_t n, const uint8_t *&input_ptr, std::size_t &input_left) {
 	input_left -= n;
 }
 
-void parse_name_and_data(const uint8_t *&input_ptr, std::size_t &input_left, NBT::Tag tag, xmlpp::Element *parent_elt);
+void parse_name_and_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::Tag tag, xmlpp::Element *parent_elt);
 
-void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, NBT::Tag tag, xmlpp::Element *parent_elt) {
+void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::Tag tag, xmlpp::Element *parent_elt) {
 	switch(tag) {
-		case NBT::TAG_END:
+		case nbt::TAG_END:
 			throw std::runtime_error("Malformed NBT: unexpected TAG_END.");
 
-		case NBT::TAG_BYTE: {
+		case nbt::TAG_BYTE: {
 			check_left(1, input_left);
 			int8_t value = decode_u8(input_ptr);
 			eat(1, input_ptr, input_left);
@@ -47,7 +47,7 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, NBT::Tag tag
 			return;
 		}
 
-		case NBT::TAG_SHORT: {
+		case nbt::TAG_SHORT: {
 			check_left(2, input_left);
 			int16_t value = decode_u16(input_ptr);
 			eat(2, input_ptr, input_left);
@@ -56,7 +56,7 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, NBT::Tag tag
 			return;
 		}
 
-		case NBT::TAG_INT: {
+		case nbt::TAG_INT: {
 			check_left(4, input_left);
 			int32_t value = decode_u32(input_ptr);
 			eat(4, input_ptr, input_left);
@@ -65,7 +65,7 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, NBT::Tag tag
 			return;
 		}
 
-		case NBT::TAG_LONG: {
+		case nbt::TAG_LONG: {
 			check_left(8, input_left);
 			int64_t value = decode_u64(input_ptr);
 			eat(8, input_ptr, input_left);
@@ -74,7 +74,7 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, NBT::Tag tag
 			return;
 		}
 
-		case NBT::TAG_FLOAT: {
+		case nbt::TAG_FLOAT: {
 			check_left(4, input_left);
 			uint32_t raw = decode_u32(input_ptr);
 			eat(4, input_ptr, input_left);
@@ -89,7 +89,7 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, NBT::Tag tag
 			return;
 		}
 
-		case NBT::TAG_DOUBLE: {
+		case nbt::TAG_DOUBLE: {
 			check_left(8, input_left);
 			uint64_t raw = decode_u64(input_ptr);
 			eat(8, input_ptr, input_left);
@@ -104,7 +104,7 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, NBT::Tag tag
 			return;
 		}
 
-		case NBT::TAG_BYTE_ARRAY: {
+		case nbt::TAG_BYTE_ARRAY: {
 			check_left(4, input_left);
 			int32_t len = decode_u32(input_ptr);
 			eat(4, input_ptr, input_left);
@@ -131,7 +131,7 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, NBT::Tag tag
 			return;
 		}
 
-		case NBT::TAG_STRING: {
+		case nbt::TAG_STRING: {
 			check_left(2, input_left);
 			int16_t len = decode_u16(input_ptr);
 			eat(2, input_ptr, input_left);
@@ -144,9 +144,9 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, NBT::Tag tag
 			return;
 		}
 
-		case NBT::TAG_LIST: {
+		case nbt::TAG_LIST: {
 			check_left(5, input_left);
-			NBT::Tag subtype = static_cast<NBT::Tag>(decode_u8(input_ptr));
+			nbt::Tag subtype = static_cast<nbt::Tag>(decode_u8(input_ptr));
 			eat(1, input_ptr, input_left);
 			int32_t len = decode_u32(input_ptr);
 			eat(4, input_ptr, input_left);
@@ -161,13 +161,13 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, NBT::Tag tag
 			return;
 		}
 
-		case NBT::TAG_COMPOUND: {
+		case nbt::TAG_COMPOUND: {
 			xmlpp::Element *compound_elt = parent_elt->add_child(utf8_literal(u8"compound"));
 			for(;;) {
 				check_left(1, input_left);
-				NBT::Tag subtype = static_cast<NBT::Tag>(decode_u8(input_ptr));
+				nbt::Tag subtype = static_cast<nbt::Tag>(decode_u8(input_ptr));
 				eat(1, input_ptr, input_left);
-				if(subtype == NBT::TAG_END) {
+				if(subtype == nbt::TAG_END) {
 					break;
 				} else {
 					parse_name_and_data(input_ptr, input_left, subtype, compound_elt);
@@ -176,7 +176,7 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, NBT::Tag tag
 			return;
 		}
 
-		case NBT::TAG_INT_ARRAY: {
+		case nbt::TAG_INT_ARRAY: {
 			check_left(4, input_left);
 			int32_t len = decode_u32(input_ptr);
 			eat(4, input_ptr, input_left);
@@ -207,7 +207,7 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, NBT::Tag tag
 			return;
 		}
 
-		case NBT::TAG_LONG_ARRAY: {
+		case nbt::TAG_LONG_ARRAY: {
 			check_left(4, input_left);
 			int32_t len = decode_u32(input_ptr);
 			eat(4, input_ptr, input_left);
@@ -242,7 +242,7 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, NBT::Tag tag
 	throw std::runtime_error("Malformed NBT: unrecognized tag.");
 }
 
-void parse_name_and_data(const uint8_t *&input_ptr, std::size_t &input_left, NBT::Tag tag, xmlpp::Element *parent_elt) {
+void parse_name_and_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::Tag tag, xmlpp::Element *parent_elt) {
 	check_left(2, input_left);
 	int16_t name_length = decode_u16(input_ptr);
 	eat(2, input_ptr, input_left);
@@ -259,7 +259,7 @@ void parse_name_and_data(const uint8_t *&input_ptr, std::size_t &input_left, NBT
 }
 }
 
-int mcwutil::NBT::to_xml(std::ranges::subrange<char **> args) {
+int mcwutil::nbt::to_xml(std::ranges::subrange<char **> args) {
 	// Check parameters.
 	if(args.size() != 2) {
 		std::cerr << "Usage:\n";
@@ -284,7 +284,7 @@ int mcwutil::NBT::to_xml(std::ranges::subrange<char **> args) {
 	const uint8_t *input_ptr = static_cast<const uint8_t *>(input_mapped.data());
 	std::size_t input_left = input_mapped.size();
 	check_left(1, input_left);
-	NBT::Tag outer_tag = static_cast<NBT::Tag>(decode_u8(input_ptr));
+	nbt::Tag outer_tag = static_cast<nbt::Tag>(decode_u8(input_ptr));
 	eat(1, input_ptr, input_left);
 	parse_name_and_data(input_ptr, input_left, outer_tag, nbt_root_elt);
 

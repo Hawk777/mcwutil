@@ -52,7 +52,7 @@ void usage() {
  *
  * \param[in] args the command-line arguments
  */
-int mcwutil::CoordCalc::calc(std::ranges::subrange<char **> args) {
+int mcwutil::coord_calc::calc(std::ranges::subrange<char **> args) {
 	// Check and parse parameters.
 	if(args.size() != 2) {
 		usage();

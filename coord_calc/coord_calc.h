@@ -4,7 +4,7 @@
 #include <ranges>
 
 namespace mcwutil {
-namespace CoordCalc {
+namespace coord_calc {
 int calc(std::ranges::subrange<char **> args);
 }
 }

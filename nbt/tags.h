@@ -2,7 +2,7 @@
 #define NBT_TAGS_H
 
 namespace mcwutil {
-namespace NBT {
+namespace nbt {
 enum Tag {
 	TAG_END,
 	TAG_BYTE,
