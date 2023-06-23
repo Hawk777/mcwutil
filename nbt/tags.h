@@ -3,7 +3,7 @@
 
 namespace mcwutil {
 namespace nbt {
-enum Tag {
+enum tag {
 	TAG_END,
 	TAG_BYTE,
 	TAG_SHORT,

@@ -31,9 +31,9 @@ void eat(std::size_t n, const uint8_t *&input_ptr, std::size_t &input_left) {
 	input_left -= n;
 }
 
-void parse_name_and_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::Tag tag, xmlpp::Element *parent_elt);
+void parse_name_and_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::tag tag, xmlpp::Element *parent_elt);
 
-void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::Tag tag, xmlpp::Element *parent_elt) {
+void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::tag tag, xmlpp::Element *parent_elt) {
 	switch(tag) {
 		case nbt::TAG_END:
 			throw std::runtime_error("Malformed NBT: unexpected TAG_END.");
@@ -146,7 +146,7 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::Tag tag
 
 		case nbt::TAG_LIST: {
 			check_left(5, input_left);
-			nbt::Tag subtype = static_cast<nbt::Tag>(decode_u8(input_ptr));
+			nbt::tag subtype = static_cast<nbt::tag>(decode_u8(input_ptr));
 			eat(1, input_ptr, input_left);
 			int32_t len = decode_u32(input_ptr);
 			eat(4, input_ptr, input_left);
@@ -165,7 +165,7 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::Tag tag
 			xmlpp::Element *compound_elt = parent_elt->add_child(utf8_literal(u8"compound"));
 			for(;;) {
 				check_left(1, input_left);
-				nbt::Tag subtype = static_cast<nbt::Tag>(decode_u8(input_ptr));
+				nbt::tag subtype = static_cast<nbt::tag>(decode_u8(input_ptr));
 				eat(1, input_ptr, input_left);
 				if(subtype == nbt::TAG_END) {
 					break;
@@ -242,7 +242,7 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::Tag tag
 	throw std::runtime_error("Malformed NBT: unrecognized tag.");
 }
 
-void parse_name_and_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::Tag tag, xmlpp::Element *parent_elt) {
+void parse_name_and_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::tag tag, xmlpp::Element *parent_elt) {
 	check_left(2, input_left);
 	int16_t name_length = decode_u16(input_ptr);
 	eat(2, input_ptr, input_left);
@@ -284,7 +284,7 @@ int mcwutil::nbt::to_xml(std::ranges::subrange<char **> args) {
 	const uint8_t *input_ptr = static_cast<const uint8_t *>(input_mapped.data());
 	std::size_t input_left = input_mapped.size();
 	check_left(1, input_left);
-	nbt::Tag outer_tag = static_cast<nbt::Tag>(decode_u8(input_ptr));
+	nbt::tag outer_tag = static_cast<nbt::tag>(decode_u8(input_ptr));
 	eat(1, input_ptr, input_left);
 	parse_name_and_data(input_ptr, input_left, outer_tag, nbt_root_elt);
 

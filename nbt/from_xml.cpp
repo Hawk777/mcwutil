@@ -25,7 +25,7 @@
 
 namespace mcwutil::nbt {
 namespace {
-nbt::Tag tag_for_child_of_named_or_list(const Glib::ustring &name, const char *message) {
+nbt::tag tag_for_child_of_named_or_list(const Glib::ustring &name, const char *message) {
 	if(name == u8"byte")
 		return nbt::TAG_BYTE;
 	if(name == u8"short")
@@ -53,15 +53,15 @@ nbt::Tag tag_for_child_of_named_or_list(const Glib::ustring &name, const char *m
 	throw std::runtime_error(message);
 }
 
-nbt::Tag tag_for_child_of_named(const Glib::ustring &name) {
+nbt::tag tag_for_child_of_named(const Glib::ustring &name) {
 	return tag_for_child_of_named_or_list(name, "Malformed NBT XML: child of named must be one of (byte|short|int|long|float|double|barray|string|list|compound|iarray).");
 }
 
-nbt::Tag tag_for_child_of_list(const Glib::ustring &name) {
+nbt::tag tag_for_child_of_list(const Glib::ustring &name) {
 	return tag_for_child_of_named_or_list(name, "Malformed NBT XML: child of list must be one of (byte|short|int|long|float|double|barray|string|list|compound|iarray).");
 }
 
-void check_list_subtype(nbt::Tag subtype) {
+void check_list_subtype(nbt::tag subtype) {
 	switch(subtype) {
 		case nbt::TAG_END:
 		case nbt::TAG_BYTE:
@@ -85,7 +85,7 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 	if(elt->get_name() == u8"named") {
 		const xmlpp::Node::NodeList &children = elt->get_children();
 		const xmlpp::Element *relevant_child = 0;
-		nbt::Tag subtype = nbt::TAG_END;
+		nbt::tag subtype = nbt::TAG_END;
 		for(auto i = children.begin(), iend = children.end(); i != iend; ++i) {
 			const xmlpp::Element *elt = dynamic_cast<const xmlpp::Element *>(*i);
 			if(elt) {
@@ -256,7 +256,7 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 		iss.imbue(std::locale("C"));
 		unsigned int subtype_int;
 		iss >> subtype_int;
-		nbt::Tag subtype = static_cast<nbt::Tag>(subtype_int);
+		nbt::tag subtype = static_cast<nbt::tag>(subtype_int);
 		check_list_subtype(subtype);
 		std::vector<const xmlpp::Element *> child_elts;
 		const xmlpp::Node::NodeList &children = elt->get_children();

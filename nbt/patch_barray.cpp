@@ -31,9 +31,9 @@ void eat(std::size_t n, uint8_t *&input_ptr, std::size_t &input_left) {
 	input_left -= n;
 }
 
-void handle_named(nbt::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint8_t *sub_table, const std::vector<Glib::ustring>::const_iterator path_first, const std::vector<Glib::ustring>::const_iterator path_last, bool path_ok);
+void handle_named(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint8_t *sub_table, const std::vector<Glib::ustring>::const_iterator path_first, const std::vector<Glib::ustring>::const_iterator path_last, bool path_ok);
 
-void handle_content(nbt::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint8_t *sub_table, const std::vector<Glib::ustring>::const_iterator path_first, const std::vector<Glib::ustring>::const_iterator path_last, bool path_ok) {
+void handle_content(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint8_t *sub_table, const std::vector<Glib::ustring>::const_iterator path_first, const std::vector<Glib::ustring>::const_iterator path_last, bool path_ok) {
 	switch(tag) {
 		case nbt::TAG_END:
 			throw std::runtime_error("Malformed NBT: unexpected TAG_END.");
@@ -90,7 +90,7 @@ void handle_content(nbt::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 
 		case nbt::TAG_LIST: {
 			check_left(5, input_left);
-			nbt::Tag subtype = static_cast<nbt::Tag>(decode_u8(input_ptr));
+			nbt::tag subtype = static_cast<nbt::tag>(decode_u8(input_ptr));
 			eat(1, input_ptr, input_left);
 			int32_t length = decode_u32(input_ptr);
 			eat(4, input_ptr, input_left);
@@ -134,7 +134,7 @@ void handle_content(nbt::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 		case nbt::TAG_COMPOUND: {
 			for(;;) {
 				check_left(1, input_left);
-				nbt::Tag subtype = static_cast<nbt::Tag>(decode_u8(input_ptr));
+				nbt::tag subtype = static_cast<nbt::tag>(decode_u8(input_ptr));
 				eat(1, input_ptr, input_left);
 				if(subtype == nbt::TAG_END) {
 					return;
@@ -179,7 +179,7 @@ void handle_content(nbt::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 	throw std::runtime_error("Malformed NBT: unrecognized tag.");
 }
 
-void handle_named(nbt::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint8_t *sub_table, const std::vector<Glib::ustring>::const_iterator path_first, const std::vector<Glib::ustring>::const_iterator path_last, bool path_ok) {
+void handle_named(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint8_t *sub_table, const std::vector<Glib::ustring>::const_iterator path_first, const std::vector<Glib::ustring>::const_iterator path_last, bool path_ok) {
 	// Read name length.
 	check_left(2, input_left);
 	int16_t name_len = decode_u16(input_ptr);
@@ -297,7 +297,7 @@ int mcwutil::nbt::patch_barray(std::ranges::subrange<char **> args) {
 	uint8_t *input_ptr = static_cast<uint8_t *>(nbt_mapped.data());
 	std::size_t input_left = nbt_mapped.size();
 	check_left(1, input_left);
-	nbt::Tag root_tag = static_cast<nbt::Tag>(decode_u8(input_ptr));
+	nbt::tag root_tag = static_cast<nbt::tag>(decode_u8(input_ptr));
 	eat(1, input_ptr, input_left);
 	handle_named(root_tag, input_ptr, input_left, sub_table, path_components.begin(), path_components.end(), true);
 
