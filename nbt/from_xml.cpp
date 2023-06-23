@@ -108,8 +108,8 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 			throw std::runtime_error("Malformed NBT XML: name too long.");
 		}
 		uint8_t header[3];
-		encode_u8(&header[0], subtype);
-		encode_u16(&header[1], static_cast<int16_t>(name_utf8.size()));
+		codec::encode_u8(&header[0], subtype);
+		codec::encode_u16(&header[1], static_cast<int16_t>(name_utf8.size()));
 		nbt_fd.write(header, sizeof(header));
 		nbt_fd.write(name_utf8.data(), name_utf8.size());
 		write_nbt(nbt_fd, relevant_child);
@@ -126,7 +126,7 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 			throw std::runtime_error("Malformed NBT XML: byte value out of range.");
 		}
 		uint8_t buffer[1];
-		encode_u8(&buffer[0], static_cast<int8_t>(value));
+		codec::encode_u8(&buffer[0], static_cast<int8_t>(value));
 		nbt_fd.write(buffer, sizeof(buffer));
 	} else if(elt->get_name() == u8"short") {
 		const xmlpp::Attribute *value_attr = elt->get_attribute(utf8_literal(u8"value"));
@@ -138,7 +138,7 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 		int16_t value;
 		iss >> value;
 		uint8_t buffer[sizeof(value)];
-		encode_u16(&buffer[0], value);
+		codec::encode_u16(&buffer[0], value);
 		nbt_fd.write(buffer, sizeof(buffer));
 	} else if(elt->get_name() == u8"int") {
 		const xmlpp::Attribute *value_attr = elt->get_attribute(utf8_literal(u8"value"));
@@ -150,7 +150,7 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 		int32_t value;
 		iss >> value;
 		uint8_t buffer[sizeof(value)];
-		encode_u32(&buffer[0], value);
+		codec::encode_u32(&buffer[0], value);
 		nbt_fd.write(buffer, sizeof(buffer));
 	} else if(elt->get_name() == u8"long") {
 		const xmlpp::Attribute *value_attr = elt->get_attribute(utf8_literal(u8"value"));
@@ -162,7 +162,7 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 		int64_t value;
 		iss >> value;
 		uint8_t buffer[sizeof(value)];
-		encode_u64(&buffer[0], value);
+		codec::encode_u64(&buffer[0], value);
 		nbt_fd.write(buffer, sizeof(buffer));
 	} else if(elt->get_name() == u8"float") {
 		const xmlpp::Attribute *value_attr = elt->get_attribute(utf8_literal(u8"value"));
@@ -173,9 +173,9 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 		iss.imbue(std::locale("C"));
 		float value;
 		iss >> value;
-		uint32_t raw = encode_float_to_u32(value);
+		uint32_t raw = codec::encode_float_to_u32(value);
 		uint8_t buffer[sizeof(raw)];
-		encode_u32(&buffer[0], raw);
+		codec::encode_u32(&buffer[0], raw);
 		nbt_fd.write(buffer, sizeof(buffer));
 	} else if(elt->get_name() == u8"double") {
 		const xmlpp::Attribute *value_attr = elt->get_attribute(utf8_literal(u8"value"));
@@ -186,9 +186,9 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 		iss.imbue(std::locale("C"));
 		double value;
 		iss >> value;
-		uint64_t raw = encode_double_to_u64(value);
+		uint64_t raw = codec::encode_double_to_u64(value);
 		uint8_t buffer[sizeof(raw)];
-		encode_u64(&buffer[0], raw);
+		codec::encode_u64(&buffer[0], raw);
 		nbt_fd.write(buffer, sizeof(buffer));
 	} else if(elt->get_name() == u8"barray") {
 		const xmlpp::TextNode *text_node = elt->get_child_text();
@@ -226,12 +226,12 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 				throw std::runtime_error("Malformed NBT XML: byte array too long.");
 			}
 			uint8_t header[4];
-			encode_u32(&header[0], static_cast<int32_t>(data.size()));
+			codec::encode_u32(&header[0], static_cast<int32_t>(data.size()));
 			nbt_fd.write(header, sizeof(header));
 			nbt_fd.write(&data[0], data.size());
 		} else {
 			uint8_t header[4];
-			encode_u32(&header[0], 0);
+			codec::encode_u32(&header[0], 0);
 			nbt_fd.write(header, sizeof(header));
 		}
 	} else if(elt->get_name() == u8"string") {
@@ -244,7 +244,7 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 			throw std::runtime_error("Malformed NBT XML: string too long.");
 		}
 		uint8_t header[2];
-		encode_u16(&header[0], static_cast<int16_t>(value_utf8.size()));
+		codec::encode_u16(&header[0], static_cast<int16_t>(value_utf8.size()));
 		nbt_fd.write(header, sizeof(header));
 		nbt_fd.write(value_utf8.data(), value_utf8.size());
 	} else if(elt->get_name() == u8"list") {
@@ -273,8 +273,8 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 			throw std::runtime_error("Malformed NBT XML: list too long.");
 		}
 		uint8_t header[5];
-		encode_u8(&header[0], static_cast<int8_t>(subtype));
-		encode_u32(&header[1], static_cast<int32_t>(child_elts.size()));
+		codec::encode_u8(&header[0], static_cast<int8_t>(subtype));
+		codec::encode_u32(&header[1], static_cast<int32_t>(child_elts.size()));
 		nbt_fd.write(header, sizeof(header));
 		for(auto i = child_elts.begin(), iend = child_elts.end(); i != iend; ++i) {
 			write_nbt(nbt_fd, *i);
@@ -291,7 +291,7 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 			}
 		}
 		uint8_t footer[1];
-		encode_u8(&footer[0], nbt::TAG_END);
+		codec::encode_u8(&footer[0], nbt::TAG_END);
 		nbt_fd.write(footer, sizeof(footer));
 	} else if(elt->get_name() == u8"iarray") {
 		const xmlpp::TextNode *text_node = elt->get_child_text();
@@ -332,12 +332,12 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 				throw std::runtime_error("Malformed NBT XML: integer array too long.");
 			}
 			uint8_t header[4];
-			encode_u32(&header[0], static_cast<int32_t>(data.size() / 4));
+			codec::encode_u32(&header[0], static_cast<int32_t>(data.size() / 4));
 			nbt_fd.write(header, sizeof(header));
 			nbt_fd.write(&data[0], data.size());
 		} else {
 			uint8_t header[4];
-			encode_u32(&header[0], 0);
+			codec::encode_u32(&header[0], 0);
 			nbt_fd.write(header, sizeof(header));
 		}
 	} else if(elt->get_name() == u8"larray") {
@@ -383,12 +383,12 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 				throw std::runtime_error("Malformed NBT XML: integer array too long.");
 			}
 			uint8_t header[4];
-			encode_u32(&header[0], static_cast<int32_t>(data.size() / 8));
+			codec::encode_u32(&header[0], static_cast<int32_t>(data.size() / 8));
 			nbt_fd.write(header, sizeof(header));
 			nbt_fd.write(&data[0], data.size());
 		} else {
 			uint8_t header[4];
-			encode_u32(&header[0], 0);
+			codec::encode_u32(&header[0], 0);
 			nbt_fd.write(header, sizeof(header));
 		}
 	} else {

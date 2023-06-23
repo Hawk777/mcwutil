@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 namespace mcwutil {
+namespace codec {
 uint32_t encode_float_to_u32(float x);
 float decode_u32_to_float(uint32_t x);
 uint64_t encode_double_to_u64(double x);
@@ -183,6 +184,7 @@ inline uint64_t decode_u64(const void *buffer) {
  */
 inline double decode_double(const void *buffer) {
 	return decode_u64_to_double(decode_u64(buffer));
+}
 }
 }
 

@@ -53,9 +53,9 @@ int mcwutil::region::unpack(std::ranges::subrange<char **> args) {
 	xmlpp::Element *metadata_root_elt = metadata_document.create_root_node(utf8_literal(u8"minecraft-region-metadata"));
 	for(unsigned int i = 0; i < 1024; ++i) {
 		// Decode the header for this chunk.
-		uint32_t offset_sectors = decode_u24(&header[i * 4]);
-		uint8_t size_sectors = decode_u8(&header[i * 4 + 3]);
-		uint32_t timestamp = decode_u32(&header[4096 + i * 4]);
+		uint32_t offset_sectors = codec::decode_u24(&header[i * 4]);
+		uint8_t size_sectors = codec::decode_u8(&header[i * 4 + 3]);
+		uint32_t timestamp = codec::decode_u32(&header[4096 + i * 4]);
 
 		// Sanity check.
 		if((offset_sectors && !size_sectors) || (size_sectors && !offset_sectors)) {
@@ -80,14 +80,14 @@ int mcwutil::region::unpack(std::ranges::subrange<char **> args) {
 			region_fd.pread(chunk_data, rough_size_bytes, offset_bytes);
 
 			// Extract and sanity-check the chunk's header.
-			uint32_t precise_size_bytes = decode_u32(&chunk_data[0]);
+			uint32_t precise_size_bytes = codec::decode_u32(&chunk_data[0]);
 			if(precise_size_bytes < 1) {
 				throw std::runtime_error("Malformed chunk: precise size < 1.");
 			}
 			if(precise_size_bytes > rough_size_bytes) {
 				throw std::runtime_error("Malformed chunk: precise size > rough size.");
 			}
-			uint8_t compression_type = decode_u8(&chunk_data[4]);
+			uint8_t compression_type = codec::decode_u8(&chunk_data[4]);
 			if(compression_type != 2) {
 				throw std::runtime_error("Malformed chunk: unrecognized compression type.");
 			}

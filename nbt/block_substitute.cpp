@@ -75,7 +75,7 @@ void handle_content(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 
 		case nbt::TAG_BYTE_ARRAY: {
 			check_left(4, input_left);
-			int32_t length = decode_u32(input_ptr);
+			int32_t length = codec::decode_u32(input_ptr);
 			eat(4, input_ptr, input_left);
 			if(length < 0) {
 				throw std::runtime_error("Malformed NBT: negative byte array length.");
@@ -94,7 +94,7 @@ void handle_content(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 				}
 			} else {
 				uint8_t header[4];
-				encode_u32(&header[0], length);
+				codec::encode_u32(&header[0], length);
 				output_fd.write(header, sizeof(header));
 				output_fd.write(barray_ptr, length);
 			}
@@ -103,7 +103,7 @@ void handle_content(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 
 		case nbt::TAG_STRING: {
 			check_left(2, input_left);
-			int16_t length = decode_u16(input_ptr);
+			int16_t length = codec::decode_u16(input_ptr);
 			eat(2, input_ptr, input_left);
 			if(length < 0) {
 				throw std::runtime_error("Malformed NBT: negative string length.");
@@ -113,7 +113,7 @@ void handle_content(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 			eat(length, input_ptr, input_left);
 
 			uint8_t header[2];
-			encode_u16(&header[0], length);
+			codec::encode_u16(&header[0], length);
 			output_fd.write(header, sizeof(header));
 			output_fd.write(string_ptr, length);
 			return;
@@ -121,17 +121,17 @@ void handle_content(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 
 		case nbt::TAG_LIST: {
 			check_left(5, input_left);
-			nbt::tag subtype = static_cast<nbt::tag>(decode_u8(input_ptr));
+			nbt::tag subtype = static_cast<nbt::tag>(codec::decode_u8(input_ptr));
 			eat(1, input_ptr, input_left);
-			int32_t length = decode_u32(input_ptr);
+			int32_t length = codec::decode_u32(input_ptr);
 			eat(4, input_ptr, input_left);
 			if(length < 0) {
 				throw std::runtime_error("Malformed NBT: negative list length.");
 			}
 
 			uint8_t header[5];
-			encode_u8(&header[0], subtype);
-			encode_u32(&header[1], length);
+			codec::encode_u8(&header[0], subtype);
+			codec::encode_u32(&header[1], length);
 			output_fd.write(header, sizeof(header));
 
 			for(int32_t i = 0; i < length; ++i) {
@@ -146,7 +146,7 @@ void handle_content(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 			}
 			for(;;) {
 				check_left(1, input_left);
-				nbt::tag subtype = static_cast<nbt::tag>(decode_u8(input_ptr));
+				nbt::tag subtype = static_cast<nbt::tag>(codec::decode_u8(input_ptr));
 				eat(1, input_ptr, input_left);
 
 				if(subtype == nbt::TAG_END) {
@@ -159,11 +159,11 @@ void handle_content(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 							}
 						}
 						uint8_t header[4];
-						encode_u8(&header[0], nbt::TAG_BYTE_ARRAY);
-						encode_u16(&header[1], sizeof(u8"Blocks") - 1);
+						codec::encode_u8(&header[0], nbt::TAG_BYTE_ARRAY);
+						codec::encode_u16(&header[1], sizeof(u8"Blocks") - 1);
 						output_fd.write(header, 3);
 						output_fd.write(u8"Blocks", sizeof(u8"Blocks") - 1);
-						encode_u32(&header[0], 16 * 16 * 16);
+						codec::encode_u32(&header[0], 16 * 16 * 16);
 						output_fd.write(header, 4);
 						uint8_t buffer[16 * 16 * 16];
 						for(std::size_t i = 0; i < 16 * 16 * 16; ++i) {
@@ -171,11 +171,11 @@ void handle_content(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 						}
 						output_fd.write(buffer, 16 * 16 * 16);
 						if(any_extended) {
-							encode_u8(&header[0], nbt::TAG_BYTE_ARRAY);
-							encode_u16(&header[1], sizeof(u8"Add") - 1);
+							codec::encode_u8(&header[0], nbt::TAG_BYTE_ARRAY);
+							codec::encode_u16(&header[1], sizeof(u8"Add") - 1);
 							output_fd.write(header, 3);
 							output_fd.write(u8"Add", sizeof(u8"Add") - 1);
-							encode_u32(&header[0], 16 * 16 * 16 / 2);
+							codec::encode_u32(&header[0], 16 * 16 * 16 / 2);
 							output_fd.write(header, 4);
 							for(std::size_t i = 0; i < 16 * 16 * 16; i += 2) {
 								buffer[i / 2] = static_cast<uint8_t>((section_blocks[i] >> 8) | ((section_blocks[i + 1] >> 8) << 4));
@@ -184,7 +184,7 @@ void handle_content(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 						}
 					}
 					uint8_t footer;
-					encode_u8(&footer, nbt::TAG_END);
+					codec::encode_u8(&footer, nbt::TAG_END);
 					output_fd.write(&footer, sizeof(footer));
 					return;
 				}
@@ -194,14 +194,14 @@ void handle_content(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 
 		case nbt::TAG_INT_ARRAY: {
 			check_left(4, input_left);
-			int32_t length = decode_u32(input_ptr);
+			int32_t length = codec::decode_u32(input_ptr);
 			eat(4, input_ptr, input_left);
 			if(length < 0) {
 				throw std::runtime_error("Malformed NBT: negative integer array length.");
 			}
 
 			uint8_t header[4];
-			encode_u32(&header[0], length);
+			codec::encode_u32(&header[0], length);
 			output_fd.write(header, sizeof(header));
 
 			output_fd.write(input_ptr, length);
@@ -217,14 +217,14 @@ void handle_content(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 
 		case nbt::TAG_LONG_ARRAY: {
 			check_left(4, input_left);
-			int32_t length = decode_u32(input_ptr);
+			int32_t length = codec::decode_u32(input_ptr);
 			eat(4, input_ptr, input_left);
 			if(length < 0) {
 				throw std::runtime_error("Malformed NBT: negative long array length.");
 			}
 
 			uint8_t header[4];
-			encode_u32(&header[0], length);
+			codec::encode_u32(&header[0], length);
 			output_fd.write(header, sizeof(header));
 
 			output_fd.write(input_ptr, length);
@@ -253,7 +253,7 @@ void handle_content(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 void handle_named(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint16_t *sub_table, const FileDescriptor &output_fd, Section &section_blocks, std::vector<std::u8string_view> &path) {
 	// Read name length.
 	check_left(2, input_left);
-	int16_t name_len = decode_u16(input_ptr);
+	int16_t name_len = codec::decode_u16(input_ptr);
 	eat(2, input_ptr, input_left);
 	if(name_len < 0) {
 		throw std::runtime_error("Malformed NBT: negative name length.");
@@ -268,8 +268,8 @@ void handle_named(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, co
 	// Write to output.
 	if(!(tag == nbt::TAG_BYTE_ARRAY && (path == PATH_TO_BLOCKS || path == PATH_TO_ADD))) {
 		uint8_t header[3];
-		encode_u8(&header[0], tag);
-		encode_u16(&header[1], name_len);
+		codec::encode_u8(&header[0], tag);
+		codec::encode_u16(&header[1], name_len);
 		output_fd.write(header, sizeof(header));
 		output_fd.write(name_ptr, name_len);
 	}
@@ -353,7 +353,7 @@ int mcwutil::nbt::block_substitute(std::ranges::subrange<char **> args) {
 	uint8_t *input_ptr = static_cast<uint8_t *>(input_mapped.data());
 	std::size_t input_left = input_mapped.size();
 	check_left(1, input_left);
-	nbt::tag root_tag = static_cast<nbt::tag>(decode_u8(input_ptr));
+	nbt::tag root_tag = static_cast<nbt::tag>(codec::decode_u8(input_ptr));
 	eat(1, input_ptr, input_left);
 	handle_named(root_tag, input_ptr, input_left, sub_table, output_fd, section_blocks, path);
 

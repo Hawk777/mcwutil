@@ -110,14 +110,14 @@ int mcwutil::region::pack(std::ranges::subrange<char **> args) {
 			chunk_fd.fstat(stbuf);
 			uint8_t chunk_data[5 + stbuf.st_size];
 			chunk_fd.read(&chunk_data[5], sizeof(chunk_data) - 5);
-			encode_u32(&chunk_data[0], static_cast<uint32_t>(stbuf.st_size + 1));
-			encode_u8(&chunk_data[4], 2);
+			codec::encode_u32(&chunk_data[0], static_cast<uint32_t>(stbuf.st_size + 1));
+			codec::encode_u8(&chunk_data[4], 2);
 			region_fd.pwrite(chunk_data, sizeof(chunk_data), region_write_ptr);
 			uint32_t sector_offset = static_cast<uint32_t>(region_write_ptr / 4096);
-			encode_u24(&header.data()[4 * index], sector_offset);
+			codec::encode_u24(&header.data()[4 * index], sector_offset);
 			uint8_t sector_count = static_cast<uint8_t>((sizeof(chunk_data) + 4095) / 4096);
-			encode_u8(&header.data()[4 * index + 3], sector_count);
-			encode_u32(&header.data()[4096 + 4 * index], timestamp);
+			codec::encode_u8(&header.data()[4 * index + 3], sector_count);
+			codec::encode_u32(&header.data()[4096 + 4 * index], timestamp);
 			region_write_ptr += static_cast<off_t>(sector_count) * 4096;
 		}
 	}

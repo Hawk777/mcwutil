@@ -2,7 +2,7 @@
 #include <cmath>
 #include <limits>
 
-namespace mcwutil {
+namespace mcwutil::codec {
 namespace {
 /**
  * \brief Packs a sign bit, a biased exponent, and a significand into a 32-bit integer in IEEE754 single-precision format.
@@ -43,7 +43,7 @@ uint64_t pack_ses64(bool sign, uint16_t exponent, uint64_t significand) {
  *
  * \return the encoded form.
  */
-uint32_t mcwutil::encode_float_to_u32(float x) {
+uint32_t mcwutil::codec::encode_float_to_u32(float x) {
 	// Break down the number based on its coarse classification.
 	int classify = std::fpclassify(x);
 	if(classify == FP_NAN) {
@@ -120,7 +120,7 @@ uint32_t mcwutil::encode_float_to_u32(float x) {
  *
  * \return the floating-point number.
  */
-float mcwutil::decode_u32_to_float(uint32_t x) {
+float mcwutil::codec::decode_u32_to_float(uint32_t x) {
 	// Extract the sign bit, biased exponent, and significand.
 	bool sign = !!(x & UINT32_C(0x80000000));
 	int8_t exponent = static_cast<uint8_t>((x >> 23) & 0xFF);
@@ -164,7 +164,7 @@ float mcwutil::decode_u32_to_float(uint32_t x) {
  *
  * \return the encoded form.
  */
-uint64_t mcwutil::encode_double_to_u64(double x) {
+uint64_t mcwutil::codec::encode_double_to_u64(double x) {
 	// Break down the number based on its coarse classification.
 	int classify = std::fpclassify(x);
 	if(classify == FP_NAN) {
@@ -241,7 +241,7 @@ uint64_t mcwutil::encode_double_to_u64(double x) {
  *
  * \return the floating-point number.
  */
-double mcwutil::decode_u64_to_double(uint64_t x) {
+double mcwutil::codec::decode_u64_to_double(uint64_t x) {
 	// Extract the sign bit, biased exponent, and significand.
 	bool sign = !!(x & UINT64_C(0x8000000000000000));
 	int16_t exponent = (x >> 52) & 0x7FF;

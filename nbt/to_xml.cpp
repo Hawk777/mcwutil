@@ -40,7 +40,7 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::tag tag
 
 		case nbt::TAG_BYTE: {
 			check_left(1, input_left);
-			int8_t value = decode_u8(input_ptr);
+			int8_t value = codec::decode_u8(input_ptr);
 			eat(1, input_ptr, input_left);
 			xmlpp::Element *byte_elt = parent_elt->add_child(utf8_literal(u8"byte"));
 			byte_elt->set_attribute(utf8_literal(u8"value"), todecs(value));
@@ -49,7 +49,7 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::tag tag
 
 		case nbt::TAG_SHORT: {
 			check_left(2, input_left);
-			int16_t value = decode_u16(input_ptr);
+			int16_t value = codec::decode_u16(input_ptr);
 			eat(2, input_ptr, input_left);
 			xmlpp::Element *short_elt = parent_elt->add_child(utf8_literal(u8"short"));
 			short_elt->set_attribute(utf8_literal(u8"value"), todecs(value));
@@ -58,7 +58,7 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::tag tag
 
 		case nbt::TAG_INT: {
 			check_left(4, input_left);
-			int32_t value = decode_u32(input_ptr);
+			int32_t value = codec::decode_u32(input_ptr);
 			eat(4, input_ptr, input_left);
 			xmlpp::Element *int_elt = parent_elt->add_child(utf8_literal(u8"int"));
 			int_elt->set_attribute(utf8_literal(u8"value"), todecs(value));
@@ -67,7 +67,7 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::tag tag
 
 		case nbt::TAG_LONG: {
 			check_left(8, input_left);
-			int64_t value = decode_u64(input_ptr);
+			int64_t value = codec::decode_u64(input_ptr);
 			eat(8, input_ptr, input_left);
 			xmlpp::Element *long_elt = parent_elt->add_child(utf8_literal(u8"long"));
 			long_elt->set_attribute(utf8_literal(u8"value"), todecs(value));
@@ -76,9 +76,9 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::tag tag
 
 		case nbt::TAG_FLOAT: {
 			check_left(4, input_left);
-			uint32_t raw = decode_u32(input_ptr);
+			uint32_t raw = codec::decode_u32(input_ptr);
 			eat(4, input_ptr, input_left);
-			float fl = decode_u32_to_float(raw);
+			float fl = codec::decode_u32_to_float(raw);
 			xmlpp::Element *float_elt = parent_elt->add_child(utf8_literal(u8"float"));
 			std::wostringstream oss;
 			oss.imbue(std::locale("C"));
@@ -91,9 +91,9 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::tag tag
 
 		case nbt::TAG_DOUBLE: {
 			check_left(8, input_left);
-			uint64_t raw = decode_u64(input_ptr);
+			uint64_t raw = codec::decode_u64(input_ptr);
 			eat(8, input_ptr, input_left);
-			double db = decode_u64_to_double(raw);
+			double db = codec::decode_u64_to_double(raw);
 			xmlpp::Element *double_elt = parent_elt->add_child(utf8_literal(u8"double"));
 			std::wostringstream oss;
 			oss.imbue(std::locale("C"));
@@ -106,7 +106,7 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::tag tag
 
 		case nbt::TAG_BYTE_ARRAY: {
 			check_left(4, input_left);
-			int32_t len = decode_u32(input_ptr);
+			int32_t len = codec::decode_u32(input_ptr);
 			eat(4, input_ptr, input_left);
 			if(len < 0) {
 				throw std::runtime_error("Malformed NBT: negative byte array length.");
@@ -133,7 +133,7 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::tag tag
 
 		case nbt::TAG_STRING: {
 			check_left(2, input_left);
-			int16_t len = decode_u16(input_ptr);
+			int16_t len = codec::decode_u16(input_ptr);
 			eat(2, input_ptr, input_left);
 			if(len < 0) {
 				throw std::runtime_error("Malformed NBT: negative string length.");
@@ -146,9 +146,9 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::tag tag
 
 		case nbt::TAG_LIST: {
 			check_left(5, input_left);
-			nbt::tag subtype = static_cast<nbt::tag>(decode_u8(input_ptr));
+			nbt::tag subtype = static_cast<nbt::tag>(codec::decode_u8(input_ptr));
 			eat(1, input_ptr, input_left);
-			int32_t len = decode_u32(input_ptr);
+			int32_t len = codec::decode_u32(input_ptr);
 			eat(4, input_ptr, input_left);
 			if(len < 0) {
 				throw std::runtime_error("Malformed NBT: negative list length.");
@@ -165,7 +165,7 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::tag tag
 			xmlpp::Element *compound_elt = parent_elt->add_child(utf8_literal(u8"compound"));
 			for(;;) {
 				check_left(1, input_left);
-				nbt::tag subtype = static_cast<nbt::tag>(decode_u8(input_ptr));
+				nbt::tag subtype = static_cast<nbt::tag>(codec::decode_u8(input_ptr));
 				eat(1, input_ptr, input_left);
 				if(subtype == nbt::TAG_END) {
 					break;
@@ -178,7 +178,7 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::tag tag
 
 		case nbt::TAG_INT_ARRAY: {
 			check_left(4, input_left);
-			int32_t len = decode_u32(input_ptr);
+			int32_t len = codec::decode_u32(input_ptr);
 			eat(4, input_ptr, input_left);
 			if(len < 0) {
 				throw std::runtime_error("Malformed NBT: negative integer array length.");
@@ -193,7 +193,7 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::tag tag
 			ustr.append(utf8_literal(u8"\n"));
 			for(int32_t i = 0; i < len; ++i) {
 				static const char8_t DIGITS[] = u8"0123456789ABCDEF";
-				uint32_t integer = decode_u32(input_ptr + i * 4);
+				uint32_t integer = codec::decode_u32(input_ptr + i * 4);
 				for(int nybble = 7; nybble >= 0; --nybble) {
 					ustr.push_back(static_cast<char>(DIGITS[(integer >> (4 * nybble)) & 0x0F]));
 				}
@@ -209,7 +209,7 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::tag tag
 
 		case nbt::TAG_LONG_ARRAY: {
 			check_left(4, input_left);
-			int32_t len = decode_u32(input_ptr);
+			int32_t len = codec::decode_u32(input_ptr);
 			eat(4, input_ptr, input_left);
 			if(len < 0) {
 				throw std::runtime_error("Malformed NBT: negative long array length.");
@@ -224,7 +224,7 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::tag tag
 			ustr.append(utf8_literal(u8"\n"));
 			for(int32_t i = 0; i < len; ++i) {
 				static const char8_t DIGITS[] = u8"0123456789ABCDEF";
-				uint64_t integer = decode_u64(input_ptr + i * 8);
+				uint64_t integer = codec::decode_u64(input_ptr + i * 8);
 				for(int nybble = 15; nybble >= 0; --nybble) {
 					ustr.push_back(static_cast<char>(DIGITS[(integer >> (4 * nybble)) & 0x0F]));
 				}
@@ -244,7 +244,7 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::tag tag
 
 void parse_name_and_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::tag tag, xmlpp::Element *parent_elt) {
 	check_left(2, input_left);
-	int16_t name_length = decode_u16(input_ptr);
+	int16_t name_length = codec::decode_u16(input_ptr);
 	eat(2, input_ptr, input_left);
 	if(name_length < 0) {
 		throw std::runtime_error("Malformed NBT: negative element name length.");
@@ -284,7 +284,7 @@ int mcwutil::nbt::to_xml(std::ranges::subrange<char **> args) {
 	const uint8_t *input_ptr = static_cast<const uint8_t *>(input_mapped.data());
 	std::size_t input_left = input_mapped.size();
 	check_left(1, input_left);
-	nbt::tag outer_tag = static_cast<nbt::tag>(decode_u8(input_ptr));
+	nbt::tag outer_tag = static_cast<nbt::tag>(codec::decode_u8(input_ptr));
 	eat(1, input_ptr, input_left);
 	parse_name_and_data(input_ptr, input_left, outer_tag, nbt_root_elt);
 
