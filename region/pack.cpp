@@ -10,7 +10,7 @@
 #include <cstddef>
 #include <cstdio>
 #include <fcntl.h>
-#include <glibmm/convert.h>
+#include <filesystem>
 #include <iostream>
 #include <libxml++/document.h>
 #include <libxml++/nodes/element.h>
@@ -20,9 +20,13 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+
+using namespace std::literals::string_literals;
+using namespace std::literals::string_view_literals;
 
 int Region::pack(std::ranges::subrange<char **> args) {
 	// Check parameters.
@@ -39,13 +43,17 @@ int Region::pack(std::ranges::subrange<char **> args) {
 	}
 
 	// Extract provided pathnames.
-	const std::string &input_directory = args[0];
+	const char *input_directory = args[0];
 	const char *region_filename = args[1];
 
 	// Load the metadata document.
 	xmlpp::DomParser metadata_parser;
 	metadata_parser.set_substitute_entities();
-	metadata_parser.parse_file(input_directory + G_DIR_SEPARATOR + Glib::filename_from_utf8(utf8_literal(u8"metadata.xml")));
+	{
+		std::filesystem::path metadata_file(input_directory);
+		metadata_file /= "metadata.xml";
+		metadata_parser.parse_file(metadata_file.native());
+	}
 	const xmlpp::Document *metadata_document = metadata_parser.get_document();
 	const xmlpp::Element *metadata_root_elt = metadata_document->get_root_node();
 	if(metadata_root_elt->get_name() != u8"minecraft-region-metadata") {
@@ -93,8 +101,12 @@ int Region::pack(std::ranges::subrange<char **> args) {
 
 		if(present) {
 			// Copy the chunk data into the region file.
-			const std::string &chunk_filename = input_directory + G_DIR_SEPARATOR + Glib::filename_from_utf8(Glib::ustring::compose(utf8_literal(u8"chunk-%1.nbt.zlib"), todecu(index, 4)));
-			FileDescriptor chunk_fd = FileDescriptor::create_open(chunk_filename.c_str(), O_RDONLY, 0);
+			std::filesystem::path chunk_filename(input_directory);
+			std::string file_part("chunk-"s);
+			file_part += todecu(index, 4);
+			file_part += ".nbt.zlib"sv;
+			chunk_filename /= file_part;
+			FileDescriptor chunk_fd = FileDescriptor::create_open(chunk_filename, O_RDONLY, 0);
 			struct stat stbuf;
 			FileUtils::fstat(chunk_fd, stbuf);
 			uint8_t chunk_data[5 + stbuf.st_size];
