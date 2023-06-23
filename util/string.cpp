@@ -2,6 +2,19 @@
 #include <locale>
 #include <sstream>
 
+namespace {
+/**
+ * \brief Wraps a Glib UTF-8 string in a C++ UTF-8 string view.
+ *
+ * \param[in] s the string to wrap.
+ *
+ * \return a view of \p s, which remains valid until \p s is modified.
+ */
+std::u8string_view utf8_wrap(const Glib::ustring &s) {
+	return std::u8string_view(reinterpret_cast<const char8_t *>(s.data()), s.bytes());
+}
+}
+
 /**
  * \brief Converts a UTF-8 C-style string (typically a string literal) to a
  * GLib string.
@@ -12,17 +25,6 @@
  */
 Glib::ustring utf8_literal(const char8_t *s) {
 	return reinterpret_cast<const char *>(s);
-}
-
-/**
- * \brief Wraps a Glib UTF-8 string in a C++ UTF-8 string view.
- *
- * \param[in] s the string to wrap.
- *
- * \return a view of \p s, which remains valid until \p s is modified.
- */
-std::u8string_view utf8_wrap(const Glib::ustring &s) {
-	return std::u8string_view(reinterpret_cast<const char8_t *>(s.data()), s.bytes());
 }
 
 /**

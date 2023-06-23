@@ -7,7 +7,6 @@
 #include <string_view>
 
 Glib::ustring utf8_literal(const char8_t *s);
-std::u8string_view utf8_wrap(const Glib::ustring &s);
 bool operator==(const Glib::ustring &x, std::u8string_view y);
 bool operator==(std::u8string_view x, const Glib::ustring &y);
 Glib::ustring todecu(uintmax_t value, unsigned int width = 0);
