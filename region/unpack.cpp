@@ -8,16 +8,20 @@
 #include <cstddef>
 #include <cstdio>
 #include <fcntl.h>
-#include <glibmm/convert.h>
+#include <filesystem>
 #include <iostream>
 #include <libxml++/document.h>
 #include <libxml++/nodes/element.h>
 #include <libxml++/nodes/node.h>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+
+using namespace std::literals::string_literals;
+using namespace std::literals::string_view_literals;
 
 int Region::unpack(std::ranges::subrange<char **> args) {
 	// Check parameters.
@@ -35,7 +39,7 @@ int Region::unpack(std::ranges::subrange<char **> args) {
 
 	// Extract provided pathnames.
 	const char *region_filename = args[0];
-	const std::string &output_directory = args[1];
+	const char *output_directory = args[1];
 
 	// Open the region file.
 	FileDescriptor region_fd = FileDescriptor::create_open(region_filename, O_RDONLY, 0);
@@ -92,8 +96,12 @@ int Region::unpack(std::ranges::subrange<char **> args) {
 			const void *payload = &chunk_data[5];
 
 			// Copy the chunk's data out to a file.
-			const std::string &chunk_filename = output_directory + G_DIR_SEPARATOR + Glib::filename_from_utf8(Glib::ustring::compose(utf8_literal(u8"chunk-%1.nbt.zlib"), todecu(i, 4)));
-			FileDescriptor chunk_fd = FileDescriptor::create_open(chunk_filename.c_str(), O_WRONLY | O_CREAT, 0666);
+			std::string name_part("chunk-"s);
+			name_part += todecu(i, 4);
+			name_part += ".nbt.zlib"sv;
+			std::filesystem::path chunk_filename(output_directory);
+			chunk_filename /= name_part;
+			FileDescriptor chunk_fd = FileDescriptor::create_open(chunk_filename, O_WRONLY | O_CREAT, 0666);
 			FileUtils::write(chunk_fd, payload, payload_size_bytes);
 		} else {
 			// Mark the chunk as non-present in the metadata document.
@@ -102,7 +110,9 @@ int Region::unpack(std::ranges::subrange<char **> args) {
 	}
 
 	// Write out the metadata file.
-	metadata_document.write_to_file_formatted(output_directory + G_DIR_SEPARATOR + Glib::filename_from_utf8(utf8_literal(u8"metadata.xml")));
+	std::filesystem::path metadata_filename(output_directory);
+	metadata_filename /= "metadata.xml";
+	metadata_document.write_to_file_formatted(metadata_filename.native());
 
 	return 0;
 }
