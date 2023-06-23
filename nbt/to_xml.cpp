@@ -17,6 +17,7 @@
 #include <stdexcept>
 #include <string>
 
+namespace mcwutil {
 namespace {
 void check_left(std::size_t needed, std::size_t left) {
 	if(left < needed) {
@@ -256,8 +257,9 @@ void parse_name_and_data(const uint8_t *&input_ptr, std::size_t &input_left, NBT
 	parse_data(input_ptr, input_left, tag, named_elt);
 }
 }
+}
 
-int NBT::to_xml(std::ranges::subrange<char **> args) {
+int mcwutil::NBT::to_xml(std::ranges::subrange<char **> args) {
 	// Check parameters.
 	if(args.size() != 2) {
 		std::cerr << "Usage:\n";

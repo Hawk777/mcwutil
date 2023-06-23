@@ -8,7 +8,7 @@
 #include <vector>
 #include <zlib.h>
 
-int ZLib::compress(std::ranges::subrange<char **> args) {
+int mcwutil::ZLib::compress(std::ranges::subrange<char **> args) {
 	// Check parameters.
 	if(args.size() != 2) {
 		std::cerr << "Usage:\n";
@@ -53,7 +53,7 @@ int ZLib::compress(std::ranges::subrange<char **> args) {
 	return 0;
 }
 
-int ZLib::decompress(std::ranges::subrange<char **> args) {
+int mcwutil::ZLib::decompress(std::ranges::subrange<char **> args) {
 	// Check parameters.
 	if(args.size() != 2) {
 		std::cerr << "Usage:\n";
@@ -108,7 +108,7 @@ int ZLib::decompress(std::ranges::subrange<char **> args) {
 	return 0;
 }
 
-int ZLib::check(std::ranges::subrange<char **> args) {
+int mcwutil::ZLib::check(std::ranges::subrange<char **> args) {
 	// Check parameters.
 	if(args.size() != 1) {
 		std::cerr << "Usage:\n";

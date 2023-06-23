@@ -17,6 +17,7 @@
 #include <sys/types.h>
 #include <vector>
 
+namespace mcwutil {
 namespace {
 void check_left(std::size_t needed, std::size_t left) {
 	if(left < needed) {
@@ -230,8 +231,9 @@ void usage() {
 	std::cerr << "Note the leading empty component, reflecting the fact that the root node of the file is named and the name is empty.\n";
 }
 }
+}
 
-int NBT::patch_barray(std::ranges::subrange<char **> args) {
+int mcwutil::NBT::patch_barray(std::ranges::subrange<char **> args) {
 	// Check parameters.
 	if(args.size() < 4 || (args.size() % 2) != 0) {
 		usage();

@@ -3,8 +3,10 @@
 
 #include <ranges>
 
+namespace mcwutil {
 namespace Region {
 int unpack(std::ranges::subrange<char **> args);
+}
 }
 
 #endif

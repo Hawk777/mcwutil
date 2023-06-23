@@ -1,6 +1,7 @@
 #ifndef NBT_TAGS_H
 #define NBT_TAGS_H
 
+namespace mcwutil {
 namespace NBT {
 enum Tag {
 	TAG_END,
@@ -17,6 +18,7 @@ enum Tag {
 	TAG_INT_ARRAY,
 	TAG_LONG_ARRAY,
 };
+}
 }
 
 #endif

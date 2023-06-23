@@ -3,8 +3,10 @@
 
 #include <ranges>
 
+namespace mcwutil {
 namespace CoordCalc {
 int calc(std::ranges::subrange<char **> args);
+}
 }
 
 #endif

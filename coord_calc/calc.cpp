@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <string>
 
+namespace mcwutil {
 namespace {
 int divfloor(int num, int den) {
 	return (num < 0 ? num - (den - 1) : num) / den;
@@ -44,13 +45,14 @@ void usage() {
 	std::cerr << "  Z - the integer floor of the Y coordinate of the point\n";
 }
 }
+}
 
 /**
  * \brief Entry point for the \c coord-calc utility.
  *
  * \param[in] args the command-line arguments
  */
-int CoordCalc::calc(std::ranges::subrange<char **> args) {
+int mcwutil::CoordCalc::calc(std::ranges::subrange<char **> args) {
 	// Check and parse parameters.
 	if(args.size() != 2) {
 		usage();

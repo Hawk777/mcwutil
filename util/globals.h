@@ -3,6 +3,8 @@
 
 #include <string_view>
 
+namespace mcwutil {
 extern std::string_view appname;
+}
 
 #endif

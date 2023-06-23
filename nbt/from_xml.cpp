@@ -23,6 +23,7 @@
 #include <sys/types.h>
 #include <vector>
 
+namespace mcwutil {
 namespace {
 NBT::Tag tag_for_child_of_named_or_list(const Glib::ustring &name, const char *message) {
 	if(name == u8"byte")
@@ -421,8 +422,9 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Document *doc) {
 	write_nbt(nbt_fd, named_elt);
 }
 }
+}
 
-int NBT::from_xml(std::ranges::subrange<char **> args) {
+int mcwutil::NBT::from_xml(std::ranges::subrange<char **> args) {
 	// Check parameters.
 	if(args.size() != 2) {
 		std::cerr << "Usage:\n";

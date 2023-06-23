@@ -6,6 +6,8 @@
 #include <system_error>
 #include <unistd.h>
 
+using mcwutil::MappedFile;
+
 /**
  * \brief Maps in a file.
  *

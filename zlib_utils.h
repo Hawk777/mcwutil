@@ -3,10 +3,12 @@
 
 #include <ranges>
 
+namespace mcwutil {
 namespace ZLib {
 int compress(std::ranges::subrange<char **> args);
 int decompress(std::ranges::subrange<char **> args);
 int check(std::ranges::subrange<char **> args);
+}
 }
 
 #endif

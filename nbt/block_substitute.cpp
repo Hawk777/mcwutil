@@ -20,6 +20,7 @@
 
 using namespace std::literals::string_view_literals;
 
+namespace mcwutil {
 namespace {
 typedef std::array<uint16_t, 16 * 16 * 16> Section;
 
@@ -295,8 +296,9 @@ void usage() {
 	std::cerr << "  to1 - the block ID to change blocks equal to \"from1\" to (an integer between 0 and 4095)\n";
 }
 }
+}
 
-int NBT::block_substitute(std::ranges::subrange<char **> args) {
+int mcwutil::NBT::block_substitute(std::ranges::subrange<char **> args) {
 	// Check parameters.
 	if(args.size() < 4 || (args.size() % 2) != 0) {
 		usage();

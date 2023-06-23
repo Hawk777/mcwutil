@@ -8,6 +8,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+namespace mcwutil {
 /**
  * \brief A file descriptor that is safely closed on destruction.
  */
@@ -35,5 +36,6 @@ class FileDescriptor {
 
 	explicit FileDescriptor(const char *file, int flags, mode_t mode);
 };
+}
 
 #endif

@@ -13,6 +13,7 @@
 #include <string_view>
 #include <typeinfo>
 
+namespace mcwutil {
 namespace {
 void usage() {
 	std::cerr << "Usage:\n";
@@ -78,6 +79,7 @@ int main_impl(int argc, char **argv) {
 	return 0;
 }
 }
+}
 
 /**
  * \brief The application entry point.
@@ -89,7 +91,7 @@ int main_impl(int argc, char **argv) {
  */
 int main(int argc, char **argv) {
 	try {
-		return main_impl(argc, argv);
+		return mcwutil::main_impl(argc, argv);
 	} catch(const Glib::Exception &exp) {
 		std::cerr << typeid(exp).name() << ": " << exp.what() << '\n';
 	} catch(const std::exception &exp) {

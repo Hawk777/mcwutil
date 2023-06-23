@@ -4,6 +4,7 @@
 #include "util/fd.h"
 #include <sys/mman.h>
 
+namespace mcwutil {
 /**
  * \brief A memory-mapped view of a file.
  */
@@ -49,5 +50,6 @@ class MappedFile {
 	void *data_;
 	std::size_t size_;
 };
+}
 
 #endif

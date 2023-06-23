@@ -7,6 +7,7 @@
 #include <string>
 #include <system_error>
 
+using mcwutil::FileDescriptor;
 using namespace std::literals::string_literals;
 
 /**
