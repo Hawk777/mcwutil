@@ -17,7 +17,7 @@ SOURCES_mcwutil := calc.cpp main.cpp nbt region util zlib_utils.cpp
 #
 # All the pkg-config packages used.
 #
-PACKAGES := glibmm-2.4 libxml++-2.6 zlib
+PACKAGES := glibmm-2.4 libxml-2.0 libxml++-2.6 zlib
 
 #
 # The flags to pass to the linker ahead of any object files.
