@@ -120,7 +120,7 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 		if(!value_attr) {
 			throw std::runtime_error("Malformed NBT XML: byte must have a value.");
 		}
-		std::wistringstream iss(string::ustring2wstring(value_attr->get_value()));
+		std::wistringstream iss(string::u2w(value_attr->get_value()));
 		iss.imbue(std::locale("C"));
 		int value;
 		iss >> value;
@@ -135,7 +135,7 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 		if(!value_attr) {
 			throw std::runtime_error("Malformed NBT XML: short must have a value.");
 		}
-		std::wistringstream iss(string::ustring2wstring(value_attr->get_value()));
+		std::wistringstream iss(string::u2w(value_attr->get_value()));
 		iss.imbue(std::locale("C"));
 		int16_t value;
 		iss >> value;
@@ -147,7 +147,7 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 		if(!value_attr) {
 			throw std::runtime_error("Malformed NBT XML: int must have a value.");
 		}
-		std::wistringstream iss(string::ustring2wstring(value_attr->get_value()));
+		std::wistringstream iss(string::u2w(value_attr->get_value()));
 		iss.imbue(std::locale("C"));
 		int32_t value;
 		iss >> value;
@@ -159,7 +159,7 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 		if(!value_attr) {
 			throw std::runtime_error("Malformed NBT XML: long must have a value.");
 		}
-		std::wistringstream iss(string::ustring2wstring(value_attr->get_value()));
+		std::wistringstream iss(string::u2w(value_attr->get_value()));
 		iss.imbue(std::locale("C"));
 		int64_t value;
 		iss >> value;
@@ -171,7 +171,7 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 		if(!value_attr) {
 			throw std::runtime_error("Malformed NBT XML: float must have a value.");
 		}
-		std::wistringstream iss(string::ustring2wstring(value_attr->get_value()));
+		std::wistringstream iss(string::u2w(value_attr->get_value()));
 		iss.imbue(std::locale("C"));
 		float value;
 		iss >> value;
@@ -184,7 +184,7 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 		if(!value_attr) {
 			throw std::runtime_error("Malformed NBT XML: float must have a value.");
 		}
-		std::wistringstream iss(string::ustring2wstring(value_attr->get_value()));
+		std::wistringstream iss(string::u2w(value_attr->get_value()));
 		iss.imbue(std::locale("C"));
 		double value;
 		iss >> value;
@@ -254,7 +254,7 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 		if(!subtype_attr) {
 			throw std::runtime_error("Malformed NBT XML: list must have a subtype.");
 		}
-		std::wistringstream iss(string::ustring2wstring(subtype_attr->get_value()));
+		std::wistringstream iss(string::u2w(subtype_attr->get_value()));
 		iss.imbue(std::locale("C"));
 		unsigned int subtype_int;
 		iss >> subtype_int;

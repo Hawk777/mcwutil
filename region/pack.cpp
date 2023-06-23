@@ -77,19 +77,19 @@ int mcwutil::region::pack(std::ranges::subrange<char **> args) {
 		const xmlpp::Element *chunk_elt = dynamic_cast<const xmlpp::Element *>(*i);
 		unsigned int index;
 		{
-			std::wistringstream iss(string::ustring2wstring(chunk_elt->get_attribute_value(string::utf8_literal(u8"index"))));
+			std::wistringstream iss(string::u2w(chunk_elt->get_attribute_value(string::utf8_literal(u8"index"))));
 			iss.imbue(std::locale("C"));
 			iss >> index;
 		}
 		unsigned int present;
 		{
-			std::wistringstream iss(string::ustring2wstring(chunk_elt->get_attribute_value(string::utf8_literal(u8"present"))));
+			std::wistringstream iss(string::u2w(chunk_elt->get_attribute_value(string::utf8_literal(u8"present"))));
 			iss.imbue(std::locale("C"));
 			iss >> present;
 		}
 		uint32_t timestamp;
 		{
-			std::wistringstream iss(string::ustring2wstring(chunk_elt->get_attribute_value(string::utf8_literal(u8"timestamp"))));
+			std::wistringstream iss(string::u2w(chunk_elt->get_attribute_value(string::utf8_literal(u8"timestamp"))));
 			iss.imbue(std::locale("C"));
 			iss >> timestamp;
 		}

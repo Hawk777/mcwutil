@@ -102,7 +102,7 @@ Glib::ustring mcwutil::string::todecs(intmax_t value, unsigned int width) {
  *
  * \return the converted string.
  */
-Glib::ustring mcwutil::string::wstring2ustring(const std::wstring &wstr) {
+Glib::ustring mcwutil::string::w2u(const std::wstring &wstr) {
 	return Glib::ustring::format(wstr);
 }
 
@@ -113,7 +113,7 @@ Glib::ustring mcwutil::string::wstring2ustring(const std::wstring &wstr) {
  *
  * \return the converted string.
  */
-std::wstring mcwutil::string::ustring2wstring(const Glib::ustring &ustr) {
+std::wstring mcwutil::string::u2w(const Glib::ustring &ustr) {
 	std::wostringstream oss;
 	oss.imbue(std::locale("C"));
 	oss << ustr;

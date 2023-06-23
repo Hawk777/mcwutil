@@ -13,8 +13,8 @@ bool operator==(const Glib::ustring &x, std::u8string_view y);
 bool operator==(std::u8string_view x, const Glib::ustring &y);
 Glib::ustring todecu(uintmax_t value, unsigned int width = 0);
 Glib::ustring todecs(intmax_t value, unsigned int width = 0);
-Glib::ustring wstring2ustring(const std::wstring &wstr);
-std::wstring ustring2wstring(const Glib::ustring &ustr);
+Glib::ustring w2u(const std::wstring &wstr);
+std::wstring u2w(const Glib::ustring &ustr);
 }
 }
 

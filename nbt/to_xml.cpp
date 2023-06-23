@@ -85,7 +85,7 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::tag tag
 			oss.flags(std::ios_base::showpoint | std::ios_base::dec | std::ios_base::scientific | std::ios_base::left);
 			oss.precision(12);
 			oss << fl;
-			float_elt->set_attribute(string::utf8_literal(u8"value"), string::wstring2ustring(oss.str()));
+			float_elt->set_attribute(string::utf8_literal(u8"value"), string::w2u(oss.str()));
 			return;
 		}
 
@@ -100,7 +100,7 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::tag tag
 			oss.flags(std::ios_base::showpoint | std::ios_base::dec | std::ios_base::scientific | std::ios_base::left);
 			oss.precision(20);
 			oss << db;
-			double_elt->set_attribute(string::utf8_literal(u8"value"), string::wstring2ustring(oss.str()));
+			double_elt->set_attribute(string::utf8_literal(u8"value"), string::w2u(oss.str()));
 			return;
 		}
 
