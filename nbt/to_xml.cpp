@@ -1,7 +1,7 @@
 #include "nbt/nbt.h"
 #include "nbt/tags.h"
 #include "util/codec.h"
-#include "util/fd.h"
+#include "util/file_descriptor.h"
 #include "util/globals.h"
 #include "util/mapped_file.h"
 #include "util/string.h"

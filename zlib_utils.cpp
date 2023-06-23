@@ -1,5 +1,5 @@
 #include "zlib_utils.h"
-#include "util/fd.h"
+#include "util/file_descriptor.h"
 #include "util/globals.h"
 #include <fcntl.h>
 #include <iostream>

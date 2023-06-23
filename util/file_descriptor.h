@@ -1,5 +1,5 @@
-#ifndef UTIL_FD_H
-#define UTIL_FD_H
+#ifndef UTIL_FILE_DESCRIPTOR_H
+#define UTIL_FILE_DESCRIPTOR_H
 
 #include <algorithm>
 #include <cstddef>

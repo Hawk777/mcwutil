@@ -1,7 +1,7 @@
 #ifndef UTIL_MAPPED_FILE_H
 #define UTIL_MAPPED_FILE_H
 
-#include "util/fd.h"
+#include "util/file_descriptor.h"
 #include <sys/mman.h>
 
 namespace mcwutil {
