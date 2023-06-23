@@ -2,6 +2,7 @@
 #define UTIL_MAPPED_FILE_H
 
 #include "util/file_descriptor.h"
+#include <cstddef>
 #include <sys/mman.h>
 
 namespace mcwutil {
