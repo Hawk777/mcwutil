@@ -1,7 +1,6 @@
 #include "region/unpack.h"
 #include "util/codec.h"
 #include "util/fd.h"
-#include "util/file_utils.h"
 #include "util/globals.h"
 #include "util/string.h"
 #include <cerrno>
@@ -46,7 +45,7 @@ int Region::unpack(std::ranges::subrange<char **> args) {
 
 	// Read the header.
 	uint8_t header[8192];
-	FileUtils::pread(region_fd, header, sizeof(header), 0);
+	region_fd.pread(header, sizeof(header), 0);
 
 	// Iterate the chunks, filling in the metadata document and extracting the chunks to files.
 	xmlpp::Document metadata_document;
@@ -78,7 +77,7 @@ int Region::unpack(std::ranges::subrange<char **> args) {
 
 			// Read the chunk's data.
 			uint8_t chunk_data[rough_size_bytes];
-			FileUtils::pread(region_fd, chunk_data, rough_size_bytes, offset_bytes);
+			region_fd.pread(chunk_data, rough_size_bytes, offset_bytes);
 
 			// Extract and sanity-check the chunk's header.
 			uint32_t precise_size_bytes = decode_u32(&chunk_data[0]);
@@ -102,7 +101,7 @@ int Region::unpack(std::ranges::subrange<char **> args) {
 			std::filesystem::path chunk_filename(output_directory);
 			chunk_filename /= name_part;
 			FileDescriptor chunk_fd = FileDescriptor::create_open(chunk_filename, O_WRONLY | O_CREAT, 0666);
-			FileUtils::write(chunk_fd, payload, payload_size_bytes);
+			chunk_fd.write(payload, payload_size_bytes);
 		} else {
 			// Mark the chunk as non-present in the metadata document.
 			metadata_chunk_elt->set_attribute(utf8_literal(u8"present"), utf8_literal(u8"0"));

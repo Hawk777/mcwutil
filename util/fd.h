@@ -2,8 +2,11 @@
 #define UTIL_FD_H
 
 #include <algorithm>
+#include <cstddef>
 #include <filesystem>
+#include <sys/stat.h>
 #include <sys/types.h>
+#include <unistd.h>
 
 /**
  * \brief A file descriptor that is safely closed on destruction.
@@ -20,6 +23,12 @@ class FileDescriptor {
 
 	int fd() const;
 	void close();
+	void read(void *buf, std::size_t count) const;
+	void write(const void *buf, std::size_t count) const;
+	void pread(void *buf, std::size_t count, off_t offset) const;
+	void pwrite(const void *buf, std::size_t count, off_t offset) const;
+	void fstat(struct stat &stbuf) const;
+	void ftruncate(off_t length) const;
 
 	private:
 	int fd_;

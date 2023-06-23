@@ -2,7 +2,6 @@
 #include "nbt/tags.h"
 #include "util/codec.h"
 #include "util/fd.h"
-#include "util/file_utils.h"
 #include "util/globals.h"
 #include "util/string.h"
 #include <algorithm>
@@ -110,8 +109,8 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 		uint8_t header[3];
 		encode_u8(&header[0], subtype);
 		encode_u16(&header[1], static_cast<int16_t>(name_utf8.size()));
-		FileUtils::write(nbt_fd, header, sizeof(header));
-		FileUtils::write(nbt_fd, name_utf8.data(), name_utf8.size());
+		nbt_fd.write(header, sizeof(header));
+		nbt_fd.write(name_utf8.data(), name_utf8.size());
 		write_nbt(nbt_fd, relevant_child);
 	} else if(elt->get_name() == u8"byte") {
 		const xmlpp::Attribute *value_attr = elt->get_attribute(utf8_literal(u8"value"));
@@ -127,7 +126,7 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 		}
 		uint8_t buffer[1];
 		encode_u8(&buffer[0], static_cast<int8_t>(value));
-		FileUtils::write(nbt_fd, buffer, sizeof(buffer));
+		nbt_fd.write(buffer, sizeof(buffer));
 	} else if(elt->get_name() == u8"short") {
 		const xmlpp::Attribute *value_attr = elt->get_attribute(utf8_literal(u8"value"));
 		if(!value_attr) {
@@ -139,7 +138,7 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 		iss >> value;
 		uint8_t buffer[sizeof(value)];
 		encode_u16(&buffer[0], value);
-		FileUtils::write(nbt_fd, buffer, sizeof(buffer));
+		nbt_fd.write(buffer, sizeof(buffer));
 	} else if(elt->get_name() == u8"int") {
 		const xmlpp::Attribute *value_attr = elt->get_attribute(utf8_literal(u8"value"));
 		if(!value_attr) {
@@ -151,7 +150,7 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 		iss >> value;
 		uint8_t buffer[sizeof(value)];
 		encode_u32(&buffer[0], value);
-		FileUtils::write(nbt_fd, buffer, sizeof(buffer));
+		nbt_fd.write(buffer, sizeof(buffer));
 	} else if(elt->get_name() == u8"long") {
 		const xmlpp::Attribute *value_attr = elt->get_attribute(utf8_literal(u8"value"));
 		if(!value_attr) {
@@ -163,7 +162,7 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 		iss >> value;
 		uint8_t buffer[sizeof(value)];
 		encode_u64(&buffer[0], value);
-		FileUtils::write(nbt_fd, buffer, sizeof(buffer));
+		nbt_fd.write(buffer, sizeof(buffer));
 	} else if(elt->get_name() == u8"float") {
 		const xmlpp::Attribute *value_attr = elt->get_attribute(utf8_literal(u8"value"));
 		if(!value_attr) {
@@ -176,7 +175,7 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 		uint32_t raw = encode_float_to_u32(value);
 		uint8_t buffer[sizeof(raw)];
 		encode_u32(&buffer[0], raw);
-		FileUtils::write(nbt_fd, buffer, sizeof(buffer));
+		nbt_fd.write(buffer, sizeof(buffer));
 	} else if(elt->get_name() == u8"double") {
 		const xmlpp::Attribute *value_attr = elt->get_attribute(utf8_literal(u8"value"));
 		if(!value_attr) {
@@ -189,7 +188,7 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 		uint64_t raw = encode_double_to_u64(value);
 		uint8_t buffer[sizeof(raw)];
 		encode_u64(&buffer[0], raw);
-		FileUtils::write(nbt_fd, buffer, sizeof(buffer));
+		nbt_fd.write(buffer, sizeof(buffer));
 	} else if(elt->get_name() == u8"barray") {
 		const xmlpp::TextNode *text_node = elt->get_child_text();
 		if(text_node) {
@@ -227,12 +226,12 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 			}
 			uint8_t header[4];
 			encode_u32(&header[0], static_cast<int32_t>(data.size()));
-			FileUtils::write(nbt_fd, header, sizeof(header));
-			FileUtils::write(nbt_fd, &data[0], data.size());
+			nbt_fd.write(header, sizeof(header));
+			nbt_fd.write(&data[0], data.size());
 		} else {
 			uint8_t header[4];
 			encode_u32(&header[0], 0);
-			FileUtils::write(nbt_fd, header, sizeof(header));
+			nbt_fd.write(header, sizeof(header));
 		}
 	} else if(elt->get_name() == u8"string") {
 		const xmlpp::Attribute *value_attr = elt->get_attribute(utf8_literal(u8"value"));
@@ -245,8 +244,8 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 		}
 		uint8_t header[2];
 		encode_u16(&header[0], static_cast<int16_t>(value_utf8.size()));
-		FileUtils::write(nbt_fd, header, sizeof(header));
-		FileUtils::write(nbt_fd, value_utf8.data(), value_utf8.size());
+		nbt_fd.write(header, sizeof(header));
+		nbt_fd.write(value_utf8.data(), value_utf8.size());
 	} else if(elt->get_name() == u8"list") {
 		const xmlpp::Attribute *subtype_attr = elt->get_attribute(utf8_literal(u8"subtype"));
 		if(!subtype_attr) {
@@ -275,7 +274,7 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 		uint8_t header[5];
 		encode_u8(&header[0], static_cast<int8_t>(subtype));
 		encode_u32(&header[1], static_cast<int32_t>(child_elts.size()));
-		FileUtils::write(nbt_fd, header, sizeof(header));
+		nbt_fd.write(header, sizeof(header));
 		for(auto i = child_elts.begin(), iend = child_elts.end(); i != iend; ++i) {
 			write_nbt(nbt_fd, *i);
 		}
@@ -292,7 +291,7 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 		}
 		uint8_t footer[1];
 		encode_u8(&footer[0], NBT::TAG_END);
-		FileUtils::write(nbt_fd, footer, sizeof(footer));
+		nbt_fd.write(footer, sizeof(footer));
 	} else if(elt->get_name() == u8"iarray") {
 		const xmlpp::TextNode *text_node = elt->get_child_text();
 		if(text_node) {
@@ -333,12 +332,12 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 			}
 			uint8_t header[4];
 			encode_u32(&header[0], static_cast<int32_t>(data.size() / 4));
-			FileUtils::write(nbt_fd, header, sizeof(header));
-			FileUtils::write(nbt_fd, &data[0], data.size());
+			nbt_fd.write(header, sizeof(header));
+			nbt_fd.write(&data[0], data.size());
 		} else {
 			uint8_t header[4];
 			encode_u32(&header[0], 0);
-			FileUtils::write(nbt_fd, header, sizeof(header));
+			nbt_fd.write(header, sizeof(header));
 		}
 	} else if(elt->get_name() == u8"larray") {
 		const xmlpp::TextNode *text_node = elt->get_child_text();
@@ -384,12 +383,12 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 			}
 			uint8_t header[4];
 			encode_u32(&header[0], static_cast<int32_t>(data.size() / 8));
-			FileUtils::write(nbt_fd, header, sizeof(header));
-			FileUtils::write(nbt_fd, &data[0], data.size());
+			nbt_fd.write(header, sizeof(header));
+			nbt_fd.write(&data[0], data.size());
 		} else {
 			uint8_t header[4];
 			encode_u32(&header[0], 0);
-			FileUtils::write(nbt_fd, header, sizeof(header));
+			nbt_fd.write(header, sizeof(header));
 		}
 	} else {
 		throw std::runtime_error("Malformed NBT XML: unrecognized element.");

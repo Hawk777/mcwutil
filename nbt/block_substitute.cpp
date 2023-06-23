@@ -2,7 +2,6 @@
 #include "nbt/tags.h"
 #include "util/codec.h"
 #include "util/fd.h"
-#include "util/file_utils.h"
 #include "util/globals.h"
 #include "util/mapped_file.h"
 #include "util/string.h"
@@ -49,27 +48,27 @@ void handle_content(NBT::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 
 		case NBT::TAG_BYTE:
 			check_left(1, input_left);
-			FileUtils::write(output_fd, input_ptr, 1);
+			output_fd.write(input_ptr, 1);
 			eat(1, input_ptr, input_left);
 			return;
 
 		case NBT::TAG_SHORT:
 			check_left(2, input_left);
-			FileUtils::write(output_fd, input_ptr, 2);
+			output_fd.write(input_ptr, 2);
 			eat(2, input_ptr, input_left);
 			return;
 
 		case NBT::TAG_INT:
 		case NBT::TAG_FLOAT:
 			check_left(4, input_left);
-			FileUtils::write(output_fd, input_ptr, 4);
+			output_fd.write(input_ptr, 4);
 			eat(4, input_ptr, input_left);
 			return;
 
 		case NBT::TAG_LONG:
 		case NBT::TAG_DOUBLE:
 			check_left(8, input_left);
-			FileUtils::write(output_fd, input_ptr, 8);
+			output_fd.write(input_ptr, 8);
 			eat(8, input_ptr, input_left);
 			return;
 
@@ -95,8 +94,8 @@ void handle_content(NBT::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 			} else {
 				uint8_t header[4];
 				encode_u32(&header[0], length);
-				FileUtils::write(output_fd, header, sizeof(header));
-				FileUtils::write(output_fd, barray_ptr, length);
+				output_fd.write(header, sizeof(header));
+				output_fd.write(barray_ptr, length);
 			}
 			return;
 		}
@@ -114,8 +113,8 @@ void handle_content(NBT::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 
 			uint8_t header[2];
 			encode_u16(&header[0], length);
-			FileUtils::write(output_fd, header, sizeof(header));
-			FileUtils::write(output_fd, string_ptr, length);
+			output_fd.write(header, sizeof(header));
+			output_fd.write(string_ptr, length);
 			return;
 		}
 
@@ -132,7 +131,7 @@ void handle_content(NBT::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 			uint8_t header[5];
 			encode_u8(&header[0], subtype);
 			encode_u32(&header[1], length);
-			FileUtils::write(output_fd, header, sizeof(header));
+			output_fd.write(header, sizeof(header));
 
 			for(int32_t i = 0; i < length; ++i) {
 				handle_content(subtype, input_ptr, input_left, sub_table, output_fd, section_blocks, path);
@@ -161,31 +160,31 @@ void handle_content(NBT::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 						uint8_t header[4];
 						encode_u8(&header[0], NBT::TAG_BYTE_ARRAY);
 						encode_u16(&header[1], sizeof(u8"Blocks") - 1);
-						FileUtils::write(output_fd, header, 3);
-						FileUtils::write(output_fd, u8"Blocks", sizeof(u8"Blocks") - 1);
+						output_fd.write(header, 3);
+						output_fd.write(u8"Blocks", sizeof(u8"Blocks") - 1);
 						encode_u32(&header[0], 16 * 16 * 16);
-						FileUtils::write(output_fd, header, 4);
+						output_fd.write(header, 4);
 						uint8_t buffer[16 * 16 * 16];
 						for(std::size_t i = 0; i < 16 * 16 * 16; ++i) {
 							buffer[i] = static_cast<uint8_t>(section_blocks[i] & 0xFF);
 						}
-						FileUtils::write(output_fd, buffer, 16 * 16 * 16);
+						output_fd.write(buffer, 16 * 16 * 16);
 						if(any_extended) {
 							encode_u8(&header[0], NBT::TAG_BYTE_ARRAY);
 							encode_u16(&header[1], sizeof(u8"Add") - 1);
-							FileUtils::write(output_fd, header, 3);
-							FileUtils::write(output_fd, u8"Add", sizeof(u8"Add") - 1);
+							output_fd.write(header, 3);
+							output_fd.write(u8"Add", sizeof(u8"Add") - 1);
 							encode_u32(&header[0], 16 * 16 * 16 / 2);
-							FileUtils::write(output_fd, header, 4);
+							output_fd.write(header, 4);
 							for(std::size_t i = 0; i < 16 * 16 * 16; i += 2) {
 								buffer[i / 2] = static_cast<uint8_t>((section_blocks[i] >> 8) | ((section_blocks[i + 1] >> 8) << 4));
 							}
-							FileUtils::write(output_fd, buffer, 16 * 16 * 16 / 2);
+							output_fd.write(buffer, 16 * 16 * 16 / 2);
 						}
 					}
 					uint8_t footer;
 					encode_u8(&footer, NBT::TAG_END);
-					FileUtils::write(output_fd, &footer, sizeof(footer));
+					output_fd.write(&footer, sizeof(footer));
 					return;
 				}
 				handle_named(subtype, input_ptr, input_left, sub_table, output_fd, section_blocks, path);
@@ -202,15 +201,15 @@ void handle_content(NBT::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 
 			uint8_t header[4];
 			encode_u32(&header[0], length);
-			FileUtils::write(output_fd, header, sizeof(header));
+			output_fd.write(header, sizeof(header));
 
-			FileUtils::write(output_fd, input_ptr, length);
+			output_fd.write(input_ptr, length);
 			eat(length, input_ptr, input_left);
-			FileUtils::write(output_fd, input_ptr, length);
+			output_fd.write(input_ptr, length);
 			eat(length, input_ptr, input_left);
-			FileUtils::write(output_fd, input_ptr, length);
+			output_fd.write(input_ptr, length);
 			eat(length, input_ptr, input_left);
-			FileUtils::write(output_fd, input_ptr, length);
+			output_fd.write(input_ptr, length);
 			eat(length, input_ptr, input_left);
 			return;
 		}
@@ -225,23 +224,23 @@ void handle_content(NBT::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 
 			uint8_t header[4];
 			encode_u32(&header[0], length);
-			FileUtils::write(output_fd, header, sizeof(header));
+			output_fd.write(header, sizeof(header));
 
-			FileUtils::write(output_fd, input_ptr, length);
+			output_fd.write(input_ptr, length);
 			eat(length, input_ptr, input_left);
-			FileUtils::write(output_fd, input_ptr, length);
+			output_fd.write(input_ptr, length);
 			eat(length, input_ptr, input_left);
-			FileUtils::write(output_fd, input_ptr, length);
+			output_fd.write(input_ptr, length);
 			eat(length, input_ptr, input_left);
-			FileUtils::write(output_fd, input_ptr, length);
+			output_fd.write(input_ptr, length);
 			eat(length, input_ptr, input_left);
-			FileUtils::write(output_fd, input_ptr, length);
+			output_fd.write(input_ptr, length);
 			eat(length, input_ptr, input_left);
-			FileUtils::write(output_fd, input_ptr, length);
+			output_fd.write(input_ptr, length);
 			eat(length, input_ptr, input_left);
-			FileUtils::write(output_fd, input_ptr, length);
+			output_fd.write(input_ptr, length);
 			eat(length, input_ptr, input_left);
-			FileUtils::write(output_fd, input_ptr, length);
+			output_fd.write(input_ptr, length);
 			eat(length, input_ptr, input_left);
 			return;
 		}
@@ -270,8 +269,8 @@ void handle_named(NBT::Tag tag, uint8_t *&input_ptr, std::size_t &input_left, co
 		uint8_t header[3];
 		encode_u8(&header[0], tag);
 		encode_u16(&header[1], name_len);
-		FileUtils::write(output_fd, header, sizeof(header));
-		FileUtils::write(output_fd, name_ptr, name_len);
+		output_fd.write(header, sizeof(header));
+		output_fd.write(name_ptr, name_len);
 	}
 
 	// Handle content.

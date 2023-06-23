@@ -1,6 +1,5 @@
 #include "zlib_utils.h"
 #include "util/fd.h"
-#include "util/file_utils.h"
 #include "util/globals.h"
 #include <fcntl.h>
 #include <iostream>
@@ -26,9 +25,9 @@ int ZLib::compress(std::ranges::subrange<char **> args) {
 	// Read input file.
 	FileDescriptor input_fd = FileDescriptor::create_open(args[0], O_RDONLY, 0);
 	struct stat stbuf;
-	FileUtils::fstat(input_fd, stbuf);
+	input_fd.fstat(stbuf);
 	unsigned char input_buffer[stbuf.st_size];
-	FileUtils::read(input_fd, input_buffer, sizeof(input_buffer));
+	input_fd.read(input_buffer, sizeof(input_buffer));
 
 	// Compress data.
 	unsigned char output_buffer[compressBound(sizeof(input_buffer))];
@@ -49,7 +48,7 @@ int ZLib::compress(std::ranges::subrange<char **> args) {
 
 	// Write output file.
 	FileDescriptor output_fd = FileDescriptor::create_open(args[1], O_WRONLY | O_TRUNC | O_CREAT, 0666);
-	FileUtils::write(output_fd, output_buffer, output_length);
+	output_fd.write(output_buffer, output_length);
 
 	return 0;
 }
@@ -71,9 +70,9 @@ int ZLib::decompress(std::ranges::subrange<char **> args) {
 	// Read input file.
 	FileDescriptor input_fd = FileDescriptor::create_open(args[0], O_RDONLY, 0);
 	struct stat stbuf;
-	FileUtils::fstat(input_fd, stbuf);
+	input_fd.fstat(stbuf);
 	unsigned char input_buffer[stbuf.st_size];
-	FileUtils::read(input_fd, input_buffer, sizeof(input_buffer));
+	input_fd.read(input_buffer, sizeof(input_buffer));
 
 	// Decompress data.
 	std::vector<unsigned char> output_buffer(sizeof(input_buffer) * 4);
@@ -104,7 +103,7 @@ int ZLib::decompress(std::ranges::subrange<char **> args) {
 
 	// Write output file.
 	FileDescriptor output_fd = FileDescriptor::create_open(args[1], O_WRONLY | O_TRUNC | O_CREAT, 0666);
-	FileUtils::write(output_fd, &output_buffer[0], output_buffer.size());
+	output_fd.write(&output_buffer[0], output_buffer.size());
 
 	return 0;
 }
@@ -125,9 +124,9 @@ int ZLib::check(std::ranges::subrange<char **> args) {
 	// Read input file.
 	FileDescriptor input_fd = FileDescriptor::create_open(args[0], O_RDONLY, 0);
 	struct stat stbuf;
-	FileUtils::fstat(input_fd, stbuf);
+	input_fd.fstat(stbuf);
 	unsigned char input_buffer[stbuf.st_size];
-	FileUtils::read(input_fd, input_buffer, sizeof(input_buffer));
+	input_fd.read(input_buffer, sizeof(input_buffer));
 
 	// Decompress data.
 	std::vector<unsigned char> output_buffer(sizeof(input_buffer) * 4);

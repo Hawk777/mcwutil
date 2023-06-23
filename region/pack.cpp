@@ -1,7 +1,6 @@
 #include "region/pack.h"
 #include "util/codec.h"
 #include "util/fd.h"
-#include "util/file_utils.h"
 #include "util/globals.h"
 #include "util/string.h"
 #include <algorithm>
@@ -108,12 +107,12 @@ int Region::pack(std::ranges::subrange<char **> args) {
 			chunk_filename /= file_part;
 			FileDescriptor chunk_fd = FileDescriptor::create_open(chunk_filename, O_RDONLY, 0);
 			struct stat stbuf;
-			FileUtils::fstat(chunk_fd, stbuf);
+			chunk_fd.fstat(stbuf);
 			uint8_t chunk_data[5 + stbuf.st_size];
-			FileUtils::read(chunk_fd, &chunk_data[5], sizeof(chunk_data) - 5);
+			chunk_fd.read(&chunk_data[5], sizeof(chunk_data) - 5);
 			encode_u32(&chunk_data[0], static_cast<uint32_t>(stbuf.st_size + 1));
 			encode_u8(&chunk_data[4], 2);
-			FileUtils::pwrite(region_fd, chunk_data, sizeof(chunk_data), region_write_ptr);
+			region_fd.pwrite(chunk_data, sizeof(chunk_data), region_write_ptr);
 			uint32_t sector_offset = static_cast<uint32_t>(region_write_ptr / 4096);
 			encode_u24(&header.data()[4 * index], sector_offset);
 			uint8_t sector_count = static_cast<uint8_t>((sizeof(chunk_data) + 4095) / 4096);
@@ -129,10 +128,10 @@ int Region::pack(std::ranges::subrange<char **> args) {
 	}
 
 	// Extend the file to a sector boundary.
-	FileUtils::ftruncate(region_fd, region_write_ptr);
+	region_fd.ftruncate(region_write_ptr);
 
 	// Write the header.
-	FileUtils::pwrite(region_fd, header.data(), header.size(), 0);
+	region_fd.pwrite(header.data(), header.size(), 0);
 
 	return 0;
 }
