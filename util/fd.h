@@ -18,19 +18,13 @@ class FileDescriptor {
 	~FileDescriptor();
 	FileDescriptor &operator=(FileDescriptor &&moveref);
 
-	void swap(FileDescriptor &other);
 	void close();
 	int fd() const;
-	bool is() const;
 
 	private:
 	int fd_;
 
 	explicit FileDescriptor(const char *file, int flags, mode_t mode);
 };
-
-namespace std {
-void swap(FileDescriptor &x, FileDescriptor &y);
-}
 
 #endif

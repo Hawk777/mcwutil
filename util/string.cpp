@@ -92,25 +92,6 @@ Glib::ustring todecs(intmax_t value, unsigned int width) {
 }
 
 /**
- * \brief Converts an unsigned integer of any type to a hexadecimal string.
- *
- * \param[in] value the value to convert.
- *
- * \param[in] width the width, in characters, of the output to produce.
- *
- * \return the hex string.
- */
-Glib::ustring tohex(uintmax_t value, unsigned int width) {
-	std::wostringstream oss;
-	oss.imbue(std::locale("C"));
-	oss.flags(std::ios::uppercase | std::ios::hex | std::ios::right);
-	oss.width(width);
-	oss.fill(L'0');
-	oss << value;
-	return Glib::ustring::format(oss.str());
-}
-
-/**
  * \brief Converts a wide-character string to a UTF-8 string.
  *
  * \param[in] wstr the string to convert.

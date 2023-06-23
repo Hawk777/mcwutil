@@ -82,15 +82,6 @@ FileDescriptor &FileDescriptor::operator=(FileDescriptor &&moveref) {
 }
 
 /**
- * \brief Exchanges the contents of two FileDescriptor objects.
- *
- * \param[in,out] other the other descriptor to swap with.
- */
-void FileDescriptor::swap(FileDescriptor &other) {
-	std::swap(fd_, other.fd_);
-}
-
-/**
  * \brief Closes the descriptor.
  */
 void FileDescriptor::close() {
@@ -111,17 +102,6 @@ int FileDescriptor::fd() const {
 	return fd_;
 }
 
-/**
- * \brief Checks whether the file descriptor is valid.
- *
- * \retval true if the file descriptor is valid.
- * \retval false if the file descriptor has been closed or has not been
- * initialized.
- */
-bool FileDescriptor::is() const {
-	return fd_ >= 0;
-}
-
 FileDescriptor::FileDescriptor(const char *file, int flags, mode_t mode) :
 		fd_(open(file, flags, mode)) {
 	if(fd_ < 0) {
@@ -129,8 +109,4 @@ FileDescriptor::FileDescriptor(const char *file, int flags, mode_t mode) :
 		msg << "open(" << file << ")";
 		throw std::system_error(errno, std::system_category(), msg.str());
 	}
-}
-
-void std::swap(FileDescriptor &x, FileDescriptor &y) {
-	x.swap(y);
 }
