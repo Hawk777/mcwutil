@@ -1,14 +1,11 @@
 #include "util/fd.h"
 #include <cstdlib>
 #include <fcntl.h>
-#include <glibmm/miscutils.h>
 #include <sstream>
 #include <string>
-#include <sys/socket.h>
 #include <sys/types.h>
 #include <system_error>
 #include <unistd.h>
-#include <vector>
 
 using namespace std::literals::string_literals;
 

@@ -5,7 +5,6 @@
 #undef _GNU_SOURCE
 
 #include "util/misc.h"
-#include <string.h>
 #include <sys/mman.h>
 
 /**
