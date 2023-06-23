@@ -2,6 +2,7 @@
 #define UTIL_FD_H
 
 #include <algorithm>
+#include <filesystem>
 #include <sys/types.h>
 
 /**
@@ -10,6 +11,7 @@
 class FileDescriptor {
 	public:
 	static FileDescriptor create_open(const char *file, int flags, mode_t mode);
+	static FileDescriptor create_open(const std::filesystem::path &file, int flags, mode_t mode);
 
 	explicit FileDescriptor();
 	explicit FileDescriptor(FileDescriptor &&moveref);

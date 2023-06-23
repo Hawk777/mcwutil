@@ -28,6 +28,21 @@ FileDescriptor FileDescriptor::create_open(const char *file, int flags, mode_t m
 }
 
 /**
+ * \brief Constructs a new FileDescriptor by calling \c open(2).
+ *
+ * \param[in] file the name of the file to open or create.
+ *
+ * \param[in] flags the file flags to use as per \c open(2).
+ *
+ * \param[in] mode the permissions to create a new file with, if \c O_CREAT is included in \p flags.
+ *
+ * \return the new FileDescriptor.
+ */
+FileDescriptor FileDescriptor::create_open(const std::filesystem::path &file, int flags, mode_t mode) {
+	return create_open(file.c_str(), flags, mode);
+}
+
+/**
  * \brief Constructs a FileDescriptor with no associated descriptor.
  */
 FileDescriptor::FileDescriptor() :
