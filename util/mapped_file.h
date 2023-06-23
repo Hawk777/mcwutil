@@ -10,14 +10,14 @@ class file_descriptor;
 /**
  * \brief A memory-mapped view of a file.
  */
-class MappedFile {
+class mapped_file {
 	public:
-	explicit MappedFile(const file_descriptor &fd, int prot = PROT_READ, int flags = MAP_SHARED | MAP_FILE);
-	~MappedFile();
+	explicit mapped_file(const file_descriptor &fd, int prot = PROT_READ, int flags = MAP_SHARED | MAP_FILE);
+	~mapped_file();
 
 	// This class is not copyable.
-	explicit MappedFile(const MappedFile &) = delete;
-	void operator=(const MappedFile &) = delete;
+	explicit mapped_file(const mapped_file &) = delete;
+	void operator=(const mapped_file &) = delete;
 
 	/**
 	 * \brief Returns the mapped data.

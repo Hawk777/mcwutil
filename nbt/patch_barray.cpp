@@ -293,7 +293,7 @@ int mcwutil::nbt::patch_barray(std::ranges::subrange<char **> args) {
 
 	// Open and map NBT file.
 	file_descriptor nbt_fd = file_descriptor::create_open(args[0], O_RDWR, 0);
-	MappedFile nbt_mapped(nbt_fd, PROT_READ | PROT_WRITE);
+	mapped_file nbt_mapped(nbt_fd, PROT_READ | PROT_WRITE);
 
 	// Do the thing.
 	uint8_t *input_ptr = static_cast<uint8_t *>(nbt_mapped.data());

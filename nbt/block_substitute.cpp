@@ -341,7 +341,7 @@ int mcwutil::nbt::block_substitute(std::ranges::subrange<char **> args) {
 
 	// Open and map input NBT file.
 	file_descriptor input_fd = file_descriptor::create_open(args[0], O_RDONLY, 0);
-	MappedFile input_mapped(input_fd, PROT_READ);
+	mapped_file input_mapped(input_fd, PROT_READ);
 
 	// Open the output file.
 	file_descriptor output_fd = file_descriptor::create_open(args[1], O_WRONLY | O_CREAT | O_TRUNC, 0666);

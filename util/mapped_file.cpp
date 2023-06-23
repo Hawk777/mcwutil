@@ -7,7 +7,7 @@
 #include <system_error>
 #include <unistd.h>
 
-using mcwutil::MappedFile;
+using mcwutil::mapped_file;
 
 /**
  * \brief Maps in a file.
@@ -18,7 +18,7 @@ using mcwutil::MappedFile;
  *
  * \param[in] flags the mapping flags to use.
  */
-MappedFile::MappedFile(const file_descriptor &fd, int prot, int flags) {
+mapped_file::mapped_file(const file_descriptor &fd, int prot, int flags) {
 	struct stat st;
 	if(fstat(fd.fd(), &st) < 0) {
 		throw std::system_error(errno, std::system_category(), "fstat");
@@ -40,7 +40,7 @@ MappedFile::MappedFile(const file_descriptor &fd, int prot, int flags) {
 /**
  * \brief Unmaps the file.
  */
-MappedFile::~MappedFile() {
+mapped_file::~mapped_file() {
 	if(data_) {
 		munmap(data_, size_);
 	}
@@ -49,6 +49,6 @@ MappedFile::~MappedFile() {
 /**
  * \brief Forces changes made to a writable mapping back to the disk.
  */
-void MappedFile::sync() {
+void mapped_file::sync() {
 	msync(data_, size_, MS_SYNC | MS_INVALIDATE);
 }
