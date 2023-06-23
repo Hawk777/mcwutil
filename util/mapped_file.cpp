@@ -1,5 +1,4 @@
 #include "util/mapped_file.h"
-#include "util/misc.h"
 #include <fcntl.h>
 #include <limits>
 #include <sys/stat.h>
@@ -27,7 +26,7 @@ MappedFile::MappedFile(const FileDescriptor &fd, int prot, int flags) {
 	size_ = static_cast<std::size_t>(st.st_size);
 	if(size_) {
 		data_ = mmap(0, size_, prot, flags, fd.fd(), 0);
-		if(data_ == get_map_failed()) {
+		if(data_ == MAP_FAILED) {
 			throw std::system_error(errno, std::system_category(), "mmap");
 		}
 	} else {
