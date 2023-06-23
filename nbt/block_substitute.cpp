@@ -40,9 +40,9 @@ void eat(std::size_t n, uint8_t *&input_ptr, std::size_t &input_left) {
 	input_left -= n;
 }
 
-void handle_named(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint16_t *sub_table, const FileDescriptor &output_fd, Section &section_blocks, std::vector<std::u8string_view> &path);
+void handle_named(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint16_t *sub_table, const file_descriptor &output_fd, Section &section_blocks, std::vector<std::u8string_view> &path);
 
-void handle_content(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint16_t *sub_table, const FileDescriptor &output_fd, Section &section_blocks, std::vector<std::u8string_view> &path) {
+void handle_content(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint16_t *sub_table, const file_descriptor &output_fd, Section &section_blocks, std::vector<std::u8string_view> &path) {
 	switch(tag) {
 		case nbt::TAG_END:
 			throw std::runtime_error("Malformed NBT: unexpected TAG_END.");
@@ -250,7 +250,7 @@ void handle_content(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 	throw std::runtime_error("Malformed NBT: unrecognized tag.");
 }
 
-void handle_named(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint16_t *sub_table, const FileDescriptor &output_fd, Section &section_blocks, std::vector<std::u8string_view> &path) {
+void handle_named(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint16_t *sub_table, const file_descriptor &output_fd, Section &section_blocks, std::vector<std::u8string_view> &path) {
 	// Read name length.
 	check_left(2, input_left);
 	int16_t name_len = codec::decode_u16(input_ptr);
@@ -340,11 +340,11 @@ int mcwutil::nbt::block_substitute(std::ranges::subrange<char **> args) {
 	}
 
 	// Open and map input NBT file.
-	FileDescriptor input_fd = FileDescriptor::create_open(args[0], O_RDONLY, 0);
+	file_descriptor input_fd = file_descriptor::create_open(args[0], O_RDONLY, 0);
 	MappedFile input_mapped(input_fd, PROT_READ);
 
 	// Open the output file.
-	FileDescriptor output_fd = FileDescriptor::create_open(args[1], O_WRONLY | O_CREAT | O_TRUNC, 0666);
+	file_descriptor output_fd = file_descriptor::create_open(args[1], O_WRONLY | O_CREAT | O_TRUNC, 0666);
 
 	// Do the thing.
 	Section section_blocks;

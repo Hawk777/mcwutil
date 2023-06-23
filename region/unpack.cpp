@@ -41,7 +41,7 @@ int mcwutil::region::unpack(std::ranges::subrange<char **> args) {
 	const char *output_directory = args[1];
 
 	// Open the region file.
-	FileDescriptor region_fd = FileDescriptor::create_open(region_filename, O_RDONLY, 0);
+	file_descriptor region_fd = file_descriptor::create_open(region_filename, O_RDONLY, 0);
 
 	// Read the header.
 	uint8_t header[8192];
@@ -100,7 +100,7 @@ int mcwutil::region::unpack(std::ranges::subrange<char **> args) {
 			name_part += ".nbt.zlib"sv;
 			std::filesystem::path chunk_filename(output_directory);
 			chunk_filename /= name_part;
-			FileDescriptor chunk_fd = FileDescriptor::create_open(chunk_filename, O_WRONLY | O_CREAT, 0666);
+			file_descriptor chunk_fd = file_descriptor::create_open(chunk_filename, O_WRONLY | O_CREAT, 0666);
 			chunk_fd.write(payload, payload_size_bytes);
 		} else {
 			// Mark the chunk as non-present in the metadata document.

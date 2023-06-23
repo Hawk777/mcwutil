@@ -274,7 +274,7 @@ int mcwutil::nbt::to_xml(std::ranges::subrange<char **> args) {
 	}
 
 	// Open and map NBT file.
-	FileDescriptor input_fd = FileDescriptor::create_open(args[0], O_RDONLY, 0);
+	file_descriptor input_fd = file_descriptor::create_open(args[0], O_RDONLY, 0);
 	MappedFile input_mapped(input_fd, PROT_READ);
 
 	// Construct document.

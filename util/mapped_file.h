@@ -5,14 +5,14 @@
 #include <sys/mman.h>
 
 namespace mcwutil {
-class FileDescriptor;
+class file_descriptor;
 
 /**
  * \brief A memory-mapped view of a file.
  */
 class MappedFile {
 	public:
-	explicit MappedFile(const FileDescriptor &fd, int prot = PROT_READ, int flags = MAP_SHARED | MAP_FILE);
+	explicit MappedFile(const file_descriptor &fd, int prot = PROT_READ, int flags = MAP_SHARED | MAP_FILE);
 	~MappedFile();
 
 	// This class is not copyable.

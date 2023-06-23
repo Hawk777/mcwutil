@@ -18,7 +18,7 @@ using mcwutil::MappedFile;
  *
  * \param[in] flags the mapping flags to use.
  */
-MappedFile::MappedFile(const FileDescriptor &fd, int prot, int flags) {
+MappedFile::MappedFile(const file_descriptor &fd, int prot, int flags) {
 	struct stat st;
 	if(fstat(fd.fd(), &st) < 0) {
 		throw std::system_error(errno, std::system_category(), "fstat");

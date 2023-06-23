@@ -12,15 +12,15 @@ namespace mcwutil {
 /**
  * \brief A file descriptor that is safely closed on destruction.
  */
-class FileDescriptor {
+class file_descriptor {
 	public:
-	static FileDescriptor create_open(const char *file, int flags, mode_t mode);
-	static FileDescriptor create_open(const std::filesystem::path &file, int flags, mode_t mode);
+	static file_descriptor create_open(const char *file, int flags, mode_t mode);
+	static file_descriptor create_open(const std::filesystem::path &file, int flags, mode_t mode);
 
-	explicit FileDescriptor();
-	explicit FileDescriptor(FileDescriptor &&moveref);
-	~FileDescriptor();
-	FileDescriptor &operator=(FileDescriptor &&moveref);
+	explicit file_descriptor();
+	explicit file_descriptor(file_descriptor &&moveref);
+	~file_descriptor();
+	file_descriptor &operator=(file_descriptor &&moveref);
 
 	int fd() const;
 	void close();
@@ -34,7 +34,7 @@ class FileDescriptor {
 	private:
 	int fd_;
 
-	explicit FileDescriptor(const char *file, int flags, mode_t mode);
+	explicit file_descriptor(const char *file, int flags, mode_t mode);
 };
 }
 

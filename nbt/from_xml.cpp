@@ -83,7 +83,7 @@ void check_list_subtype(nbt::tag subtype) {
 	throw std::runtime_error("Malformed NBT XML: list has bad subtype.");
 }
 
-void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
+void write_nbt(const file_descriptor &nbt_fd, const xmlpp::Element *elt) {
 	if(elt->get_name() == u8"named") {
 		const xmlpp::Node::NodeList &children = elt->get_children();
 		const xmlpp::Element *relevant_child = 0;
@@ -398,7 +398,7 @@ void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Element *elt) {
 	}
 }
 
-void write_nbt(const FileDescriptor &nbt_fd, const xmlpp::Document *doc) {
+void write_nbt(const file_descriptor &nbt_fd, const xmlpp::Document *doc) {
 	const xmlpp::Element *root = doc->get_root_node();
 	if(root->get_name() != u8"minecraft-nbt") {
 		throw std::runtime_error("Malformed NBT XML: improper root node name.");
@@ -446,7 +446,7 @@ int mcwutil::nbt::from_xml(std::ranges::subrange<char **> args) {
 	parser.parse_file(args[0]);
 
 	// Write output file.
-	FileDescriptor nbt_fd = FileDescriptor::create_open(args[1], O_WRONLY | O_CREAT | O_TRUNC, 0666);
+	file_descriptor nbt_fd = file_descriptor::create_open(args[1], O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	write_nbt(nbt_fd, parser.get_document());
 
 	return 0;

@@ -61,7 +61,7 @@ int mcwutil::region::pack(std::ranges::subrange<char **> args) {
 	}
 
 	// Open the region file.
-	FileDescriptor region_fd = FileDescriptor::create_open(region_filename, O_WRONLY | O_TRUNC | O_CREAT, 0666);
+	file_descriptor region_fd = file_descriptor::create_open(region_filename, O_WRONLY | O_TRUNC | O_CREAT, 0666);
 	off_t region_write_ptr = 8192;
 
 	// Iterate the chunk elements in the metadata file.
@@ -106,7 +106,7 @@ int mcwutil::region::pack(std::ranges::subrange<char **> args) {
 			file_part += string::todecu(index, 4);
 			file_part += ".nbt.zlib"sv;
 			chunk_filename /= file_part;
-			FileDescriptor chunk_fd = FileDescriptor::create_open(chunk_filename, O_RDONLY, 0);
+			file_descriptor chunk_fd = file_descriptor::create_open(chunk_filename, O_RDONLY, 0);
 			struct stat stbuf;
 			chunk_fd.fstat(stbuf);
 			uint8_t chunk_data[5 + stbuf.st_size];

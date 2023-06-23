@@ -23,7 +23,7 @@ int mcwutil::zlib::compress(std::ranges::subrange<char **> args) {
 	}
 
 	// Read input file.
-	FileDescriptor input_fd = FileDescriptor::create_open(args[0], O_RDONLY, 0);
+	file_descriptor input_fd = file_descriptor::create_open(args[0], O_RDONLY, 0);
 	struct stat stbuf;
 	input_fd.fstat(stbuf);
 	unsigned char input_buffer[stbuf.st_size];
@@ -47,7 +47,7 @@ int mcwutil::zlib::compress(std::ranges::subrange<char **> args) {
 	}
 
 	// Write output file.
-	FileDescriptor output_fd = FileDescriptor::create_open(args[1], O_WRONLY | O_TRUNC | O_CREAT, 0666);
+	file_descriptor output_fd = file_descriptor::create_open(args[1], O_WRONLY | O_TRUNC | O_CREAT, 0666);
 	output_fd.write(output_buffer, output_length);
 
 	return 0;
@@ -68,7 +68,7 @@ int mcwutil::zlib::decompress(std::ranges::subrange<char **> args) {
 	}
 
 	// Read input file.
-	FileDescriptor input_fd = FileDescriptor::create_open(args[0], O_RDONLY, 0);
+	file_descriptor input_fd = file_descriptor::create_open(args[0], O_RDONLY, 0);
 	struct stat stbuf;
 	input_fd.fstat(stbuf);
 	unsigned char input_buffer[stbuf.st_size];
@@ -102,7 +102,7 @@ int mcwutil::zlib::decompress(std::ranges::subrange<char **> args) {
 	}
 
 	// Write output file.
-	FileDescriptor output_fd = FileDescriptor::create_open(args[1], O_WRONLY | O_TRUNC | O_CREAT, 0666);
+	file_descriptor output_fd = file_descriptor::create_open(args[1], O_WRONLY | O_TRUNC | O_CREAT, 0666);
 	output_fd.write(&output_buffer[0], output_buffer.size());
 
 	return 0;
@@ -122,7 +122,7 @@ int mcwutil::zlib::check(std::ranges::subrange<char **> args) {
 	}
 
 	// Read input file.
-	FileDescriptor input_fd = FileDescriptor::create_open(args[0], O_RDONLY, 0);
+	file_descriptor input_fd = file_descriptor::create_open(args[0], O_RDONLY, 0);
 	struct stat stbuf;
 	input_fd.fstat(stbuf);
 	unsigned char input_buffer[stbuf.st_size];
