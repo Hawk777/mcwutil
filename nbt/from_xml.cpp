@@ -56,11 +56,11 @@ nbt::tag tag_for_child_of_named_or_list(const Glib::ustring &name, const char *m
 }
 
 nbt::tag tag_for_child_of_named(const Glib::ustring &name) {
-	return tag_for_child_of_named_or_list(name, "Malformed NBT XML: child of named must be one of (byte|short|int|long|float|double|barray|string|list|compound|iarray).");
+	return tag_for_child_of_named_or_list(name, "Malformed NBT XML: child of named must be one of (byte|short|int|long|float|double|barray|string|list|compound|iarray|larray).");
 }
 
 nbt::tag tag_for_child_of_list(const Glib::ustring &name) {
-	return tag_for_child_of_named_or_list(name, "Malformed NBT XML: child of list must be one of (byte|short|int|long|float|double|barray|string|list|compound|iarray).");
+	return tag_for_child_of_named_or_list(name, "Malformed NBT XML: child of list must be one of (byte|short|int|long|float|double|barray|string|list|compound|iarray|larray).");
 }
 
 void check_list_subtype(nbt::tag subtype) {
