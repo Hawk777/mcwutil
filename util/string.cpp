@@ -4,6 +4,7 @@
 #include <locale>
 #include <sstream>
 #include <system_error>
+#include <utility>
 
 namespace mcwutil::string {
 namespace {
@@ -121,6 +122,44 @@ std::wstring mcwutil::string::u2w(const Glib::ustring &ustr) {
 	oss.imbue(std::locale("C"));
 	oss << ustr;
 	return oss.str();
+}
+
+/**
+ * \brief Converts an unsigned integer of any type to a fixed-width decimal string.
+ *
+ * \param[in] value the value to convert.
+ *
+ * \param[in] width the width, in characters, of the output to produce.
+ *
+ * \return the decimal string.
+ */
+std::string mcwutil::string::todecu_std(uintmax_t value, unsigned int width) {
+	std::ostringstream oss;
+	oss.imbue(std::locale("C"));
+	oss.flags(std::ios::uppercase | std::ios::dec | std::ios::right);
+	oss.width(width);
+	oss.fill(L'0');
+	oss << value;
+	return std::move(oss).str();
+}
+
+/**
+ * \brief Converts a signed integer of any type to a fixed-width decimal string.
+ *
+ * \param[in] value the value to convert.
+ *
+ * \param[in] width the width, in characters, of the output to produce.
+ *
+ * \return the decimal string.
+ */
+std::string mcwutil::string::todecs_std(intmax_t value, unsigned int width) {
+	std::ostringstream oss;
+	oss.imbue(std::locale("C"));
+	oss.flags(std::ios::uppercase | std::ios::dec | std::ios::right);
+	oss.width(width);
+	oss.fill(L'0');
+	oss << value;
+	return std::move(oss).str();
 }
 
 /**
