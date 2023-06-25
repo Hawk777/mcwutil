@@ -2,6 +2,7 @@
 #include "nbt/nbt.h"
 #include "region/region.h"
 #include "util/globals.h"
+#include "util/xml.h"
 #include "zlib_utils.h"
 #include <exception>
 #include <glibmm/exception.h>
@@ -95,6 +96,29 @@ int main(int argc, char **argv) {
 		std::cerr << typeid(exp).name() << ": " << exp.what() << '\n';
 	} catch(const std::exception &exp) {
 		std::cerr << typeid(exp).name() << ": " << exp.what() << '\n';
+	} catch(const mcwutil::xml::error &exp) {
+		std::cerr << typeid(exp).name() << ":\n";
+		for(const auto &i : exp.errors) {
+			struct {
+				void operator()(const std::string &i) {
+					std::cerr << "  " << i << '\n';
+				}
+				void operator()(const xmlError &i) {
+					std::cerr << "  ";
+					if(i.file) {
+						std::cerr << i.file << ':';
+						if(!i.line) {
+							std::cerr << ' ';
+						}
+					}
+					if(i.line) {
+						std::cerr << i.line << ": ";
+					}
+					std::cerr << i.message;
+				}
+			} vis;
+			std::visit(vis, i);
+		}
 	} catch(...) {
 		std::cerr << "Unknown error!\n";
 	}
