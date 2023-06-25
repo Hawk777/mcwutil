@@ -15,6 +15,8 @@ Glib::ustring todecu(uintmax_t value, unsigned int width = 0);
 Glib::ustring todecs(intmax_t value, unsigned int width = 0);
 Glib::ustring w2u(const std::wstring &wstr);
 std::wstring u2w(const Glib::ustring &ustr);
+std::u8string l2u(std::string_view lstr);
+std::string u2l(std::u8string_view ustr);
 }
 }
 
