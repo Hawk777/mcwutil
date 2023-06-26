@@ -101,7 +101,7 @@ int mcwutil::region::pack(std::ranges::subrange<char **> args) {
 			// Copy the chunk data into the region file.
 			std::filesystem::path chunk_filename(input_directory);
 			std::string file_part("chunk-"s);
-			file_part += string::todecu_std(index, 4);
+			file_part += string::todecu(index, 4);
 			file_part += ".nbt.zlib"sv;
 			chunk_filename /= file_part;
 			file_descriptor chunk_fd = file_descriptor::create_open(chunk_filename, O_RDONLY, 0);

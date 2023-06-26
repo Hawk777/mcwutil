@@ -63,12 +63,12 @@ int mcwutil::region::unpack(std::ranges::subrange<char **> args) {
 
 		// Construct a metadata element.
 		xmlNode &metadata_chunk_elt = xml::node_append_child(metadata_root_elt, u8"chunk");
-		xml::node_attr(metadata_chunk_elt, u8"index", string::l2u(string::todecu_std(i)).c_str());
+		xml::node_attr(metadata_chunk_elt, u8"index", string::l2u(string::todecu(i)).c_str());
 
 		if(offset_sectors) {
 			// Record the chunk's metadata.
 			xml::node_attr(metadata_chunk_elt, u8"present", u8"1");
-			xml::node_attr(metadata_chunk_elt, u8"timestamp", string::l2u(string::todecu_std(timestamp)).c_str());
+			xml::node_attr(metadata_chunk_elt, u8"timestamp", string::l2u(string::todecu(timestamp)).c_str());
 
 			// Compute the location and size of the chunk.
 			off_t offset_bytes = static_cast<off_t>(offset_sectors) * 4096;
@@ -95,7 +95,7 @@ int mcwutil::region::unpack(std::ranges::subrange<char **> args) {
 
 			// Copy the chunk's data out to a file.
 			std::string name_part("chunk-"s);
-			name_part += string::todecu_std(i, 4);
+			name_part += string::todecu(i, 4);
 			name_part += ".nbt.zlib"sv;
 			std::filesystem::path chunk_filename(output_directory);
 			chunk_filename /= name_part;

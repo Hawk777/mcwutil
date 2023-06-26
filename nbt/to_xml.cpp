@@ -42,7 +42,7 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::tag tag
 			int8_t value = codec::decode_u8(input_ptr);
 			eat(1, input_ptr, input_left);
 			xmlNode &byte_elt = xml::node_append_child(parent_elt, u8"byte");
-			xml::node_attr(byte_elt, u8"value", string::l2u(string::todecs_std(value)).c_str());
+			xml::node_attr(byte_elt, u8"value", string::l2u(string::todecs(value)).c_str());
 			return;
 		}
 
@@ -51,7 +51,7 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::tag tag
 			int16_t value = codec::decode_u16(input_ptr);
 			eat(2, input_ptr, input_left);
 			xmlNode &short_elt = xml::node_append_child(parent_elt, u8"short");
-			xml::node_attr(short_elt, u8"value", string::l2u(string::todecs_std(value)).c_str());
+			xml::node_attr(short_elt, u8"value", string::l2u(string::todecs(value)).c_str());
 			return;
 		}
 
@@ -60,7 +60,7 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::tag tag
 			int32_t value = codec::decode_u32(input_ptr);
 			eat(4, input_ptr, input_left);
 			xmlNode &int_elt = xml::node_append_child(parent_elt, u8"int");
-			xml::node_attr(int_elt, u8"value", string::l2u(string::todecs_std(value)).c_str());
+			xml::node_attr(int_elt, u8"value", string::l2u(string::todecs(value)).c_str());
 			return;
 		}
 
@@ -69,7 +69,7 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::tag tag
 			int64_t value = codec::decode_u64(input_ptr);
 			eat(8, input_ptr, input_left);
 			xmlNode &long_elt = xml::node_append_child(parent_elt, u8"long");
-			xml::node_attr(long_elt, u8"value", string::l2u(string::todecs_std(value)).c_str());
+			xml::node_attr(long_elt, u8"value", string::l2u(string::todecs(value)).c_str());
 			return;
 		}
 
@@ -154,7 +154,7 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::tag tag
 				throw std::runtime_error("Malformed NBT: negative list length.");
 			}
 			xmlNode &list_elt = xml::node_append_child(parent_elt, u8"list");
-			xml::node_attr(list_elt, u8"subtype", string::l2u(string::todecu_std(subtype)).c_str());
+			xml::node_attr(list_elt, u8"subtype", string::l2u(string::todecu(subtype)).c_str());
 			for(int32_t i = 0; i < len; ++i) {
 				parse_data(input_ptr, input_left, subtype, list_elt);
 			}

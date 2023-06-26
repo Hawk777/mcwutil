@@ -15,7 +15,7 @@
  *
  * \return the decimal string.
  */
-std::string mcwutil::string::todecu_std(uintmax_t value, unsigned int width) {
+std::string mcwutil::string::todecu(uintmax_t value, unsigned int width) {
 	std::ostringstream oss;
 	oss.imbue(std::locale("C"));
 	oss.flags(std::ios::uppercase | std::ios::dec | std::ios::right);
@@ -34,7 +34,7 @@ std::string mcwutil::string::todecu_std(uintmax_t value, unsigned int width) {
  *
  * \return the decimal string.
  */
-std::string mcwutil::string::todecs_std(intmax_t value, unsigned int width) {
+std::string mcwutil::string::todecs(intmax_t value, unsigned int width) {
 	std::ostringstream oss;
 	oss.imbue(std::locale("C"));
 	oss.flags(std::ios::uppercase | std::ios::dec | std::ios::right);
