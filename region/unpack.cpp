@@ -3,15 +3,14 @@
 #include "util/file_descriptor.h"
 #include "util/globals.h"
 #include "util/string.h"
+#include "util/xml.h"
 #include <cerrno>
 #include <cstddef>
 #include <cstdio>
 #include <fcntl.h>
 #include <filesystem>
 #include <iostream>
-#include <libxml++/document.h>
-#include <libxml++/nodes/element.h>
-#include <libxml++/nodes/node.h>
+#include <libxml/tree.h>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -48,9 +47,9 @@ int mcwutil::region::unpack(std::ranges::subrange<char **> args) {
 	region_fd.pread(header, sizeof(header), 0);
 
 	// Iterate the chunks, filling in the metadata document and extracting the chunks to files.
-	xmlpp::Document metadata_document;
-	metadata_document.set_internal_subset(string::utf8_literal(u8"minecraft-region-metadata"), string::utf8_literal(u8""), string::utf8_literal(u8"urn:uuid:5e7a5ee0-2a7b-11e1-9e08-1c4bd68d068e"));
-	xmlpp::Element *metadata_root_elt = metadata_document.create_root_node(string::utf8_literal(u8"minecraft-region-metadata"));
+	auto metadata_document = xml::empty();
+	xml::internal_subset(*metadata_document, u8"minecraft-region-metadata", nullptr, u8"urn:uuid:5e7a5ee0-2a7b-11e1-9e08-1c4bd68d068e");
+	xmlNode &metadata_root_elt = xml::node_create_root(*metadata_document, u8"minecraft-region-metadata");
 	for(unsigned int i = 0; i < 1024; ++i) {
 		// Decode the header for this chunk.
 		uint32_t offset_sectors = codec::decode_u24(&header[i * 4]);
@@ -63,13 +62,13 @@ int mcwutil::region::unpack(std::ranges::subrange<char **> args) {
 		}
 
 		// Construct a metadata element.
-		xmlpp::Element *metadata_chunk_elt = metadata_root_elt->add_child(string::utf8_literal(u8"chunk"));
-		metadata_chunk_elt->set_attribute(string::utf8_literal(u8"index"), string::todecu(i));
+		xmlNode &metadata_chunk_elt = xml::node_append_child(metadata_root_elt, u8"chunk");
+		xml::node_attr(metadata_chunk_elt, u8"index", string::l2u(string::todecu_std(i)).c_str());
 
 		if(offset_sectors) {
 			// Record the chunk's metadata.
-			metadata_chunk_elt->set_attribute(string::utf8_literal(u8"present"), string::utf8_literal(u8"1"));
-			metadata_chunk_elt->set_attribute(string::utf8_literal(u8"timestamp"), string::todecu(timestamp));
+			xml::node_attr(metadata_chunk_elt, u8"present", u8"1");
+			xml::node_attr(metadata_chunk_elt, u8"timestamp", string::l2u(string::todecu_std(timestamp)).c_str());
 
 			// Compute the location and size of the chunk.
 			off_t offset_bytes = static_cast<off_t>(offset_sectors) * 4096;
@@ -96,7 +95,7 @@ int mcwutil::region::unpack(std::ranges::subrange<char **> args) {
 
 			// Copy the chunk's data out to a file.
 			std::string name_part("chunk-"s);
-			name_part += string::todecu(i, 4);
+			name_part += string::todecu_std(i, 4);
 			name_part += ".nbt.zlib"sv;
 			std::filesystem::path chunk_filename(output_directory);
 			chunk_filename /= name_part;
@@ -104,14 +103,15 @@ int mcwutil::region::unpack(std::ranges::subrange<char **> args) {
 			chunk_fd.write(payload, payload_size_bytes);
 		} else {
 			// Mark the chunk as non-present in the metadata document.
-			metadata_chunk_elt->set_attribute(string::utf8_literal(u8"present"), string::utf8_literal(u8"0"));
+			xml::node_attr(metadata_chunk_elt, u8"present", u8"0");
 		}
 	}
 
 	// Write out the metadata file.
 	std::filesystem::path metadata_filename(output_directory);
 	metadata_filename /= "metadata.xml";
-	metadata_document.write_to_file_formatted(metadata_filename.native());
+	file_descriptor metadata_fd = file_descriptor::create_open(metadata_filename, O_WRONLY | O_CREAT, 0666);
+	xml::write(*metadata_document, metadata_fd);
 
 	return 0;
 }
