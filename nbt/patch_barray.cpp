@@ -13,11 +13,12 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <vector>
 
-using mcwutil::string::operator==;
+using namespace std::literals::string_view_literals;
 
 namespace mcwutil::nbt {
 namespace {
@@ -33,9 +34,9 @@ void eat(std::size_t n, uint8_t *&input_ptr, std::size_t &input_left) {
 	input_left -= n;
 }
 
-void handle_named(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint8_t *sub_table, const std::vector<Glib::ustring>::const_iterator path_first, const std::vector<Glib::ustring>::const_iterator path_last, bool path_ok);
+void handle_named(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint8_t *sub_table, const std::vector<std::u8string>::const_iterator path_first, const std::vector<std::u8string>::const_iterator path_last, bool path_ok);
 
-void handle_content(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint8_t *sub_table, const std::vector<Glib::ustring>::const_iterator path_first, const std::vector<Glib::ustring>::const_iterator path_last, bool path_ok) {
+void handle_content(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint8_t *sub_table, const std::vector<std::u8string>::const_iterator path_first, const std::vector<std::u8string>::const_iterator path_last, bool path_ok) {
 	switch(tag) {
 		case nbt::TAG_END:
 			throw std::runtime_error("Malformed NBT: unexpected TAG_END.");
@@ -100,12 +101,12 @@ void handle_content(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 				throw std::runtime_error("Malformed NBT: negative list length.");
 			}
 			int32_t match;
-			std::vector<Glib::ustring>::const_iterator new_path_first;
+			std::vector<std::u8string>::const_iterator new_path_first;
 			if(path_ok && path_first != path_last) {
-				if(*path_first == u8"*") {
+				if(*path_first == u8"*"sv) {
 					match = -2;
 				} else {
-					const std::string &raw = path_first->raw();
+					const std::string &raw = string::u2l(*path_first);
 					if(raw.size()) {
 						char *end;
 						unsigned long ul = std::strtoul(raw.data(), &end, 10);
@@ -181,7 +182,7 @@ void handle_content(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 	throw std::runtime_error("Malformed NBT: unrecognized tag.");
 }
 
-void handle_named(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint8_t *sub_table, const std::vector<Glib::ustring>::const_iterator path_first, const std::vector<Glib::ustring>::const_iterator path_last, bool path_ok) {
+void handle_named(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint8_t *sub_table, const std::vector<std::u8string>::const_iterator path_first, const std::vector<std::u8string>::const_iterator path_last, bool path_ok) {
 	// Read name length.
 	check_left(2, input_left);
 	int16_t name_len = codec::decode_u16(input_ptr);
@@ -192,13 +193,13 @@ void handle_named(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, co
 
 	// Read name.
 	check_left(name_len, input_left);
-	Glib::ustring name(std::string(input_ptr, input_ptr + name_len));
+	std::u8string_view name(reinterpret_cast<const char8_t *>(input_ptr), name_len);
 	eat(name_len, input_ptr, input_left);
 
 	// Check for match.
-	std::vector<Glib::ustring>::const_iterator new_path_first;
+	std::vector<std::u8string>::const_iterator new_path_first;
 	if(path_first != path_last) {
-		if(*path_first != u8"*" && *path_first != name) {
+		if(*path_first != u8"*"sv && *path_first != name) {
 			path_ok = false;
 		}
 		new_path_first = path_first + 1;
@@ -277,15 +278,16 @@ int mcwutil::nbt::patch_barray(std::ranges::subrange<char **> args) {
 	}
 
 	// Build the target path.
-	std::vector<Glib::ustring> path_components;
+	std::vector<std::u8string> path_components;
 	{
-		Glib::ustring current_component;
-		for(const char *i = args[1]; *i; ++i) {
-			if(*i == '/') {
+		std::u8string path = string::l2u(args[1]);
+		std::u8string current_component;
+		for(const char8_t i : path) {
+			if(i == u8'/') {
 				path_components.push_back(current_component);
 				current_component.clear();
 			} else {
-				current_component.push_back(*i);
+				current_component.push_back(i);
 			}
 		}
 		path_components.push_back(current_component);
