@@ -3,6 +3,7 @@
 #include "util/file_descriptor.h"
 #include "util/globals.h"
 #include "util/string.h"
+#include "util/xml.h"
 #include <algorithm>
 #include <array>
 #include <cerrno>
@@ -11,10 +12,7 @@
 #include <fcntl.h>
 #include <filesystem>
 #include <iostream>
-#include <libxml++/document.h>
-#include <libxml++/nodes/element.h>
-#include <libxml++/nodes/node.h>
-#include <libxml++/parsers/domparser.h>
+#include <libxml/tree.h>
 #include <locale>
 #include <sstream>
 #include <stdexcept>
@@ -24,7 +22,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-using mcwutil::string::operator==;
 using namespace std::literals::string_literals;
 using namespace std::literals::string_view_literals;
 
@@ -47,16 +44,11 @@ int mcwutil::region::pack(std::ranges::subrange<char **> args) {
 	const char *region_filename = args[1];
 
 	// Load the metadata document.
-	xmlpp::DomParser metadata_parser;
-	metadata_parser.set_substitute_entities();
-	{
-		std::filesystem::path metadata_file(input_directory);
-		metadata_file /= "metadata.xml";
-		metadata_parser.parse_file(metadata_file.native());
-	}
-	const xmlpp::Document *metadata_document = metadata_parser.get_document();
-	const xmlpp::Element *metadata_root_elt = metadata_document->get_root_node();
-	if(metadata_root_elt->get_name() != u8"minecraft-region-metadata") {
+	std::filesystem::path metadata_file(input_directory);
+	metadata_file /= "metadata.xml";
+	auto metadata_document = xml::parse(metadata_file.c_str());
+	const xmlNode &metadata_root_elt = *xmlDocGetRootElement(metadata_document.get());
+	if(xml::node_name(metadata_root_elt) != u8"minecraft-region-metadata"sv) {
 		throw std::runtime_error("Malformed metadata.xml: improper root node name.");
 	}
 
@@ -72,26 +64,32 @@ int mcwutil::region::pack(std::ranges::subrange<char **> args) {
 	std::fill(seen_indices.begin(), seen_indices.end(), false);
 	std::array<uint8_t, 8192> header;
 	std::fill(header.begin(), header.end(), 0);
-	const xmlpp::Node::NodeList &chunk_elts = metadata_root_elt->get_children(string::utf8_literal(u8"chunk"));
-	for(auto i = chunk_elts.begin(), iend = chunk_elts.end(); i != iend; ++i) {
-		const xmlpp::Element *chunk_elt = dynamic_cast<const xmlpp::Element *>(*i);
+	for(const xmlNode *i = metadata_root_elt.children; i; i = i->next) {
+		if(i->type != XML_ELEMENT_NODE) {
+			continue;
+		}
 		unsigned int index;
 		{
-			std::wistringstream iss(string::u2w(chunk_elt->get_attribute_value(string::utf8_literal(u8"index"))));
+			std::istringstream iss(string::u2l(xml::node_attr(*i, u8"index")));
 			iss.imbue(std::locale("C"));
 			iss >> index;
 		}
 		unsigned int present;
 		{
-			std::wistringstream iss(string::u2w(chunk_elt->get_attribute_value(string::utf8_literal(u8"present"))));
+			std::istringstream iss(string::u2l(xml::node_attr(*i, u8"present")));
 			iss.imbue(std::locale("C"));
 			iss >> present;
 		}
 		uint32_t timestamp;
 		{
-			std::wistringstream iss(string::u2w(chunk_elt->get_attribute_value(string::utf8_literal(u8"timestamp"))));
-			iss.imbue(std::locale("C"));
-			iss >> timestamp;
+			const char8_t *timestamp_raw = xml::node_attr(*i, u8"timestamp");
+			if(timestamp_raw) {
+				std::istringstream iss(string::u2l(timestamp_raw));
+				iss.imbue(std::locale("C"));
+				iss >> timestamp;
+			} else {
+				timestamp = 0;
+			}
 		}
 
 		if(seen_indices[index]) {
@@ -103,7 +101,7 @@ int mcwutil::region::pack(std::ranges::subrange<char **> args) {
 			// Copy the chunk data into the region file.
 			std::filesystem::path chunk_filename(input_directory);
 			std::string file_part("chunk-"s);
-			file_part += string::todecu(index, 4);
+			file_part += string::todecu_std(index, 4);
 			file_part += ".nbt.zlib"sv;
 			chunk_filename /= file_part;
 			file_descriptor chunk_fd = file_descriptor::create_open(chunk_filename, O_RDONLY, 0);
