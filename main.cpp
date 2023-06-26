@@ -5,7 +5,6 @@
 #include "util/xml.h"
 #include "zlib_utils.h"
 #include <exception>
-#include <glibmm/exception.h>
 #include <iostream>
 #include <locale>
 #include <ranges>
@@ -92,8 +91,6 @@ int main_impl(int argc, char **argv) {
 int main(int argc, char **argv) {
 	try {
 		return mcwutil::main_impl(argc, argv);
-	} catch(const Glib::Exception &exp) {
-		std::cerr << typeid(exp).name() << ": " << exp.what() << '\n';
 	} catch(const std::exception &exp) {
 		std::cerr << typeid(exp).name() << ": " << exp.what() << '\n';
 	} catch(const mcwutil::xml::error &exp) {
