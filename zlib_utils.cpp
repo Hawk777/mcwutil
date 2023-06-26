@@ -49,6 +49,7 @@ int mcwutil::zlib::compress(std::ranges::subrange<char **> args) {
 	// Write output file.
 	file_descriptor output_fd = file_descriptor::create_open(args[1], O_WRONLY | O_TRUNC | O_CREAT, 0666);
 	output_fd.write(output_buffer, output_length);
+	output_fd.close();
 
 	return 0;
 }
@@ -104,6 +105,7 @@ int mcwutil::zlib::decompress(std::ranges::subrange<char **> args) {
 	// Write output file.
 	file_descriptor output_fd = file_descriptor::create_open(args[1], O_WRONLY | O_TRUNC | O_CREAT, 0666);
 	output_fd.write(&output_buffer[0], output_buffer.size());
+	output_fd.close();
 
 	return 0;
 }

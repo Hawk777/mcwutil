@@ -101,6 +101,7 @@ int mcwutil::region::unpack(std::ranges::subrange<char **> args) {
 			chunk_filename /= name_part;
 			file_descriptor chunk_fd = file_descriptor::create_open(chunk_filename, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 			chunk_fd.write(payload, payload_size_bytes);
+			chunk_fd.close();
 		} else {
 			// Mark the chunk as non-present in the metadata document.
 			xml::node_attr(metadata_chunk_elt, u8"present", u8"0");
@@ -112,6 +113,7 @@ int mcwutil::region::unpack(std::ranges::subrange<char **> args) {
 	metadata_filename /= "metadata.xml";
 	file_descriptor metadata_fd = file_descriptor::create_open(metadata_filename, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	xml::write(*metadata_document, metadata_fd);
+	metadata_fd.close();
 
 	return 0;
 }

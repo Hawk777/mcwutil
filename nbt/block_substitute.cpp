@@ -356,6 +356,7 @@ int mcwutil::nbt::block_substitute(std::ranges::subrange<char **> args) {
 	nbt::tag root_tag = static_cast<nbt::tag>(codec::decode_u8(input_ptr));
 	eat(1, input_ptr, input_left);
 	handle_named(root_tag, input_ptr, input_left, sub_table, output_fd, section_blocks, path);
+	output_fd.close();
 
 	return 0;
 }

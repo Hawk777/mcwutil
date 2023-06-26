@@ -132,5 +132,7 @@ int mcwutil::region::pack(std::ranges::subrange<char **> args) {
 	// Write the header.
 	region_fd.pwrite(header.data(), header.size(), 0);
 
+	region_fd.close();
+
 	return 0;
 }
