@@ -99,7 +99,7 @@ int mcwutil::region::unpack(std::ranges::subrange<char **> args) {
 			name_part += ".nbt.zlib"sv;
 			std::filesystem::path chunk_filename(output_directory);
 			chunk_filename /= name_part;
-			file_descriptor chunk_fd = file_descriptor::create_open(chunk_filename, O_WRONLY | O_CREAT, 0666);
+			file_descriptor chunk_fd = file_descriptor::create_open(chunk_filename, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 			chunk_fd.write(payload, payload_size_bytes);
 		} else {
 			// Mark the chunk as non-present in the metadata document.
@@ -110,7 +110,7 @@ int mcwutil::region::unpack(std::ranges::subrange<char **> args) {
 	// Write out the metadata file.
 	std::filesystem::path metadata_filename(output_directory);
 	metadata_filename /= "metadata.xml";
-	file_descriptor metadata_fd = file_descriptor::create_open(metadata_filename, O_WRONLY | O_CREAT, 0666);
+	file_descriptor metadata_fd = file_descriptor::create_open(metadata_filename, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	xml::write(*metadata_document, metadata_fd);
 
 	return 0;

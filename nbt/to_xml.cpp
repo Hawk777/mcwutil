@@ -289,7 +289,7 @@ int mcwutil::nbt::to_xml(std::ranges::subrange<char **> args) {
 	parse_name_and_data(input_ptr, input_left, outer_tag, nbt_root_elt);
 
 	// Write output file.
-	file_descriptor nbt_fd = file_descriptor::create_open(args[1], O_WRONLY | O_CREAT, 0666);
+	file_descriptor nbt_fd = file_descriptor::create_open(args[1], O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	xml::write(*nbt_document, nbt_fd);
 
 	return 0;
