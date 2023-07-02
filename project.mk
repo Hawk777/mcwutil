@@ -13,7 +13,7 @@ EXECUTABLES_EXCLUDE_WORLD := cppunit
 # Directories will be searched recursively for source files.
 #
 SOURCES_mcwutil := calc.cpp main.cpp nbt region util zlib_utils.cpp
-SOURCES_cppunit := cppunit
+SOURCES_cppunit := cppunit util
 
 #
 # All the pkg-config packages used.
