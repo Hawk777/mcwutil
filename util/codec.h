@@ -87,6 +87,19 @@ inline void encode_u64(void *b, uint64_t x) {
 /**
  * \brief Encodes a floating-point number to a byte array.
  *
+ * The floating-point number will consume 4 bytes of storage.
+ *
+ * \param[out] b the buffer into which to encode.
+ *
+ * \param[in] x the floating-point number to encode.
+ */
+inline void encode_float(void *b, float x) {
+	encode_u32(b, encode_float_to_u32(x));
+}
+
+/**
+ * \brief Encodes a floating-point number to a byte array.
+ *
  * The floating-point number will consume 8 bytes of storage.
  *
  * \param[out] b the buffer into which to encode.
@@ -171,6 +184,19 @@ inline uint64_t decode_u64(const void *buffer) {
 		val = static_cast<uint64_t>((val << 8) | buf[i]);
 	}
 	return val;
+}
+
+/**
+ * \brief Extracts a floating-point number from a data buffer.
+ *
+ * The floating-point number must be 4 bytes wide.
+ *
+ * \param[in] buffer the data to extract from.
+ *
+ * \return the floating-point number.
+ */
+inline float decode_float(const void *buffer) {
+	return decode_u32_to_float(decode_u32(buffer));
 }
 
 /**
