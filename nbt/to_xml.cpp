@@ -75,9 +75,8 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::tag tag
 
 		case nbt::TAG_FLOAT: {
 			check_left(4, input_left);
-			uint32_t raw = codec::decode_u32(input_ptr);
+			float fl = codec::decode_float(input_ptr);
 			eat(4, input_ptr, input_left);
-			float fl = codec::decode_u32_to_float(raw);
 			xmlNode &float_elt = xml::node_append_child(parent_elt, u8"float");
 			std::ostringstream oss;
 			oss.imbue(std::locale("C"));
@@ -90,9 +89,8 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::tag tag
 
 		case nbt::TAG_DOUBLE: {
 			check_left(8, input_left);
-			uint64_t raw = codec::decode_u64(input_ptr);
+			double db = codec::decode_double(input_ptr);
 			eat(8, input_ptr, input_left);
-			double db = codec::decode_u64_to_double(raw);
 			xmlNode &double_elt = xml::node_append_child(parent_elt, u8"double");
 			std::ostringstream oss;
 			oss.imbue(std::locale("C"));

@@ -169,9 +169,8 @@ void write_nbt(const file_descriptor &nbt_fd, const xmlNode &elt) {
 		iss.imbue(std::locale("C"));
 		float value;
 		iss >> value;
-		uint32_t raw = codec::encode_float_to_u32(value);
-		uint8_t buffer[sizeof(raw)];
-		codec::encode_u32(&buffer[0], raw);
+		uint8_t buffer[4];
+		codec::encode_float(&buffer[0], value);
 		nbt_fd.write(buffer, sizeof(buffer));
 	} else if(elt_name == u8"double"sv) {
 		const char8_t *value_raw = xml::node_attr(elt, u8"value");
@@ -182,9 +181,8 @@ void write_nbt(const file_descriptor &nbt_fd, const xmlNode &elt) {
 		iss.imbue(std::locale("C"));
 		double value;
 		iss >> value;
-		uint64_t raw = codec::encode_double_to_u64(value);
-		uint8_t buffer[sizeof(raw)];
-		codec::encode_u64(&buffer[0], raw);
+		uint8_t buffer[8];
+		codec::encode_double(&buffer[0], value);
 		nbt_fd.write(buffer, sizeof(buffer));
 	} else if(elt_name == u8"barray"sv) {
 		const xmlNode *text = nullptr;
