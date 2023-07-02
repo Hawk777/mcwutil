@@ -1,9 +1,11 @@
 #include "util/codec.h"
 #include "cppunit/helpers.h"
 #include <array>
+#include <cmath>
 #include <cppunit/TestAssert.h>
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
+#include <limits>
 #include <ranges>
 
 namespace mcwutil::codec {
@@ -149,6 +151,90 @@ class integer_test final : public CppUnit::TestFixture {
 	void test_encode();
 	void test_decode();
 };
+
+/**
+ * \brief Test cases and metadata about encoding and decoding of a specific
+ * floating-point type.
+ *
+ * \tparam T the type of floating-point value.
+ */
+template<typename T>
+struct floating_info {
+};
+
+template<>
+struct floating_info<float> {
+	static constexpr std::size_t bits = 32;
+	using type = float;
+	static constexpr auto cases = std::array{
+		// Ordinary numbers.
+		test_case<float, bits>{1.0f, {0x3F, 0x80, 0x00, 0x00}},
+		test_case<float, bits>{-1.0f, {0xBF, 0x80, 0x00, 0x00}},
+		test_case<float, bits>{27.0f, {0x41, 0xD8, 0x00, 0x00}},
+		test_case<float, bits>{-27.0f, {0xC1, 0xD8, 0x00, 0x00}},
+		// Positive and negative zero.
+		test_case<float, bits>{0.0f, {0x00, 0x00, 0x00, 0x00}},
+		test_case<float, bits>{-0.0f, {0x80, 0x00, 0x00, 0x00}},
+		// Very large and very small numbers with lots of digits.
+		test_case<float, bits>{1.234567e-37f, {0x02, 0x28, 0x0A, 0x62}},
+		test_case<float, bits>{1.234567e+38f, {0x7E, 0xB9, 0xC1, 0xCB}},
+		// Subnormal numbers.
+		test_case<float, bits>{1.0e-40f, {0x00, 0x01, 0x16, 0xC2}},
+		test_case<float, bits>{-1.0e-40f, {0x80, 0x01, 0x16, 0xC2}},
+		// Special numbers.
+		test_case<float, bits>{std::numeric_limits<float>::infinity(), {0x7F, 0x80, 0x00, 0x00}},
+		test_case<float, bits>{-std::numeric_limits<float>::infinity(), {0xFF, 0x80, 0x00, 0x00}},
+		test_case<float, bits>{std::numeric_limits<float>::quiet_NaN(), {0x7F, 0x80, 0x00, 0x01}},
+	};
+	static constexpr auto encode = encode_float;
+	static constexpr auto decode = decode_float;
+};
+
+template<>
+struct floating_info<double> {
+	static constexpr std::size_t bits = 64;
+	using type = double;
+	static constexpr auto cases = std::array{
+		// Ordinary numbers.
+		test_case<double, bits>{1.0, {0x3F, 0xF0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}},
+		test_case<double, bits>{-1.0, {0xBF, 0xF0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}},
+		test_case<double, bits>{27.0, {0x40, 0x3B, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}},
+		test_case<double, bits>{-27.0, {0xC0, 0x3B, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}},
+		// Positive and negative zero.
+		test_case<double, bits>{0.0, {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}},
+		test_case<double, bits>{-0.0, {0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}},
+		// Very large and very small numbers with lots of digits.
+		test_case<double, bits>{1.2345678901234e-308, {0x00, 0x08, 0xE0, 0xA3, 0xA2, 0xBC, 0x2F, 0xAC}},
+		test_case<double, bits>{1.2345678901234e+307, {0x7F, 0xB1, 0x94, 0xB1, 0x4B, 0xE2, 0x79, 0x01}},
+		// Subnormal numbers.
+		test_case<double, bits>{1.0e-310, {0x00, 0x00, 0x12, 0x68, 0x8B, 0x70, 0xE6, 0x2B}},
+		test_case<double, bits>{-1.0e-310, {0x80, 0x00, 0x12, 0x68, 0x8B, 0x70, 0xE6, 0x2B}},
+		// Special numbers.
+		test_case<double, bits>{std::numeric_limits<double>::infinity(), {0x7F, 0xF0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}},
+		test_case<double, bits>{-std::numeric_limits<double>::infinity(), {0xFF, 0xF0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}},
+		test_case<double, bits>{std::numeric_limits<double>::quiet_NaN(), {0x7F, 0xF0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01}},
+	};
+	static constexpr auto encode = encode_double;
+	static constexpr auto decode = decode_double;
+};
+
+/**
+ * \brief Verifies that floating-point encoding and decoding works properly.
+ *
+ * \tparam T the type of floating-point value.
+ */
+template<typename T>
+class floating_test final : public CppUnit::TestFixture {
+	public:
+	CPPUNIT_TEST_SUITE(floating_test<T>);
+	CPPUNIT_TEST(test_encode);
+	CPPUNIT_TEST(test_decode);
+	CPPUNIT_TEST_SUITE_END();
+
+	private:
+	void test_encode();
+	void test_decode();
+};
 }
 }
 
@@ -198,8 +284,62 @@ void mcwutil::codec::integer_test<Bits>::test_decode() {
 	}
 }
 
+/**
+ * \brief Tests encoding floating-point numbers of a specific type.
+ *
+ * \tparam T the type of floating-point value.
+ */
+template<typename T>
+void mcwutil::codec::floating_test<T>::test_encode() {
+	using info = floating_info<T>;
+	static_assert(!(info::bits % 8));
+	constexpr std::size_t bytes = info::bits / 8;
+	for(const auto &i : info::cases) {
+		// Allocate a two-byte-wider buffer to encode into. Fill it with 0x55
+		// except for 0xAA in the first and last positions.
+		std::array<uint8_t, bytes + 2> buffer;
+		buffer.fill(0x55);
+		buffer.front() = buffer.back() = 0xAA;
+
+		// Perform the encoding.
+		info::encode(buffer.data() + 1, i.value);
+
+		// Construct the expected buffer contents, which should be 0xAA in the
+		// first and last positions and the encoded bytes in the middle.
+		std::array<uint8_t, bytes + 2> expected{};
+		expected.front() = expected.back() = 0xAA;
+		std::copy(i.bytes.begin(), i.bytes.end(), expected.begin() + 1);
+
+		// Verify.
+		CPPUNIT_ASSERT_EQUAL(expected, buffer);
+	}
+}
+
+/**
+ * \brief Tests decoding a floating-point numbers of a specific type.
+ *
+ * \tparam T the type of floating-point value.
+ */
+template<typename T>
+void mcwutil::codec::floating_test<T>::test_decode() {
+	using info = floating_info<T>;
+	for(const auto &i : info::cases) {
+		// Test decoding.
+		T decoded = info::decode(i.bytes.data());
+		if(std::isnan(i.value)) {
+			// NaNs cannot be directly compared, so if a NaN is expected, just
+			// verify that a NaN (any NaN) was produced.
+			CPPUNIT_ASSERT(std::isnan(decoded));
+		} else {
+			CPPUNIT_ASSERT_EQUAL(i.value, decoded);
+		}
+	}
+}
+
 CPPUNIT_TEST_SUITE_REGISTRATION(mcwutil::codec::integer_test<8>);
 CPPUNIT_TEST_SUITE_REGISTRATION(mcwutil::codec::integer_test<16>);
 CPPUNIT_TEST_SUITE_REGISTRATION(mcwutil::codec::integer_test<24>);
 CPPUNIT_TEST_SUITE_REGISTRATION(mcwutil::codec::integer_test<32>);
 CPPUNIT_TEST_SUITE_REGISTRATION(mcwutil::codec::integer_test<64>);
+CPPUNIT_TEST_SUITE_REGISTRATION(mcwutil::codec::floating_test<float>);
+CPPUNIT_TEST_SUITE_REGISTRATION(mcwutil::codec::floating_test<double>);
