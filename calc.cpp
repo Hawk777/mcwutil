@@ -43,6 +43,9 @@ int real_mod(int num, int den) {
  * \param[in] s the string to parse.
  *
  * \return the integer value.
+ *
+ * \exception std::invalid_argument if the passed-in string is not a valid
+ * integer.
  */
 int parse_int(const std::string &s) {
 	std::size_t consumed;
