@@ -6,10 +6,29 @@
 
 namespace mcwutil::calc {
 namespace {
+/**
+ * \brief Divides two integers, rounding the quotient towards negative
+ * infinity.
+ *
+ * \param[in] num the numerator.
+ *
+ * \param[in] den the denominator.
+ *
+ * \return the quotient.
+ */
 int divfloor(int num, int den) {
 	return (num < 0 ? num - (den - 1) : num) / den;
 }
 
+/**
+ * \brief Computes the mathematical modulus of two integers.
+ *
+ * \param[in] num the numerator.
+ *
+ * \param[in] den the denominator, which must be positive.
+ *
+ * \return the nonnegative modulus of \p num divided by \p den.
+ */
 int real_mod(int num, int den) {
 	num %= den;
 	if(num < 0) {
@@ -34,6 +53,9 @@ int parse_int(const std::string &s) {
 	return value;
 }
 
+/**
+ * \brief Displays the usage help text.
+ */
 void usage() {
 	std::cerr << "Usage:\n";
 	std::cerr << appname << " coord-calc X Z\n";

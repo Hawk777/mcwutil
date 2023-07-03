@@ -22,12 +22,38 @@ using namespace std::literals::string_view_literals;
 
 namespace mcwutil::nbt {
 namespace {
+/**
+ * \brief verifies that a required number of bytes are available in the nbt
+ * data.
+ *
+ * \param[in] needed the number of bytes needed for the next decoding step.
+ *
+ * \param[in] left the number of bytes remaining in source data.
+ *
+ * \exception std::runtime_error if \p left < \p needed.
+ */
 void check_left(std::size_t needed, std::size_t left) {
 	if(left < needed) {
 		throw std::runtime_error("Malformed NBT: input truncated.");
 	}
 }
 
+/**
+ * \brief Updates the input pointer and length to consume a specified number of
+ * bytes.
+ *
+ * \pre \p n ≤ \p input_left.
+ *
+ * \post \p input_ptr is incremented by \p n.
+ *
+ * \post \p input_left is decremented by \p n.
+ *
+ * \param[in] n the number of bytes to consume.
+ *
+ * \param[in, out] input_ptr the data pointer to increment.
+ *
+ * \param[in, out] input_left the number of bytes remaining, to decrement.
+ */
 void eat(std::size_t n, uint8_t *&input_ptr, std::size_t &input_left) {
 	assert(n <= input_left);
 	input_ptr += n;
@@ -36,6 +62,37 @@ void eat(std::size_t n, uint8_t *&input_ptr, std::size_t &input_left) {
 
 void handle_named(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint8_t *sub_table, const std::vector<std::u8string>::const_iterator path_first, const std::vector<std::u8string>::const_iterator path_last, bool path_ok);
 
+/**
+ * \brief Handles the content of a data item.
+ *
+ * \pre \p input_ptr points at the beginning of the encoded contents of a data
+ * item.
+ *
+ * \post \p input_ptr points just past the contents of the data item.
+ *
+ * \post \p input_left is decremented by the same amount as \p input_ptr is
+ * incremented.
+ *
+ * \post If appropriate, the data that \p input_ptr advanced over was modified
+ * according to \p sub_table.
+ *
+ * \param[in] tag the data type.
+ *
+ * \param[in, out] input_ptr the data pointer, through which data is modified
+ * in-place.
+ *
+ * \param[in, out] input_left the number of bytes remaining.
+ *
+ * \param[in] sub_table the table of byte value substitutions to apply.
+ *
+ * \param[in] path_first the start of the portion of the user-specified path
+ * that has not been matched yet.
+ *
+ * \param[in] path_last the past-the-end of the user-specified path.
+ *
+ * \param[in] path_ok if the path to this point matched the user-specified
+ * path, so substitution should be applied in this subtree.
+ */
 void handle_content(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint8_t *sub_table, const std::vector<std::u8string>::const_iterator path_first, const std::vector<std::u8string>::const_iterator path_last, bool path_ok) {
 	switch(tag) {
 		case nbt::TAG_END:
@@ -182,6 +239,37 @@ void handle_content(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 	throw std::runtime_error("Malformed NBT: unrecognized tag.");
 }
 
+/**
+ * \brief Handles a single key/value pair in a \ref TAG_COMPOUND.
+ *
+ * \pre \p input_ptr points at the beginning of the name portion of the
+ * key/value pair, i.e. just past the tag byte.
+ *
+ * \post \p input_ptr points just past the contents of the key/value pair.
+ *
+ * \post \p input_left is decremented by the same amount as \p input_ptr is
+ * incremented.
+ *
+ * \post If appropriate, the data that \p input_ptr advanced over was modified
+ * according to \p sub_table.
+ *
+ * \param[in] tag the data type.
+ *
+ * \param[in, out] input_ptr the data pointer, through which data is modified
+ * in-place.
+ *
+ * \param[in, out] input_left the number of bytes remaining.
+ *
+ * \param[in] sub_table the table of byte value substitutions to apply.
+ *
+ * \param[in] path_first the start of the portion of the user-specified path
+ * that has not been matched yet.
+ *
+ * \param[in] path_last the past-the-end of the user-specified path.
+ *
+ * \param[in] path_ok if the path to this point matched the user-specified
+ * path, so substitution should be applied in this subtree.
+ */
 void handle_named(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint8_t *sub_table, const std::vector<std::u8string>::const_iterator path_first, const std::vector<std::u8string>::const_iterator path_last, bool path_ok) {
 	// Read name length.
 	check_left(2, input_left);
@@ -212,6 +300,9 @@ void handle_named(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, co
 	handle_content(tag, input_ptr, input_left, sub_table, new_path_first, path_last, path_ok);
 }
 
+/**
+ * \brief Displays the usage help text.
+ */
 void usage() {
 	std::cerr << "Usage:\n";
 	std::cerr << appname << " nbt-patch-barray nbtfile barraypath from1 to1 [from2 to2 ...]\n";

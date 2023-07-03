@@ -22,6 +22,18 @@ using namespace std::literals::string_view_literals;
 
 namespace mcwutil::nbt {
 namespace {
+/**
+ * \brief Returns the numeric tag value for a given XML element.
+ *
+ * \param[in] name the XML element name.
+ *
+ * \param[in] message the message to throw in an exception if \p name is not
+ * one of the recognized names.
+ *
+ * \return the numeric tag value.
+ *
+ * \exception std::runtime_error if \p name is not recognized.
+ */
 nbt::tag tag_for_child_of_named_or_list(std::u8string_view name, const char *message) {
 	if(name == u8"byte"sv)
 		return nbt::TAG_BYTE;
@@ -50,14 +62,43 @@ nbt::tag tag_for_child_of_named_or_list(std::u8string_view name, const char *mes
 	throw std::runtime_error(message);
 }
 
+/**
+ * \brief Returns the numeric tag value for a given XML element inside a \c
+ * named element.
+ *
+ * \param[in] name the XML element name.
+ *
+ * \return the numeric tag value.
+ *
+ * \exception std::runtime_error if \p name is not recognized.
+ */
 nbt::tag tag_for_child_of_named(std::u8string_view name) {
 	return tag_for_child_of_named_or_list(name, "Malformed NBT XML: child of named must be one of (byte|short|int|long|float|double|barray|string|list|compound|iarray|larray).");
 }
 
+/**
+ * \brief Returns the numeric tag value for a given XML element inside a \c
+ * named element.
+ *
+ * \param[in] name the XML element name.
+ *
+ * \return the numeric tag value.
+ *
+ * \exception std::runtime_error if \p name is not recognized.
+ */
 nbt::tag tag_for_child_of_list(std::u8string_view name) {
 	return tag_for_child_of_named_or_list(name, "Malformed NBT XML: child of list must be one of (byte|short|int|long|float|double|barray|string|list|compound|iarray|larray).");
 }
 
+/**
+ * \brief Checks that the numeric subtype specified for a \c list element is
+ * acceptable.
+ *
+ * \param[in] subtype the numeric subtype.
+ *
+ * \exception std::runtime_error if \p subtype is not a legal numeric subtype
+ * for a \c list element.
+ */
 void check_list_subtype(nbt::tag subtype) {
 	switch(subtype) {
 		case nbt::TAG_END:
@@ -78,6 +119,13 @@ void check_list_subtype(nbt::tag subtype) {
 	throw std::runtime_error("Malformed NBT XML: list has bad subtype.");
 }
 
+/**
+ * \brief Converts an XML element to NBT.
+ *
+ * \param[out] nbt_fd the file descriptor to write to.
+ *
+ * \param[in] elt the XML element to convert.
+ */
 void write_nbt(const file_descriptor &nbt_fd, const xmlNode &elt) {
 	std::u8string_view elt_name = xml::node_name(elt);
 	if(elt_name == u8"named"sv) {
@@ -406,6 +454,13 @@ void write_nbt(const file_descriptor &nbt_fd, const xmlNode &elt) {
 	}
 }
 
+/**
+ * \brief Converts an XML document to NBT.
+ *
+ * \param[out] nbt_fd the file descriptor to write to.
+ *
+ * \param[in] doc the XML document to convert.
+ */
 void write_nbt(const file_descriptor &nbt_fd, const xmlDoc &doc) {
 	const xmlNode &root = *xmlDocGetRootElement(&doc);
 	if(xml::node_name(root) != u8"minecraft-nbt"sv) {

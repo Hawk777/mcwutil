@@ -18,12 +18,38 @@
 
 namespace mcwutil::nbt {
 namespace {
+/**
+ * \brief verifies that a required number of bytes are available in the nbt
+ * data.
+ *
+ * \param[in] needed the number of bytes needed for the next decoding step.
+ *
+ * \param[in] left the number of bytes remaining in source data.
+ *
+ * \exception std::runtime_error if \p left < \p needed.
+ */
 void check_left(std::size_t needed, std::size_t left) {
 	if(left < needed) {
 		throw std::runtime_error("Malformed NBT: input truncated.");
 	}
 }
 
+/**
+ * \brief Updates the input pointer and length to consume a specified number of
+ * bytes.
+ *
+ * \pre \p n ≤ \p input_left.
+ *
+ * \post \p input_ptr is incremented by \p n.
+ *
+ * \post \p input_left is decremented by \p n.
+ *
+ * \param[in] n the number of bytes to consume.
+ *
+ * \param[in, out] input_ptr the data pointer to increment.
+ *
+ * \param[in, out] input_left the number of bytes remaining, to decrement.
+ */
 void eat(std::size_t n, const uint8_t *&input_ptr, std::size_t &input_left) {
 	assert(n <= input_left);
 	input_ptr += n;
@@ -32,6 +58,27 @@ void eat(std::size_t n, const uint8_t *&input_ptr, std::size_t &input_left) {
 
 void parse_name_and_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::tag tag, xmlNode &parent_elt);
 
+/**
+ * \brief Converts the content of a data item to XML form and appends it to a
+ * parent XML element.
+ *
+ * \pre \p input_ptr points at the beginning of the encoded contents of a data
+ * item.
+ *
+ * \post \p input_ptr points just past the contents of the data item.
+ *
+ * \post \p input_left is decremented by the same amount as \p input_ptr is
+ * incremented.
+ *
+ * \param[in, out] input_ptr the data pointer.
+ *
+ * \param[in, out] input_left the number of bytes remaining.
+ *
+ * \param[in] tag the data type.
+ *
+ * \param[out] parent_elt the XML element to which to append a child
+ * representing the data item.
+ */
 void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::tag tag, xmlNode &parent_elt) {
 	switch(tag) {
 		case nbt::TAG_END:
@@ -240,6 +287,27 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::tag tag
 	throw std::runtime_error("Malformed NBT: unrecognized tag.");
 }
 
+/**
+ * \brief Converts a single key/value pair in a \ref TAG_COMPOUND to an XML \c
+ * named element and appends it to a parent XML element.
+ *
+ * \pre \p input_ptr points at the beginning of the encoded contents of a data
+ * item.
+ *
+ * \post \p input_ptr points just past the contents of the data item.
+ *
+ * \post \p input_left is decremented by the same amount as \p input_ptr is
+ * incremented.
+ *
+ * \param[in, out] input_ptr the data pointer.
+ *
+ * \param[in, out] input_left the number of bytes remaining.
+ *
+ * \param[in] tag the data type.
+ *
+ * \param[out] parent_elt the XML element to which to append a \c named
+ * element for the key/value pair.
+ */
 void parse_name_and_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::tag tag, xmlNode &parent_elt) {
 	check_left(2, input_left);
 	int16_t name_length = codec::decode_u16(input_ptr);

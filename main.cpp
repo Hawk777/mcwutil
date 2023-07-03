@@ -14,6 +14,9 @@
 
 namespace mcwutil {
 namespace {
+/**
+ * \brief Displays the usage help text.
+ */
 void usage() {
 	std::cerr << "Usage:\n";
 	std::cerr << appname << " command [arguments...]\n";
@@ -31,6 +34,16 @@ void usage() {
 	std::cerr << "  nbt-patch-barray - replaces specific byte values in NBT byte arrays with other values\n";
 }
 
+/**
+ * \brief The application entry point, wrapped in exception handling logic.
+ *
+ * \param[in] argc the number of command-line arguments, including the
+ * application name.
+ *
+ * \param[in] argv the command-line arguments.
+ *
+ * \return the application exit code.
+ */
 int main_impl(int argc, char **argv) {
 	// Set the current locale from environment variables.
 	std::locale::global(std::locale(""));

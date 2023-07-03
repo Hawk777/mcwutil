@@ -37,6 +37,10 @@ struct error_collector final {
 
 /**
  * \brief The generic error handler used with \ref error_collector.
+ *
+ * \param[in] context a pointer to the \ref error_collector.
+ *
+ * \param[in] msg the \c printf style format string of the error message.
  */
 void generic_error_handler(void *context, const char *msg, ...) {
 	// Turn the message into a string.
@@ -64,6 +68,10 @@ void generic_error_handler(void *context, const char *msg, ...) {
 
 /**
  * \brief The structured error handler used with \ref error_collector.
+ *
+ * \param[in] context a pointer to the \ref error_collector.
+ *
+ * \param[in] e the error that occurred.
  */
 void structured_error_handler(void *context, xmlError *e) {
 	// Duplicate the error so the contained pointers will not be invalidated
@@ -79,6 +87,12 @@ void structured_error_handler(void *context, xmlError *e) {
 /**
  * \brief An external entity loader that always fails, to allow safe usage on
  * untrusted XML files.
+ *
+ * \param[in] url the URL of the requested entity.
+ *
+ * \param[in] context the parser context that is requesting the entity.
+ *
+ * \return \c nullptr.
  */
 xmlParserInput *null_entity_loader(const char *url, const char *, xmlParserCtxt *context) {
 	xmlParserError(context, "external entity reference to %s rejected", url);

@@ -22,18 +22,59 @@ using namespace std::literals::string_view_literals;
 
 namespace mcwutil::nbt {
 namespace {
+/**
+ * \brief An array of block IDs compiled from the \c Blocks and \c Add arrays
+ * for a single 16×16×16 section.
+ */
 typedef std::array<uint16_t, 16 * 16 * 16> Section;
 
+/**
+ * \brief The path to the \c Sections list.
+ */
 const std::vector<std::u8string_view> PATH_TO_SECTIONS = {u8""sv, u8"Level"sv, u8"Sections"sv};
+
+/**
+ * \brief The path to the \c Blocks byte array in a section.
+ */
 const std::vector<std::u8string_view> PATH_TO_BLOCKS = {u8""sv, u8"Level"sv, u8"Sections"sv, u8"Blocks"sv};
+
+/**
+ * \brief The path to the \c Add byte array in a section.
+ */
 const std::vector<std::u8string_view> PATH_TO_ADD = {u8""sv, u8"Level"sv, u8"Sections"sv, u8"Add"sv};
 
+/**
+ * \brief Verifies that a required number of bytes are available in the NBT
+ * data.
+ *
+ * \param[in] needed the number of bytes needed for the next decoding step.
+ *
+ * \param[in] left the number of bytes remaining in source data.
+ *
+ * \exception std::runtime_error if \p left < \p needed.
+ */
 void check_left(std::size_t needed, std::size_t left) {
 	if(left < needed) {
 		throw std::runtime_error("Malformed NBT: input truncated.");
 	}
 }
 
+/**
+ * \brief Updates the input pointer and length to consume a specified number of
+ * bytes.
+ *
+ * \pre \p n ≤ \p input_left.
+ *
+ * \post \p input_ptr is incremented by \p n.
+ *
+ * \post \p input_left is decremented by \p n.
+ *
+ * \param[in] n the number of bytes to consume.
+ *
+ * \param[in, out] input_ptr the data pointer to increment.
+ *
+ * \param[in, out] input_left the number of bytes remaining, to decrement.
+ */
 void eat(std::size_t n, uint8_t *&input_ptr, std::size_t &input_left) {
 	assert(n <= input_left);
 	input_ptr += n;
@@ -42,6 +83,32 @@ void eat(std::size_t n, uint8_t *&input_ptr, std::size_t &input_left) {
 
 void handle_named(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint16_t *sub_table, const file_descriptor &output_fd, Section &section_blocks, std::vector<std::u8string_view> &path);
 
+/**
+ * \brief Handles the content of a data item.
+ *
+ * \pre \p input_ptr points at the beginning of the encoded contents of a data
+ * item.
+ *
+ * \post \p input_ptr points just past the contents of the data item.
+ *
+ * \post \p input_left is decremented by the same amount as \p input_ptr is
+ * incremented.
+ *
+ * \param[in] tag the data type.
+ *
+ * \param[in, out] input_ptr the data pointer.
+ *
+ * \param[in, out] input_left the number of bytes remaining.
+ *
+ * \param[in] sub_table the table of block ID substitutions to apply.
+ *
+ * \param[out] output_fd the file descriptor to write the result to.
+ *
+ * \param[in, out] section_blocks the working storage in which the section’s
+ * block IDs are reassembled from their split components.
+ *
+ * \param[in] path the path to the current location.
+ */
 void handle_content(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint16_t *sub_table, const file_descriptor &output_fd, Section &section_blocks, std::vector<std::u8string_view> &path) {
 	switch(tag) {
 		case nbt::TAG_END:
@@ -250,6 +317,32 @@ void handle_content(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 	throw std::runtime_error("Malformed NBT: unrecognized tag.");
 }
 
+/**
+ * \brief Handles a single key/value pair in a \ref TAG_COMPOUND.
+ *
+ * \pre \p input_ptr points at the beginning of the name portion of the
+ * key/value pair, i.e. just past the tag byte.
+ *
+ * \post \p input_ptr points just past the contents of the key/value pair.
+ *
+ * \post \p input_left is decremented by the same amount as \p input_ptr is
+ * incremented.
+ *
+ * \param[in] tag the data type.
+ *
+ * \param[in, out] input_ptr the data pointer.
+ *
+ * \param[in, out] input_left the number of bytes remaining.
+ *
+ * \param[in] sub_table the table of block ID substitutions to apply.
+ *
+ * \param[out] output_fd the file descriptor to write the result to.
+ *
+ * \param[in, out] section_blocks the working storage in which the section’s
+ * block IDs are reassembled from their split components.
+ *
+ * \param[in] path the path to the current location.
+ */
 void handle_named(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, const uint16_t *sub_table, const file_descriptor &output_fd, Section &section_blocks, std::vector<std::u8string_view> &path) {
 	// Read name length.
 	check_left(2, input_left);
@@ -281,6 +374,9 @@ void handle_named(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, co
 	path.pop_back();
 }
 
+/**
+ * \brief Displays the usage help text.
+ */
 void usage() {
 	std::cerr << "Usage:\n";
 	std::cerr << appname << " nbt-block-substitute infile outfile from1 to1 [from2 to2 ...]\n";
