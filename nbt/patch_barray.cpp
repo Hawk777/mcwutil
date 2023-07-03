@@ -334,7 +334,7 @@ void usage() {
  *
  * \return the application exit code.
  */
-int mcwutil::nbt::patch_barray(std::ranges::subrange<char **> args) {
+int mcwutil::nbt::patch_barray(std::span<char *> args) {
 	// Check parameters.
 	if(args.size() < 4 || (args.size() % 2) != 0) {
 		usage();

@@ -332,7 +332,7 @@ void parse_name_and_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt
  *
  * \return the application exit code.
  */
-int mcwutil::nbt::to_xml(std::ranges::subrange<char **> args) {
+int mcwutil::nbt::to_xml(std::span<char *> args) {
 	// Check parameters.
 	if(args.size() != 2) {
 		std::cerr << "Usage:\n";

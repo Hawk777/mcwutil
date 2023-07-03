@@ -493,7 +493,7 @@ void write_nbt(const file_descriptor &nbt_fd, const xmlDoc &doc) {
  *
  * \return the application exit code.
  */
-int mcwutil::nbt::from_xml(std::ranges::subrange<char **> args) {
+int mcwutil::nbt::from_xml(std::span<char *> args) {
 	// Check parameters.
 	if(args.size() != 2) {
 		std::cerr << "Usage:\n";

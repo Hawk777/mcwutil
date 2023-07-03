@@ -32,7 +32,7 @@ using namespace std::literals::string_view_literals;
  *
  * \return the application exit code.
  */
-int mcwutil::region::pack(std::ranges::subrange<char **> args) {
+int mcwutil::region::pack(std::span<char *> args) {
 	// Check parameters.
 	if(args.size() != 2) {
 		std::cerr << "Usage:\n";

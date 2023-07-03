@@ -15,7 +15,7 @@
  *
  * \return the application exit code.
  */
-int mcwutil::zlib::compress(std::ranges::subrange<char **> args) {
+int mcwutil::zlib::compress(std::span<char *> args) {
 	// Check parameters.
 	if(args.size() != 2) {
 		std::cerr << "Usage:\n";
@@ -68,7 +68,7 @@ int mcwutil::zlib::compress(std::ranges::subrange<char **> args) {
  *
  * \return the application exit code.
  */
-int mcwutil::zlib::decompress(std::ranges::subrange<char **> args) {
+int mcwutil::zlib::decompress(std::span<char *> args) {
 	// Check parameters.
 	if(args.size() != 2) {
 		std::cerr << "Usage:\n";
@@ -131,7 +131,7 @@ int mcwutil::zlib::decompress(std::ranges::subrange<char **> args) {
  *
  * \return the application exit code.
  */
-int mcwutil::zlib::check(std::ranges::subrange<char **> args) {
+int mcwutil::zlib::check(std::span<char *> args) {
 	// Check parameters.
 	if(args.size() != 1) {
 		std::cerr << "Usage:\n";

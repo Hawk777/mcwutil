@@ -79,7 +79,7 @@ void usage() {
  *
  * \return the application exit code.
  */
-int mcwutil::calc::coord(std::ranges::subrange<char **> args) {
+int mcwutil::calc::coord(std::span<char *> args) {
 	// Check and parse parameters.
 	if(args.size() != 2) {
 		usage();

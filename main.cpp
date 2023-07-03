@@ -7,7 +7,7 @@
 #include <exception>
 #include <iostream>
 #include <locale>
-#include <ranges>
+#include <span>
 #include <stdexcept>
 #include <string_view>
 #include <typeinfo>
@@ -49,11 +49,11 @@ int main_impl(int argc, char **argv) {
 	std::locale::global(std::locale(""));
 
 	// Wrap the command-line parameters in a view.
-	std::ranges::subrange<char **> args(argv, argv + argc);
+	std::span<char *> args(argv, argc);
 
 	// Extract the application name.
 	appname = args.front();
-	args.advance(1);
+	args = args.subspan(1);
 
 	// Extract the command name.
 	if(args.empty()) {
@@ -61,7 +61,7 @@ int main_impl(int argc, char **argv) {
 		return 1;
 	}
 	std::string_view command = args.front();
-	args.advance(1);
+	args = args.subspan(1);
 
 	// Dispatch.
 	if(command == "coord-calc") {
