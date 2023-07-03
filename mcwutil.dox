@@ -1,0 +1,5 @@
+/**
+\namespace mcwutil
+
+\brief The top-level namespace containing the Minecraft World Utility symbols.
+*/
