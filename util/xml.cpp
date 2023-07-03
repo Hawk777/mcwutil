@@ -36,7 +36,7 @@ struct error_collector final {
 };
 
 /**
- * \brief The generic error handler used with @ref error_collector.
+ * \brief The generic error handler used with \ref error_collector.
  */
 void generic_error_handler(void *context, const char *msg, ...) {
 	// Turn the message into a string.
@@ -63,7 +63,7 @@ void generic_error_handler(void *context, const char *msg, ...) {
 }
 
 /**
- * \brief The structured error handler used with @ref error_collector.
+ * \brief The structured error handler used with \ref error_collector.
  */
 void structured_error_handler(void *context, xmlError *e) {
 	// Duplicate the error so the contained pointers will not be invalidated
@@ -242,7 +242,7 @@ const char8_t *mcwutil::xml::node_content(const xmlNode &node) {
  *
  * \param[in] attr the name of the attribute.
  *
- * \return the value of the attribute, or @c nullptr if \p node does not
+ * \return the value of the attribute, or \c nullptr if \p node does not
  * possess \p attr.
  */
 const char8_t *mcwutil::xml::node_attr(const xmlNode &node, const char8_t *attr) {
