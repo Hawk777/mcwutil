@@ -85,8 +85,6 @@ xmlParserInput *null_entity_loader(const char *url, const char *, xmlParserCtxt 
 	external_entity_reference_rejected = true;
 	return nullptr;
 }
-}
-}
 
 /**
  * \brief Installs an error collector.
@@ -103,6 +101,8 @@ error_collector::error_collector() :
 error_collector::~error_collector() {
 	xmlSetGenericErrorFunc(nullptr, nullptr);
 	xmlSetStructuredErrorFunc(nullptr, nullptr);
+}
+}
 }
 
 /**
