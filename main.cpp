@@ -84,9 +84,9 @@ int main_impl(int argc, char **argv) {
  * \brief The application entry point.
  *
  * \param[in] argc the number of command-line arguments, including the
- * application name
+ * application name.
  *
- * \param[in] argv the command-line arguments
+ * \param[in] argv the command-line arguments.
  */
 int main(int argc, char **argv) {
 	try {

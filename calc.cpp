@@ -50,7 +50,7 @@ void usage() {
 /**
  * \brief Entry point for the \c coord-calc utility.
  *
- * \param[in] args the command-line arguments
+ * \param[in] args the command-line arguments.
  */
 int mcwutil::calc::coord(std::ranges::subrange<char **> args) {
 	// Check and parse parameters.
