@@ -6,6 +6,10 @@
 #include <string_view>
 
 namespace mcwutil {
+/**
+ * \brief Symbols related to converting between types of strings and between
+ * strings and numbers.
+ */
 namespace string {
 std::string todecu(uintmax_t value, unsigned int width = 0);
 std::string todecs(intmax_t value, unsigned int width = 0);

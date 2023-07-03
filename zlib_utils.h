@@ -4,6 +4,9 @@
 #include <ranges>
 
 namespace mcwutil {
+/**
+ * \brief Symbols related to the ZLib compression format.
+ */
 namespace zlib {
 int compress(std::ranges::subrange<char **> args);
 int decompress(std::ranges::subrange<char **> args);

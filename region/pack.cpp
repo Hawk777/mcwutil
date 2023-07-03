@@ -25,6 +25,13 @@
 using namespace std::literals::string_literals;
 using namespace std::literals::string_view_literals;
 
+/**
+ * \brief Entry point for the \c region-pack utility.
+ *
+ * \param[in] args the command-line arguments.
+ *
+ * \return the application exit code.
+ */
 int mcwutil::region::pack(std::ranges::subrange<char **> args) {
 	// Check parameters.
 	if(args.size() != 2) {

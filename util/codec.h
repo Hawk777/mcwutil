@@ -5,6 +5,9 @@
 #include <stdint.h>
 
 namespace mcwutil {
+/**
+ * \brief Symbols related to converting between bytes and primitive data types.
+ */
 namespace codec {
 uint32_t encode_float_to_u32(float x);
 float decode_u32_to_float(uint32_t x);

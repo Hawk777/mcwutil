@@ -298,6 +298,13 @@ void usage() {
 }
 }
 
+/**
+ * \brief Entry point for the \c nbt-block-substitute utility.
+ *
+ * \param[in] args the command-line arguments.
+ *
+ * \return the application exit code.
+ */
 int mcwutil::nbt::block_substitute(std::ranges::subrange<char **> args) {
 	// Check parameters.
 	if(args.size() < 4 || (args.size() % 2) != 0) {

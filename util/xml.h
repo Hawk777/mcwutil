@@ -12,6 +12,9 @@
 namespace mcwutil {
 class file_descriptor;
 
+/**
+ * \brief Symbols related to XML file loading, saving, and manipulation.
+ */
 namespace xml {
 /**
  * \brief An individual XML parsing or saving error.
@@ -36,9 +39,23 @@ struct error final {
 	// Because xmlErrors contain pointers to heap allocations, they cannot be
 	// naïvely copied. However they can be moved.
 	explicit error(const error &) = delete;
-	explicit error(error &&) = default;
+
+	/**
+	 * \brief Moves an @c error.
+	 *
+	 * \param[in] moveref the error to move from.
+	 */
+	explicit error(error &&moveref) = default;
 	void operator=(const error &) = delete;
-	error &operator=(error &&) = default;
+
+	/**
+	 * \brief Moves an @c error.
+	 *
+	 * \param[in] moveref the error to move from.
+	 *
+	 * \return \p *this.
+	 */
+	error &operator=(error &&moveref) = default;
 };
 
 /**

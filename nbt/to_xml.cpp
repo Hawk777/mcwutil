@@ -257,6 +257,13 @@ void parse_name_and_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt
 }
 }
 
+/**
+ * \brief Entry point for the \c nbt-to-xml utility.
+ *
+ * \param[in] args the command-line arguments.
+ *
+ * \return the application exit code.
+ */
 int mcwutil::nbt::to_xml(std::ranges::subrange<char **> args) {
 	// Check parameters.
 	if(args.size() != 2) {

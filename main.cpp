@@ -87,6 +87,8 @@ int main_impl(int argc, char **argv) {
  * application name.
  *
  * \param[in] argv the command-line arguments.
+ *
+ * \return the application exit code.
  */
 int main(int argc, char **argv) {
 	try {

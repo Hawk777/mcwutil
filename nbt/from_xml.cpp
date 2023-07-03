@@ -431,6 +431,13 @@ void write_nbt(const file_descriptor &nbt_fd, const xmlDoc &doc) {
 }
 }
 
+/**
+ * \brief Entry point for the \c nbt-from-xml utility.
+ *
+ * \param[in] args the command-line arguments.
+ *
+ * \return the application exit code.
+ */
 int mcwutil::nbt::from_xml(std::ranges::subrange<char **> args) {
 	// Check parameters.
 	if(args.size() != 2) {

@@ -8,6 +8,13 @@
 #include <vector>
 #include <zlib.h>
 
+/**
+ * \brief Entry point for the \c zlib-compress utility.
+ *
+ * \param[in] args the command-line arguments.
+ *
+ * \return the application exit code.
+ */
 int mcwutil::zlib::compress(std::ranges::subrange<char **> args) {
 	// Check parameters.
 	if(args.size() != 2) {
@@ -54,6 +61,13 @@ int mcwutil::zlib::compress(std::ranges::subrange<char **> args) {
 	return 0;
 }
 
+/**
+ * \brief Entry point for the \c zlib-decompress utility.
+ *
+ * \param[in] args the command-line arguments.
+ *
+ * \return the application exit code.
+ */
 int mcwutil::zlib::decompress(std::ranges::subrange<char **> args) {
 	// Check parameters.
 	if(args.size() != 2) {
@@ -110,6 +124,13 @@ int mcwutil::zlib::decompress(std::ranges::subrange<char **> args) {
 	return 0;
 }
 
+/**
+ * \brief Entry point for the \c zlib-check utility.
+ *
+ * \param[in] args the command-line arguments.
+ *
+ * \return the application exit code.
+ */
 int mcwutil::zlib::check(std::ranges::subrange<char **> args) {
 	// Check parameters.
 	if(args.size() != 1) {
