@@ -49,7 +49,14 @@ class mapped_file {
 	void sync();
 
 	private:
+	/**
+	 * \brief The base address of the memory-mapped region.
+	 */
 	void *data_;
+
+	/**
+	 * \brief The size of the file.
+	 */
 	std::size_t size_;
 };
 }

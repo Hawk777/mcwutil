@@ -32,6 +32,10 @@ class file_descriptor {
 	void ftruncate(off_t length) const;
 
 	private:
+	/**
+	 * \brief The raw file descriptor value, or −1 if this object has been
+	 * closed or moved from.
+	 */
 	int fd_;
 
 	explicit file_descriptor(const char *file, int flags, mode_t mode);

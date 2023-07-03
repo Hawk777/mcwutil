@@ -227,6 +227,15 @@ void file_descriptor::ftruncate(off_t length) const {
 	}
 }
 
+/**
+ * \brief Constructs a new file_descriptor by calling \c open(2).
+ *
+ * \param[in] file the name of the file to open or create.
+ *
+ * \param[in] flags the file flags to use as per \c open(2).
+ *
+ * \param[in] mode the permissions to create a new file with, if \c O_CREAT is included in \p flags.
+ */
 file_descriptor::file_descriptor(const char *file, int flags, mode_t mode) :
 		fd_(open(file, flags, mode)) {
 	if(fd_ < 0) {
