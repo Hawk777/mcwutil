@@ -95,11 +95,17 @@ inline T decode_integer(I buffer)
  *
  * The floating-point number must be 4 bytes wide.
  *
+ * \tparam I the byte iterator from which to fetch source bytes, which defaults
+ * to <code>const uint8_t *</code>.
+ *
  * \param[in] buffer the data to extract from.
  *
  * \return the floating-point number.
  */
-inline float decode_float(const uint8_t *buffer) {
+template<std::input_iterator I = const uint8_t *>
+inline float decode_float(I buffer)
+	requires std::same_as<std::iter_value_t<I>, uint8_t>
+{
 	return decode_u32_to_float(decode_integer<uint32_t>(buffer));
 }
 
@@ -108,11 +114,17 @@ inline float decode_float(const uint8_t *buffer) {
  *
  * The floating-point number must be 8 bytes wide.
  *
+ * \tparam I the byte iterator from which to fetch source bytes, which defaults
+ * to <code>const uint8_t *</code>.
+ *
  * \param[in] buffer the data to extract from.
  *
  * \return the floating-point number.
  */
-inline double decode_double(const uint8_t *buffer) {
+template<std::input_iterator I = const uint8_t *>
+inline double decode_double(I buffer)
+	requires std::same_as<std::iter_value_t<I>, uint8_t>
+{
 	return decode_u64_to_double(decode_integer<uint64_t>(buffer));
 }
 }

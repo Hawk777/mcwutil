@@ -177,7 +177,7 @@ struct floating_info<float> {
 		test_case<float, bits>{std::numeric_limits<float>::quiet_NaN(), {0x7F, 0x80, 0x00, 0x01}},
 	};
 	static constexpr auto encode = encode_float;
-	static constexpr auto decode = decode_float;
+	static constexpr auto decode = decode_float<const uint8_t *>;
 };
 
 template<>
@@ -205,7 +205,7 @@ struct floating_info<double> {
 		test_case<double, bits>{std::numeric_limits<double>::quiet_NaN(), {0x7F, 0xF0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01}},
 	};
 	static constexpr auto encode = encode_double;
-	static constexpr auto decode = decode_double;
+	static constexpr auto decode = decode_double<const uint8_t *>;
 };
 
 /**
