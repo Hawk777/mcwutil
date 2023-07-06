@@ -120,7 +120,7 @@ enum tag {
 	TAG_INT_ARRAY,
 
 	/**
-	 * \brief A packed array of signed 32-bit integers.
+	 * \brief A packed array of signed 64-bit integers.
 	 *
 	 * The content is:
 	 * 1. The number of integers, a signed 32-bit integer, in big-endian
