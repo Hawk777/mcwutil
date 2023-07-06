@@ -95,7 +95,9 @@ std::string todec_floating(T value) {
  * \return the converted value.
  */
 template<typename T>
-T fromdec(std::string_view s) requires std::integral<T> || std::floating_point<T> {
+T fromdec(std::string_view s)
+	requires std::integral<T> || std::floating_point<T>
+{
 	T ret;
 	std::from_chars_result res = std::from_chars(s.data(), s.data() + s.size(), ret);
 	if(res.ec != std::errc()) {
