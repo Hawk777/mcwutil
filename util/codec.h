@@ -3,6 +3,7 @@
 
 #include <concepts>
 #include <cstddef>
+#include <iterator>
 #include <stdint.h>
 
 namespace mcwutil {
@@ -69,16 +70,22 @@ inline void encode_double(void *b, double x) {
  *
  * \tparam N the number of bytes to decode, which defaults to the size of \p T.
  *
+ * \tparam I the byte iterator from which to fetch source bytes, which defaults
+ * to <code>const uint8_t *</code>.
+ *
  * \param[in] buffer the data to extract from.
  *
  * \return the integer.
  */
-template<std::unsigned_integral T, std::size_t N = sizeof(T)>
-inline T decode_integer(const uint8_t *buffer) {
+template<std::unsigned_integral T, std::size_t N = sizeof(T), std::input_iterator I = const uint8_t *>
+inline T decode_integer(I buffer)
+	requires std::same_as<std::iter_value_t<I>, uint8_t>
+{
 	T ret = 0;
 	for(std::size_t i = 0; i != N; ++i) {
 		ret <<= 8;
-		ret |= buffer[i];
+		ret |= *buffer;
+		++buffer;
 	}
 	return ret;
 }
