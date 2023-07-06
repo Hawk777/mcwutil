@@ -74,12 +74,11 @@ inline void encode_double(void *b, double x) {
  * \return the integer.
  */
 template<std::unsigned_integral T, std::size_t N = sizeof(T)>
-inline T decode_integer(const void *buffer) {
-	const uint8_t *buf = static_cast<const uint8_t *>(buffer);
+inline T decode_integer(const uint8_t *buffer) {
 	T ret = 0;
 	for(std::size_t i = 0; i != N; ++i) {
 		ret <<= 8;
-		ret |= buf[i];
+		ret |= buffer[i];
 	}
 	return ret;
 }
@@ -93,7 +92,7 @@ inline T decode_integer(const void *buffer) {
  *
  * \return the floating-point number.
  */
-inline float decode_float(const void *buffer) {
+inline float decode_float(const uint8_t *buffer) {
 	return decode_u32_to_float(decode_integer<uint32_t>(buffer));
 }
 
@@ -106,7 +105,7 @@ inline float decode_float(const void *buffer) {
  *
  * \return the floating-point number.
  */
-inline double decode_double(const void *buffer) {
+inline double decode_double(const uint8_t *buffer) {
 	return decode_u64_to_double(decode_integer<uint64_t>(buffer));
 }
 }
