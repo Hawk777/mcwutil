@@ -51,7 +51,7 @@ struct integer_info<8> {
 		test_case<uint8_t, bits>{0xFF, {0xFF}},
 	};
 	static constexpr auto encode = encode_integer<uint8_t>;
-	static constexpr auto decode = decode_u8;
+	static constexpr auto decode = decode_integer<uint8_t>;
 };
 
 template<>
@@ -68,7 +68,7 @@ struct integer_info<16> {
 		test_case<uint16_t, bits>{0xFFFF, {0xFF, 0xFF}},
 	};
 	static constexpr auto encode = encode_integer<uint16_t>;
-	static constexpr auto decode = decode_u16;
+	static constexpr auto decode = decode_integer<uint16_t>;
 };
 
 template<>
@@ -87,7 +87,7 @@ struct integer_info<24> {
 		test_case<uint32_t, bits>{0xFFFFFF, {0xFF, 0xFF, 0xFF}},
 	};
 	static constexpr auto encode = encode_integer<uint32_t, 3>;
-	static constexpr auto decode = decode_u24;
+	static constexpr auto decode = decode_integer<uint32_t, 3>;
 };
 
 template<>
@@ -108,7 +108,7 @@ struct integer_info<32> {
 		test_case<uint32_t, bits>{0xFFFFFFFF, {0xFF, 0xFF, 0xFF, 0xFF}},
 	};
 	static constexpr auto encode = encode_integer<uint32_t>;
-	static constexpr auto decode = decode_u32;
+	static constexpr auto decode = decode_integer<uint32_t>;
 };
 
 template<>
@@ -131,7 +131,7 @@ struct integer_info<64> {
 		test_case<uint64_t, bits>{0xFFFFFFFFFFFFFFFF, {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}},
 	};
 	static constexpr auto encode = encode_integer<uint64_t>;
-	static constexpr auto decode = decode_u64;
+	static constexpr auto decode = decode_integer<uint64_t>;
 };
 
 /**

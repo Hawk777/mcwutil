@@ -63,79 +63,25 @@ inline void encode_double(void *b, double x) {
 }
 
 /**
- * \brief Extracts an 8-bit integer from a data buffer.
+ * \brief Extracts an integer from a data buffer.
+ *
+ * \tparam T the type of integer to decode.
+ *
+ * \tparam N the number of bytes to decode, which defaults to the size of \p T.
  *
  * \param[in] buffer the data to extract from.
  *
  * \return the integer.
  */
-inline uint8_t decode_u8(const void *buffer) {
+template<std::unsigned_integral T, std::size_t N = sizeof(T)>
+inline T decode_integer(const void *buffer) {
 	const uint8_t *buf = static_cast<const uint8_t *>(buffer);
-	return buf[0];
-}
-
-/**
- * \brief Extracts a 16-bit integer from a data buffer.
- *
- * \param[in] buffer the data to extract from.
- *
- * \return the integer.
- */
-inline uint16_t decode_u16(const void *buffer) {
-	const uint8_t *buf = static_cast<const uint8_t *>(buffer);
-	uint16_t val = 0;
-	for(std::size_t i = 0; i < 2; ++i) {
-		val = static_cast<uint16_t>((val << 8) | buf[i]);
+	T ret = 0;
+	for(std::size_t i = 0; i != N; ++i) {
+		ret <<= 8;
+		ret |= buf[i];
 	}
-	return val;
-}
-
-/**
- * \brief Extracts a 24-bit integer from a data buffer.
- *
- * \param[in] buffer the data to extract from.
- *
- * \return the integer.
- */
-inline uint32_t decode_u24(const void *buffer) {
-	const uint8_t *buf = static_cast<const uint8_t *>(buffer);
-	uint32_t val = 0;
-	for(std::size_t i = 0; i < 3; ++i) {
-		val = static_cast<uint32_t>((val << 8) | buf[i]);
-	}
-	return val;
-}
-
-/**
- * \brief Extracts a 32-bit integer from a data buffer.
- *
- * \param[in] buffer the data to extract from.
- *
- * \return the integer.
- */
-inline uint32_t decode_u32(const void *buffer) {
-	const uint8_t *buf = static_cast<const uint8_t *>(buffer);
-	uint32_t val = 0;
-	for(std::size_t i = 0; i < 4; ++i) {
-		val = static_cast<uint32_t>((val << 8) | buf[i]);
-	}
-	return val;
-}
-
-/**
- * \brief Extracts a 64-bit integer from a data buffer.
- *
- * \param[in] buffer the data to extract from.
- *
- * \return the integer.
- */
-inline uint64_t decode_u64(const void *buffer) {
-	const uint8_t *buf = static_cast<const uint8_t *>(buffer);
-	uint64_t val = 0;
-	for(std::size_t i = 0; i < 8; ++i) {
-		val = static_cast<uint64_t>((val << 8) | buf[i]);
-	}
-	return val;
+	return ret;
 }
 
 /**
@@ -148,7 +94,7 @@ inline uint64_t decode_u64(const void *buffer) {
  * \return the floating-point number.
  */
 inline float decode_float(const void *buffer) {
-	return decode_u32_to_float(decode_u32(buffer));
+	return decode_u32_to_float(decode_integer<uint32_t>(buffer));
 }
 
 /**
@@ -161,7 +107,7 @@ inline float decode_float(const void *buffer) {
  * \return the floating-point number.
  */
 inline double decode_double(const void *buffer) {
-	return decode_u64_to_double(decode_u64(buffer));
+	return decode_u64_to_double(decode_integer<uint64_t>(buffer));
 }
 }
 }
