@@ -41,7 +41,7 @@ struct error final {
 	explicit error(const error &) = delete;
 
 	/**
-	 * \brief Moves an @c error.
+	 * \brief Moves an \c error.
 	 *
 	 * \param[in] moveref the error to move from.
 	 */
@@ -49,7 +49,7 @@ struct error final {
 	void operator=(const error &) = delete;
 
 	/**
-	 * \brief Moves an @c error.
+	 * \brief Moves an \c error.
 	 *
 	 * \param[in] moveref the error to move from.
 	 *
