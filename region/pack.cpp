@@ -13,8 +13,6 @@
 #include <filesystem>
 #include <iostream>
 #include <libxml/tree.h>
-#include <locale>
-#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -75,25 +73,13 @@ int mcwutil::region::pack(std::span<char *> args) {
 		if(i->type != XML_ELEMENT_NODE) {
 			continue;
 		}
-		unsigned int index;
-		{
-			std::istringstream iss(string::u2l(xml::node_attr(*i, u8"index")));
-			iss.imbue(std::locale("C"));
-			iss >> index;
-		}
-		unsigned int present;
-		{
-			std::istringstream iss(string::u2l(xml::node_attr(*i, u8"present")));
-			iss.imbue(std::locale("C"));
-			iss >> present;
-		}
+		unsigned int index = string::fromdecui(string::u2l(xml::node_attr(*i, u8"index")));
+		unsigned int present = string::fromdecui(string::u2l(xml::node_attr(*i, u8"present")));
 		uint32_t timestamp;
 		{
 			const char8_t *timestamp_raw = xml::node_attr(*i, u8"timestamp");
 			if(timestamp_raw) {
-				std::istringstream iss(string::u2l(timestamp_raw));
-				iss.imbue(std::locale("C"));
-				iss >> timestamp;
+				timestamp = string::fromdecu32(string::u2l(timestamp_raw));
 			} else {
 				timestamp = 0;
 			}

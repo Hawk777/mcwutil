@@ -83,6 +83,29 @@ std::string todec_floating(T value) {
 		buf.resize(buf.size() * 2);
 	}
 }
+
+/**
+ * \brief Converts a decimal string, potentially in scientific notation in case
+ * of a floating-point return type, to a numeric value.
+ *
+ * \tparam T the type of value to convert to.
+ *
+ * \param[in] s the string to convert.
+ *
+ * \return the converted value.
+ */
+template<typename T>
+T fromdec(std::string_view s) requires std::integral<T> || std::floating_point<T> {
+	T ret;
+	std::from_chars_result res = std::from_chars(s.data(), s.data() + s.size(), ret);
+	if(res.ec != std::errc()) {
+		throw std::system_error(std::make_error_code(res.ec));
+	}
+	if(res.ptr != s.data() + s.size()) {
+		throw std::system_error(std::make_error_code(std::errc::result_out_of_range));
+	}
+	return ret;
+}
 }
 }
 
@@ -134,6 +157,96 @@ std::string mcwutil::string::todecf(float value) {
  */
 std::string mcwutil::string::todecd(double value) {
 	return todec_floating(value);
+}
+
+/**
+ * \brief Converts a decimal string to a signed 8-bit integer.
+ *
+ * \param[in] s the string to convert.
+ *
+ * \return the integer value.
+ */
+int8_t mcwutil::string::fromdecs8(std::string_view s) {
+	return fromdec<int8_t>(s);
+}
+
+/**
+ * \brief Converts a decimal string to a signed 16-bit integer.
+ *
+ * \param[in] s the string to convert.
+ *
+ * \return the integer value.
+ */
+int16_t mcwutil::string::fromdecs16(std::string_view s) {
+	return fromdec<int16_t>(s);
+}
+
+/**
+ * \brief Converts a decimal string to a signed 32-bit integer.
+ *
+ * \param[in] s the string to convert.
+ *
+ * \return the integer value.
+ */
+int32_t mcwutil::string::fromdecs32(std::string_view s) {
+	return fromdec<int32_t>(s);
+}
+
+/**
+ * \brief Converts a decimal string to a signed 64-bit integer.
+ *
+ * \param[in] s the string to convert.
+ *
+ * \return the integer value.
+ */
+int64_t mcwutil::string::fromdecs64(std::string_view s) {
+	return fromdec<int64_t>(s);
+}
+
+/**
+ * \brief Converts a decimal string to an unsigned 32-bit integer.
+ *
+ * \param[in] s the string to convert.
+ *
+ * \return the integer value.
+ */
+uint32_t mcwutil::string::fromdecu32(std::string_view s) {
+	return fromdec<uint32_t>(s);
+}
+
+/**
+ * \brief Converts a decimal string to an unsigned native-sized integer.
+ *
+ * \param[in] s the string to convert.
+ *
+ * \return the integer value.
+ */
+unsigned int mcwutil::string::fromdecui(std::string_view s) {
+	return fromdec<unsigned int>(s);
+}
+
+/**
+ * \brief Converts a decimal string, possibly in scientific notation, to a
+ * single-precision floating-point value.
+ *
+ * \param[in] s the string to convert.
+ *
+ * \return the floating-point value.
+ */
+float mcwutil::string::fromdecf(std::string_view s) {
+	return fromdec<float>(s);
+}
+
+/**
+ * \brief Converts a decimal string, possibly in scientific notation, to a
+ * double-precision floating-point value.
+ *
+ * \param[in] s the string to convert.
+ *
+ * \return the floating-point value.
+ */
+double mcwutil::string::fromdecd(std::string_view s) {
+	return fromdec<double>(s);
 }
 
 /**

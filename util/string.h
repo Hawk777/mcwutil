@@ -15,6 +15,14 @@ std::string todecu(uintmax_t value, unsigned int width = 0);
 std::string todecs(intmax_t value, unsigned int width = 0);
 std::string todecf(float value);
 std::string todecd(double value);
+int8_t fromdecs8(std::string_view s);
+int16_t fromdecs16(std::string_view s);
+int32_t fromdecs32(std::string_view s);
+int64_t fromdecs64(std::string_view s);
+uint32_t fromdecu32(std::string_view s);
+unsigned int fromdecui(std::string_view s);
+float fromdecf(std::string_view s);
+double fromdecd(std::string_view s);
 std::u8string l2u(std::string_view lstr);
 std::string u2l(std::u8string_view ustr);
 }

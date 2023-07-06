@@ -10,9 +10,7 @@
 #include <iostream>
 #include <libxml/tree.h>
 #include <limits>
-#include <locale>
 #include <memory>
-#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -162,25 +160,16 @@ void write_nbt(const file_descriptor &nbt_fd, const xmlNode &elt) {
 		if(!value_raw) {
 			throw std::runtime_error("Malformed NBT XML: byte must have a value.");
 		}
-		std::istringstream iss(string::u2l(value_raw));
-		iss.imbue(std::locale("C"));
-		int value;
-		iss >> value;
-		if(value < std::numeric_limits<int8_t>::min() || value > std::numeric_limits<int8_t>::max()) {
-			throw std::runtime_error("Malformed NBT XML: byte value out of range.");
-		}
+		int8_t value = string::fromdecs8(string::u2l(value_raw));
 		uint8_t buffer[1];
-		codec::encode_u8(&buffer[0], static_cast<int8_t>(value));
+		codec::encode_u8(&buffer[0], value);
 		nbt_fd.write(buffer, sizeof(buffer));
 	} else if(elt_name == u8"short"sv) {
 		const char8_t *value_raw = xml::node_attr(elt, u8"value");
 		if(!value_raw) {
 			throw std::runtime_error("Malformed NBT XML: byte must have a value.");
 		}
-		std::istringstream iss(string::u2l(value_raw));
-		iss.imbue(std::locale("C"));
-		int16_t value;
-		iss >> value;
+		int16_t value = string::fromdecs16(string::u2l(value_raw));
 		uint8_t buffer[sizeof(value)];
 		codec::encode_u16(&buffer[0], value);
 		nbt_fd.write(buffer, sizeof(buffer));
@@ -189,10 +178,7 @@ void write_nbt(const file_descriptor &nbt_fd, const xmlNode &elt) {
 		if(!value_raw) {
 			throw std::runtime_error("Malformed NBT XML: byte must have a value.");
 		}
-		std::istringstream iss(string::u2l(value_raw));
-		iss.imbue(std::locale("C"));
-		int32_t value;
-		iss >> value;
+		int32_t value = string::fromdecs32(string::u2l(value_raw));
 		uint8_t buffer[sizeof(value)];
 		codec::encode_u32(&buffer[0], value);
 		nbt_fd.write(buffer, sizeof(buffer));
@@ -201,10 +187,7 @@ void write_nbt(const file_descriptor &nbt_fd, const xmlNode &elt) {
 		if(!value_raw) {
 			throw std::runtime_error("Malformed NBT XML: byte must have a value.");
 		}
-		std::istringstream iss(string::u2l(value_raw));
-		iss.imbue(std::locale("C"));
-		int64_t value;
-		iss >> value;
+		int64_t value = string::fromdecs64(string::u2l(value_raw));
 		uint8_t buffer[sizeof(value)];
 		codec::encode_u64(&buffer[0], value);
 		nbt_fd.write(buffer, sizeof(buffer));
@@ -213,10 +196,7 @@ void write_nbt(const file_descriptor &nbt_fd, const xmlNode &elt) {
 		if(!value_raw) {
 			throw std::runtime_error("Malformed NBT XML: byte must have a value.");
 		}
-		std::istringstream iss(string::u2l(value_raw));
-		iss.imbue(std::locale("C"));
-		float value;
-		iss >> value;
+		float value = string::fromdecf(string::u2l(value_raw));
 		uint8_t buffer[4];
 		codec::encode_float(&buffer[0], value);
 		nbt_fd.write(buffer, sizeof(buffer));
@@ -225,10 +205,7 @@ void write_nbt(const file_descriptor &nbt_fd, const xmlNode &elt) {
 		if(!value_raw) {
 			throw std::runtime_error("Malformed NBT XML: byte must have a value.");
 		}
-		std::istringstream iss(string::u2l(value_raw));
-		iss.imbue(std::locale("C"));
-		double value;
-		iss >> value;
+		double value = string::fromdecd(string::u2l(value_raw));
 		uint8_t buffer[8];
 		codec::encode_double(&buffer[0], value);
 		nbt_fd.write(buffer, sizeof(buffer));
@@ -300,10 +277,7 @@ void write_nbt(const file_descriptor &nbt_fd, const xmlNode &elt) {
 		if(!subtype_raw) {
 			throw std::runtime_error("Malformed NBT XML: list must have a subtype.");
 		}
-		std::istringstream iss(string::u2l(subtype_raw));
-		iss.imbue(std::locale("C"));
-		unsigned int subtype_int;
-		iss >> subtype_int;
+		unsigned int subtype_int = string::fromdecui(string::u2l(subtype_raw));
 		nbt::tag subtype = static_cast<nbt::tag>(subtype_int);
 		check_list_subtype(subtype);
 		unsigned int element_count = 0;
