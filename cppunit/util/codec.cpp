@@ -50,8 +50,6 @@ struct integer_info<8> {
 		test_case<uint8_t, bits>{1, {1}},
 		test_case<uint8_t, bits>{0xFF, {0xFF}},
 	};
-	static constexpr auto encode = encode_integer<uint8_t>;
-	static constexpr auto decode = decode_integer<uint8_t>;
 };
 
 template<>
@@ -67,8 +65,6 @@ struct integer_info<16> {
 		test_case<uint16_t, bits>{0x1234, {0x12, 0x34}},
 		test_case<uint16_t, bits>{0xFFFF, {0xFF, 0xFF}},
 	};
-	static constexpr auto encode = encode_integer<uint16_t>;
-	static constexpr auto decode = decode_integer<uint16_t>;
 };
 
 template<>
@@ -86,8 +82,6 @@ struct integer_info<24> {
 		test_case<uint32_t, bits>{0x123456, {0x12, 0x34, 0x56}},
 		test_case<uint32_t, bits>{0xFFFFFF, {0xFF, 0xFF, 0xFF}},
 	};
-	static constexpr auto encode = encode_integer<uint32_t, 3>;
-	static constexpr auto decode = decode_integer<uint32_t, 3>;
 };
 
 template<>
@@ -107,8 +101,6 @@ struct integer_info<32> {
 		test_case<uint32_t, bits>{0x12345678, {0x12, 0x34, 0x56, 0x78}},
 		test_case<uint32_t, bits>{0xFFFFFFFF, {0xFF, 0xFF, 0xFF, 0xFF}},
 	};
-	static constexpr auto encode = encode_integer<uint32_t>;
-	static constexpr auto decode = decode_integer<uint32_t>;
 };
 
 template<>
@@ -130,8 +122,6 @@ struct integer_info<64> {
 		test_case<uint64_t, bits>{0x1122334455667788, {0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88}},
 		test_case<uint64_t, bits>{0xFFFFFFFFFFFFFFFF, {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}},
 	};
-	static constexpr auto encode = encode_integer<uint64_t>;
-	static constexpr auto decode = decode_integer<uint64_t>;
 };
 
 /**
@@ -256,7 +246,7 @@ void mcwutil::codec::integer_test<Bits>::test_encode() {
 		buffer.front() = buffer.back() = 0xAA;
 
 		// Perform the encoding.
-		info::encode(buffer.data() + 1, i.value);
+		encode_integer<typename info::type, info::bits / 8>(buffer.data() + 1, i.value);
 
 		// Construct the expected buffer contents, which should be 0xAA in the
 		// first and last positions and the encoded bytes in the middle.
@@ -279,7 +269,7 @@ void mcwutil::codec::integer_test<Bits>::test_decode() {
 	using info = integer_info<Bits>;
 	for(const auto &i : info::cases) {
 		// Test decoding.
-		typename info::type decoded = info::decode(i.bytes.data());
+		typename info::type decoded = decode_integer<typename info::type, info::bits / 8>(i.bytes.data());
 		CPPUNIT_ASSERT_EQUAL(i.value, decoded);
 	}
 }
