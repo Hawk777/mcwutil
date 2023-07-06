@@ -1,10 +1,90 @@
 #include "util/string.h"
+#include <cassert>
+#include <charconv>
+#include <concepts>
 #include <cstddef>
 #include <cuchar>
-#include <locale>
-#include <sstream>
+#include <limits>
 #include <system_error>
-#include <utility>
+
+namespace mcwutil::string {
+namespace {
+/**
+ * \brief Pads a string on the left with zeroes to a specified width.
+ *
+ * \param[in, out] s the string to pad.
+ *
+ * \param[in] width the minimum width to pad \p s to.
+ */
+void pad(std::string &s, std::size_t width) {
+	if(s.size() < width) {
+		std::size_t to_add = width - s.size();
+		s.insert(0, to_add, '0');
+	}
+}
+
+/**
+ * \brief Converts an integer of any type to a fixed-width decimal string.
+ *
+ * \tparam T the type of integer to convert.
+ *
+ * \param[in] value the value to convert.
+ *
+ * \param[in] width the width, in characters, of the output to produce.
+ *
+ * \return the decimal string.
+ */
+template<std::integral T>
+std::string todec_integer(T value, std::size_t width) {
+	constexpr std::size_t sign_size = std::signed_integral<T> ? 1 : 0;
+	// Can’t use max_digits10 because that is only specified for
+	// floating-point-types. digits10 will typically be one lower, because it
+	// means all N-digit numbers can be represented as a uintmax_t, but since
+	// uintmax_t can represent *some* but not all N+1-digit numbers, we need
+	// N+1.
+	constexpr std::size_t max_size = sign_size + std::numeric_limits<uintmax_t>::digits10 + 1;
+	std::string buf(max_size, '\0');
+	std::to_chars_result res = std::to_chars(buf.data(), buf.data() + buf.size(), value);
+	// This should be impossible, since we should have sized the buffer
+	// sufficiently to hold any value.
+	assert(res.ec == std::errc());
+	buf.resize(res.ptr - buf.data());
+	pad(buf, width);
+	return buf;
+}
+
+/**
+ * \brief Converts a floating-point value to a decimal string, potentially in
+ * scientific notation.
+ *
+ * \tparam T the type of value to convert.
+ *
+ * \param[in] value the value to convert.
+ *
+ * \return the decimal string.
+ */
+template<std::floating_point T>
+std::string todec_floating(T value) {
+	constexpr std::size_t initial_buffer_size =
+		1 /* sign */
+		+ std::numeric_limits<T>::max_digits10 /* mantissa */
+		+ 1 /* decimal point */
+		+ 1 /* e */
+		+ 1 /* sign of exponent */
+		+ 3 /* magnitude of exponent, hopefully large enough */
+		+ 10 /* extra margin */;
+	std::string buf(initial_buffer_size, '\0');
+	for(;;) {
+		std::to_chars_result res = std::to_chars(buf.data(), buf.data() + buf.size(), value);
+		if(res.ec == std::errc()) {
+			buf.resize(res.ptr - buf.data());
+			return buf;
+		}
+		buf.resize(buf.size() * 2);
+	}
+}
+}
+}
 
 /**
  * \brief Converts an unsigned integer of any type to a fixed-width decimal string.
@@ -16,13 +96,7 @@
  * \return the decimal string.
  */
 std::string mcwutil::string::todecu(uintmax_t value, unsigned int width) {
-	std::ostringstream oss;
-	oss.imbue(std::locale("C"));
-	oss.flags(std::ios::uppercase | std::ios::dec | std::ios::right);
-	oss.width(width);
-	oss.fill(L'0');
-	oss << value;
-	return std::move(oss).str();
+	return todec_integer(value, width);
 }
 
 /**
@@ -35,13 +109,31 @@ std::string mcwutil::string::todecu(uintmax_t value, unsigned int width) {
  * \return the decimal string.
  */
 std::string mcwutil::string::todecs(intmax_t value, unsigned int width) {
-	std::ostringstream oss;
-	oss.imbue(std::locale("C"));
-	oss.flags(std::ios::uppercase | std::ios::dec | std::ios::right);
-	oss.width(width);
-	oss.fill(L'0');
-	oss << value;
-	return std::move(oss).str();
+	return todec_integer(value, width);
+}
+
+/**
+ * \brief Converts a single-precision floating-point value to a decimal string,
+ * potentially in scientific notation.
+ *
+ * \param[in] value the value to convert.
+ *
+ * \return the decimal string.
+ */
+std::string mcwutil::string::todecf(float value) {
+	return todec_floating(value);
+}
+
+/**
+ * \brief Converts a double-precision floating-point value to a decimal string,
+ * potentially in scientific notation.
+ *
+ * \param[in] value the value to convert.
+ *
+ * \return the decimal string.
+ */
+std::string mcwutil::string::todecd(double value) {
+	return todec_floating(value);
 }
 
 /**

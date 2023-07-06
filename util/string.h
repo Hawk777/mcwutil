@@ -13,6 +13,8 @@ namespace mcwutil {
 namespace string {
 std::string todecu(uintmax_t value, unsigned int width = 0);
 std::string todecs(intmax_t value, unsigned int width = 0);
+std::string todecf(float value);
+std::string todecd(double value);
 std::u8string l2u(std::string_view lstr);
 std::string u2l(std::u8string_view ustr);
 }

@@ -11,8 +11,6 @@
 #include <iostream>
 #include <libxml/tree.h>
 #include <limits>
-#include <locale>
-#include <sstream>
 #include <stdexcept>
 #include <string>
 
@@ -125,12 +123,7 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::tag tag
 			float fl = codec::decode_float(input_ptr);
 			eat(4, input_ptr, input_left);
 			xmlNode &float_elt = xml::node_append_child(parent_elt, u8"float");
-			std::ostringstream oss;
-			oss.imbue(std::locale("C"));
-			oss.flags(std::ios_base::showpoint | std::ios_base::dec | std::ios_base::scientific | std::ios_base::left);
-			oss.precision(12);
-			oss << fl;
-			xml::node_attr(float_elt, u8"value", string::l2u(oss.view()).c_str());
+			xml::node_attr(float_elt, u8"value", string::l2u(string::todecf(fl)).c_str());
 			return;
 		}
 
@@ -139,12 +132,7 @@ void parse_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt::tag tag
 			double db = codec::decode_double(input_ptr);
 			eat(8, input_ptr, input_left);
 			xmlNode &double_elt = xml::node_append_child(parent_elt, u8"double");
-			std::ostringstream oss;
-			oss.imbue(std::locale("C"));
-			oss.flags(std::ios_base::showpoint | std::ios_base::dec | std::ios_base::scientific | std::ios_base::left);
-			oss.precision(20);
-			oss << db;
-			xml::node_attr(double_elt, u8"value", string::l2u(oss.view()).c_str());
+			xml::node_attr(double_elt, u8"value", string::l2u(string::todecd(db)).c_str());
 			return;
 		}
 
