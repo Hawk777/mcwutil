@@ -161,7 +161,7 @@ void handle_content(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 				}
 			} else {
 				uint8_t header[4];
-				codec::encode_u32(&header[0], length);
+				codec::encode_integer<uint32_t>(&header[0], length);
 				output_fd.write(header, sizeof(header));
 				output_fd.write(barray_ptr, length);
 			}
@@ -180,7 +180,7 @@ void handle_content(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 			eat(length, input_ptr, input_left);
 
 			uint8_t header[2];
-			codec::encode_u16(&header[0], length);
+			codec::encode_integer<uint16_t>(&header[0], length);
 			output_fd.write(header, sizeof(header));
 			output_fd.write(string_ptr, length);
 			return;
@@ -197,8 +197,8 @@ void handle_content(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 			}
 
 			uint8_t header[5];
-			codec::encode_u8(&header[0], subtype);
-			codec::encode_u32(&header[1], length);
+			codec::encode_integer<uint8_t>(&header[0], subtype);
+			codec::encode_integer<uint32_t>(&header[1], length);
 			output_fd.write(header, sizeof(header));
 
 			for(int32_t i = 0; i < length; ++i) {
@@ -226,11 +226,11 @@ void handle_content(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 							}
 						}
 						uint8_t header[4];
-						codec::encode_u8(&header[0], nbt::TAG_BYTE_ARRAY);
-						codec::encode_u16(&header[1], sizeof(u8"Blocks") - 1);
+						codec::encode_integer<uint8_t>(&header[0], nbt::TAG_BYTE_ARRAY);
+						codec::encode_integer<uint16_t>(&header[1], sizeof(u8"Blocks") - 1);
 						output_fd.write(header, 3);
 						output_fd.write(u8"Blocks", sizeof(u8"Blocks") - 1);
-						codec::encode_u32(&header[0], 16 * 16 * 16);
+						codec::encode_integer<uint32_t>(&header[0], 16 * 16 * 16);
 						output_fd.write(header, 4);
 						uint8_t buffer[16 * 16 * 16];
 						for(std::size_t i = 0; i < 16 * 16 * 16; ++i) {
@@ -238,11 +238,11 @@ void handle_content(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 						}
 						output_fd.write(buffer, 16 * 16 * 16);
 						if(any_extended) {
-							codec::encode_u8(&header[0], nbt::TAG_BYTE_ARRAY);
-							codec::encode_u16(&header[1], sizeof(u8"Add") - 1);
+							codec::encode_integer<uint8_t>(&header[0], nbt::TAG_BYTE_ARRAY);
+							codec::encode_integer<uint16_t>(&header[1], sizeof(u8"Add") - 1);
 							output_fd.write(header, 3);
 							output_fd.write(u8"Add", sizeof(u8"Add") - 1);
-							codec::encode_u32(&header[0], 16 * 16 * 16 / 2);
+							codec::encode_integer<uint32_t>(&header[0], 16 * 16 * 16 / 2);
 							output_fd.write(header, 4);
 							for(std::size_t i = 0; i < 16 * 16 * 16; i += 2) {
 								buffer[i / 2] = static_cast<uint8_t>((section_blocks[i] >> 8) | ((section_blocks[i + 1] >> 8) << 4));
@@ -251,7 +251,7 @@ void handle_content(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 						}
 					}
 					uint8_t footer;
-					codec::encode_u8(&footer, nbt::TAG_END);
+					codec::encode_integer<uint8_t>(&footer, nbt::TAG_END);
 					output_fd.write(&footer, sizeof(footer));
 					return;
 				}
@@ -268,7 +268,7 @@ void handle_content(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 			}
 
 			uint8_t header[4];
-			codec::encode_u32(&header[0], length);
+			codec::encode_integer<uint32_t>(&header[0], length);
 			output_fd.write(header, sizeof(header));
 
 			output_fd.write(input_ptr, length);
@@ -291,7 +291,7 @@ void handle_content(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, 
 			}
 
 			uint8_t header[4];
-			codec::encode_u32(&header[0], length);
+			codec::encode_integer<uint32_t>(&header[0], length);
 			output_fd.write(header, sizeof(header));
 
 			output_fd.write(input_ptr, length);
@@ -361,8 +361,8 @@ void handle_named(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, co
 	// Write to output.
 	if(!(tag == nbt::TAG_BYTE_ARRAY && (path == PATH_TO_BLOCKS || path == PATH_TO_ADD))) {
 		uint8_t header[3];
-		codec::encode_u8(&header[0], tag);
-		codec::encode_u16(&header[1], name_len);
+		codec::encode_integer<uint8_t>(&header[0], tag);
+		codec::encode_integer<uint16_t>(&header[1], name_len);
 		output_fd.write(header, sizeof(header));
 		output_fd.write(name_ptr, name_len);
 	}

@@ -150,8 +150,8 @@ void write_nbt(const file_descriptor &nbt_fd, const xmlNode &elt) {
 			throw std::runtime_error("Malformed NBT XML: name too long.");
 		}
 		uint8_t header[3];
-		codec::encode_u8(&header[0], subtype);
-		codec::encode_u16(&header[1], static_cast<int16_t>(name.size()));
+		codec::encode_integer<uint8_t>(&header[0], subtype);
+		codec::encode_integer(&header[1], static_cast<uint16_t>(name.size()));
 		nbt_fd.write(header, sizeof(header));
 		nbt_fd.write(name.data(), name.size());
 		write_nbt(nbt_fd, *child);
@@ -160,36 +160,36 @@ void write_nbt(const file_descriptor &nbt_fd, const xmlNode &elt) {
 		if(!value_raw) {
 			throw std::runtime_error("Malformed NBT XML: byte must have a value.");
 		}
-		int8_t value = string::fromdecs8(string::u2l(value_raw));
+		uint8_t value = string::fromdecs8(string::u2l(value_raw));
 		uint8_t buffer[1];
-		codec::encode_u8(&buffer[0], value);
+		codec::encode_integer(&buffer[0], value);
 		nbt_fd.write(buffer, sizeof(buffer));
 	} else if(elt_name == u8"short"sv) {
 		const char8_t *value_raw = xml::node_attr(elt, u8"value");
 		if(!value_raw) {
 			throw std::runtime_error("Malformed NBT XML: byte must have a value.");
 		}
-		int16_t value = string::fromdecs16(string::u2l(value_raw));
+		uint16_t value = string::fromdecs16(string::u2l(value_raw));
 		uint8_t buffer[sizeof(value)];
-		codec::encode_u16(&buffer[0], value);
+		codec::encode_integer(&buffer[0], value);
 		nbt_fd.write(buffer, sizeof(buffer));
 	} else if(elt_name == u8"int"sv) {
 		const char8_t *value_raw = xml::node_attr(elt, u8"value");
 		if(!value_raw) {
 			throw std::runtime_error("Malformed NBT XML: byte must have a value.");
 		}
-		int32_t value = string::fromdecs32(string::u2l(value_raw));
+		uint32_t value = string::fromdecs32(string::u2l(value_raw));
 		uint8_t buffer[sizeof(value)];
-		codec::encode_u32(&buffer[0], value);
+		codec::encode_integer(&buffer[0], value);
 		nbt_fd.write(buffer, sizeof(buffer));
 	} else if(elt_name == u8"long"sv) {
 		const char8_t *value_raw = xml::node_attr(elt, u8"value");
 		if(!value_raw) {
 			throw std::runtime_error("Malformed NBT XML: byte must have a value.");
 		}
-		int64_t value = string::fromdecs64(string::u2l(value_raw));
+		uint64_t value = string::fromdecs64(string::u2l(value_raw));
 		uint8_t buffer[sizeof(value)];
-		codec::encode_u64(&buffer[0], value);
+		codec::encode_integer(&buffer[0], value);
 		nbt_fd.write(buffer, sizeof(buffer));
 	} else if(elt_name == u8"float"sv) {
 		const char8_t *value_raw = xml::node_attr(elt, u8"value");
@@ -251,12 +251,12 @@ void write_nbt(const file_descriptor &nbt_fd, const xmlNode &elt) {
 				throw std::runtime_error("Malformed NBT XML: byte array too long.");
 			}
 			uint8_t header[4];
-			codec::encode_u32(&header[0], static_cast<int32_t>(data.size()));
+			codec::encode_integer(&header[0], static_cast<uint32_t>(data.size()));
 			nbt_fd.write(header, sizeof(header));
 			nbt_fd.write(&data[0], data.size());
 		} else {
 			uint8_t header[4];
-			codec::encode_u32(&header[0], 0);
+			codec::encode_integer<uint32_t>(&header[0], 0);
 			nbt_fd.write(header, sizeof(header));
 		}
 	} else if(elt_name == u8"string"sv) {
@@ -269,7 +269,7 @@ void write_nbt(const file_descriptor &nbt_fd, const xmlNode &elt) {
 			throw std::runtime_error("Malformed NBT XML: string too long.");
 		}
 		uint8_t header[2];
-		codec::encode_u16(&header[0], static_cast<int16_t>(value.size()));
+		codec::encode_integer(&header[0], static_cast<uint16_t>(value.size()));
 		nbt_fd.write(header, sizeof(header));
 		nbt_fd.write(value.data(), value.size());
 	} else if(elt_name == u8"list"sv) {
@@ -293,8 +293,8 @@ void write_nbt(const file_descriptor &nbt_fd, const xmlNode &elt) {
 			throw std::runtime_error("Malformed NBT XML: list too long.");
 		}
 		uint8_t header[5];
-		codec::encode_u8(&header[0], static_cast<int8_t>(subtype));
-		codec::encode_u32(&header[1], static_cast<int32_t>(element_count));
+		codec::encode_integer<uint8_t>(&header[0], subtype);
+		codec::encode_integer(&header[1], static_cast<uint32_t>(element_count));
 		nbt_fd.write(header, sizeof(header));
 		for(const xmlNode *i = elt.children; i; i = i->next) {
 			if(i->type == XML_ELEMENT_NODE) {
@@ -311,7 +311,7 @@ void write_nbt(const file_descriptor &nbt_fd, const xmlNode &elt) {
 			}
 		}
 		uint8_t footer[1];
-		codec::encode_u8(&footer[0], nbt::TAG_END);
+		codec::encode_integer<uint8_t>(&footer[0], nbt::TAG_END);
 		nbt_fd.write(footer, sizeof(footer));
 	} else if(elt_name == u8"iarray"sv) {
 		const xmlNode *text = nullptr;
@@ -358,12 +358,12 @@ void write_nbt(const file_descriptor &nbt_fd, const xmlNode &elt) {
 				throw std::runtime_error("Malformed NBT XML: integer array too long.");
 			}
 			uint8_t header[4];
-			codec::encode_u32(&header[0], static_cast<int32_t>(data.size() / 4));
+			codec::encode_integer(&header[0], static_cast<uint32_t>(data.size() / 4));
 			nbt_fd.write(header, sizeof(header));
 			nbt_fd.write(&data[0], data.size());
 		} else {
 			uint8_t header[4];
-			codec::encode_u32(&header[0], 0);
+			codec::encode_integer<uint32_t>(&header[0], 0);
 			nbt_fd.write(header, sizeof(header));
 		}
 	} else if(elt_name == u8"larray"sv) {
@@ -415,12 +415,12 @@ void write_nbt(const file_descriptor &nbt_fd, const xmlNode &elt) {
 				throw std::runtime_error("Malformed NBT XML: integer array too long.");
 			}
 			uint8_t header[4];
-			codec::encode_u32(&header[0], static_cast<int32_t>(data.size() / 8));
+			codec::encode_integer(&header[0], static_cast<uint32_t>(data.size() / 8));
 			nbt_fd.write(header, sizeof(header));
 			nbt_fd.write(&data[0], data.size());
 		} else {
 			uint8_t header[4];
-			codec::encode_u32(&header[0], 0);
+			codec::encode_integer<uint32_t>(&header[0], 0);
 			nbt_fd.write(header, sizeof(header));
 		}
 	} else {

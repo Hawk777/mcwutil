@@ -1,6 +1,7 @@
 #ifndef UTIL_CODEC_H
 #define UTIL_CODEC_H
 
+#include <concepts>
 #include <cstddef>
 #include <stdint.h>
 
@@ -15,76 +16,24 @@ uint64_t encode_double_to_u64(double x);
 double decode_u64_to_double(uint64_t x);
 
 /**
- * \brief Encodes an 8-bit integer to a byte array.
+ * \brief Encodes an integer to a byte array.
+ *
+ * \tparam T the type of integer to encode.
+ *
+ * \tparam N the number of bytes to encode into, which defaults to the size of
+ * \p T.
  *
  * \param[out] b the buffer into which to encode.
  *
  * \param[in] x the integer to encode.
  */
-inline void encode_u8(void *b, uint8_t x) {
+template<std::unsigned_integral T, std::size_t N = sizeof(T)>
+inline void encode_integer(void *b, T x) {
 	uint8_t *buf = static_cast<uint8_t *>(b);
-	buf[0] = x;
-}
-
-/**
- * \brief Encodes a 16-bit integer to a byte array.
- *
- * \param[out] b the buffer into which to encode.
- *
- * \param[in] x the integer to encode.
- */
-inline void encode_u16(void *b, uint16_t x) {
-	uint8_t *buf = static_cast<uint8_t *>(b);
-	buf[0] = static_cast<uint8_t>(x >> 8);
-	buf[1] = static_cast<uint8_t>(x);
-}
-
-/**
- * \brief Encodes a 24-bit integer to a byte array.
- *
- * \param[out] b the buffer into which to encode.
- *
- * \param[in] x the integer to encode.
- */
-inline void encode_u24(void *b, uint32_t x) {
-	uint8_t *buf = static_cast<uint8_t *>(b);
-	buf[0] = static_cast<uint8_t>(x >> 16);
-	buf[1] = static_cast<uint8_t>(x >> 8);
-	buf[2] = static_cast<uint8_t>(x);
-}
-
-/**
- * \brief Encodes a 32-bit integer to a byte array.
- *
- * \param[out] b the buffer into which to encode.
- *
- * \param[in] x the integer to encode.
- */
-inline void encode_u32(void *b, uint32_t x) {
-	uint8_t *buf = static_cast<uint8_t *>(b);
-	buf[0] = static_cast<uint8_t>(x >> 24);
-	buf[1] = static_cast<uint8_t>(x >> 16);
-	buf[2] = static_cast<uint8_t>(x >> 8);
-	buf[3] = static_cast<uint8_t>(x);
-}
-
-/**
- * \brief Encodes a 64-bit integer to a byte array.
- *
- * \param[out] b the buffer into which to encode.
- *
- * \param[in] x the integer to encode.
- */
-inline void encode_u64(void *b, uint64_t x) {
-	uint8_t *buf = static_cast<uint8_t *>(b);
-	buf[0] = static_cast<uint8_t>(x >> 56);
-	buf[1] = static_cast<uint8_t>(x >> 48);
-	buf[2] = static_cast<uint8_t>(x >> 40);
-	buf[3] = static_cast<uint8_t>(x >> 32);
-	buf[4] = static_cast<uint8_t>(x >> 24);
-	buf[5] = static_cast<uint8_t>(x >> 16);
-	buf[6] = static_cast<uint8_t>(x >> 8);
-	buf[7] = static_cast<uint8_t>(x);
+	for(std::size_t i = N - 1; i < N; --i) {
+		buf[i] = static_cast<uint8_t>(x);
+		x >>= 8;
+	}
 }
 
 /**
@@ -97,7 +46,7 @@ inline void encode_u64(void *b, uint64_t x) {
  * \param[in] x the floating-point number to encode.
  */
 inline void encode_float(void *b, float x) {
-	encode_u32(b, encode_float_to_u32(x));
+	encode_integer(b, encode_float_to_u32(x));
 }
 
 /**
@@ -110,7 +59,7 @@ inline void encode_float(void *b, float x) {
  * \param[in] x the floating-point number to encode.
  */
 inline void encode_double(void *b, double x) {
-	encode_u64(b, encode_double_to_u64(x));
+	encode_integer(b, encode_double_to_u64(x));
 }
 
 /**
