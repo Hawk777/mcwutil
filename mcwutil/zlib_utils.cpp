@@ -1,6 +1,6 @@
-#include "zlib_utils.h"
-#include "util/file_descriptor.h"
-#include "util/globals.h"
+#include "mcwutil/zlib_utils.h"
+#include "mcwutil/util/file_descriptor.h"
+#include "mcwutil/util/globals.h"
 #include <fcntl.h>
 #include <iostream>
 #include <new>

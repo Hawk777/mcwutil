@@ -1,9 +1,9 @@
-#include "region/region.h"
-#include "util/codec.h"
-#include "util/file_descriptor.h"
-#include "util/globals.h"
-#include "util/string.h"
-#include "util/xml.h"
+#include "mcwutil/region/region.h"
+#include "mcwutil/util/codec.h"
+#include "mcwutil/util/file_descriptor.h"
+#include "mcwutil/util/globals.h"
+#include "mcwutil/util/string.h"
+#include "mcwutil/util/xml.h"
 #include <algorithm>
 #include <array>
 #include <cerrno>

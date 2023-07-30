@@ -12,8 +12,8 @@ EXECUTABLES_EXCLUDE_WORLD := cppunit
 # The source files for each executable.
 # Directories will be searched recursively for source files.
 #
-SOURCES_mcwutil := calc.cpp main.cpp nbt region util zlib_utils.cpp
-SOURCES_cppunit := cppunit util
+SOURCES_mcwutil := mcwutil
+SOURCES_cppunit := cppunit mcwutil/util
 
 #
 # All the pkg-config packages used.
