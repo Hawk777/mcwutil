@@ -9,27 +9,39 @@ hxx{*}: extension = hpp
 # The “in” module is used for Doxygen builds.
 using in
 
-# Grab the libraries we use.
-import libs = libxml-2.0%lib{libxml2} zlib%lib{zlib}
-
-# Build the executable as part of the default update operation.
+# Build the main and unit test executables as part of the default update
+# operation.
 dir{.}: dir{mcwutil}
 mcwutil/
 {
-	dir{.}: exe{mcwutil}
-	exe{mcwutil}: {cxx hxx}{**} $libs
-}
+	import libs = libxml-2.0%lib{libxml2} zlib%lib{zlib}
+	import test_libs = cppunit%lib{cppunit}
 
-# Build the unit test executable as part of the default update operation.
-dir{.}: dir{tests}
-tests/
-{
-	import libs += cppunit%lib{cppunit}
-	dir{.}: exe{tests}
-	exe{tests}: {cxx hxx}{** ../mcwutil/util/**} $libs
+	libue{mcwutil}: {cxx hxx}{** -**.test... -main} $libs
+
+	dir{.}: exe{mcwutil}
+	exe{mcwutil}: libue{mcwutil} cxx{main}
+
+	exe{*.test}:
 	{
+		install = false
 		test = true
 	}
+	for test_source_file: cxx{**.test...}
+	{
+		dir = $directory($test_source_file)
+		basename = $name($test_source_file)...
+		dir{.}: $dir/exe{$basename}
+		$dir/exe{$basename}: $test_source_file ../test_helpers/libue{test_helpers} libue{mcwutil} $test_libs
+		$dir/exe{$basename}: libue{mcwutil}: bin.whole = false
+	}
+}
+
+# Unit tests also require a helper library.
+dir{.}: dir{test_helpers}
+test_helpers/
+{
+	dir{.}: libue{test_helpers}: {cxx hxx}{**}
 }
 
 # Run clang-format as part of the test operation.

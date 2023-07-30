@@ -6,7 +6,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include <limits>
 #include <ranges>
-#include <tests/helpers.hpp>
+#include <test_helpers/helpers.hpp>
 
 namespace mcwutil::codec {
 namespace {
