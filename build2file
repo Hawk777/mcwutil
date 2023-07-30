@@ -1,0 +1,63 @@
+# Set up general C++ configuration.
+cc.coptions += -Wall -Wextra -Wformat=2 -Wstrict-aliasing=2 -Wold-style-cast -Wconversion -Wundef -Wmissing-declarations -Wredundant-decls -fno-common -fstrict-aliasing
+cc.poptions += -D_FILE_OFFSET_BITS=64 "-I$out_root" "-I$src_root"
+cxx.std = experimental
+using cxx
+cxx{*}: extension = cpp
+hxx{*}: extension = hpp
+
+# The “in” module is used for Doxygen builds.
+using in
+
+# Grab the libraries we use.
+import libs = libxml-2.0%lib{libxml2} zlib%lib{zlib}
+
+# Build the executable as part of the default update operation.
+dir{.}: dir{mcwutil}
+mcwutil/
+{
+	dir{.}: exe{mcwutil}
+	exe{mcwutil}: {cxx hxx}{**} $libs
+}
+
+# Build the unit test executable as part of the default update operation.
+dir{.}: dir{tests}
+tests/
+{
+	import libs += cppunit%lib{cppunit}
+	dir{.}: exe{tests}
+	exe{tests}: {cxx hxx}{** ../mcwutil/util/**} $libs
+	{
+		test = true
+	}
+}
+
+# Run clang-format as part of the test operation.
+dir{.}: alias{check-format}: {cxx hxx}{**}
+% test
+{{
+	diag clang-format $<
+	clang-format --Werror --dry-run --style=file $path($<)
+}}
+
+# Build the documentation as part of the default update operation.
+import! doxygen = doxygen%exe{doxygen}
+dir{.}: alias{doc}
+alias{doc}: file{html/index.html}
+file{html/index.html}: file{Doxyfile} $doxygen {cxx hxx}{mcwutil/**} fsdir{html}
+% update
+{{
+	diag doxygen ($<[0])
+	$doxygen $path($<[0])
+}}
+% clean
+{{
+	diag rm html
+	rm -rf html
+}}
+file{Doxyfile}: in{Doxyfile}
+{
+	in.symbol = "|"
+	input_src = "$src_root/mcwutil"
+	input_out = "$out_root/mcwutil"
+}

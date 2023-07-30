@@ -1,0 +1,4 @@
+project = mcwutil
+
+using config
+using test
