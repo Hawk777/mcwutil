@@ -1,4 +1,4 @@
-#include "mcwutil/util/codec.h"
+#include "mcwutil/util/codec.hpp"
 #include <cmath>
 #include <limits>
 

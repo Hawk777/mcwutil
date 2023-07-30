@@ -1,4 +1,4 @@
-#include "mcwutil/util/string.h"
+#include "mcwutil/util/string.hpp"
 #include <cassert>
 #include <charconv>
 #include <concepts>

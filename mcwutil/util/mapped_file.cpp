@@ -1,5 +1,5 @@
-#include "mcwutil/util/mapped_file.h"
-#include "mcwutil/util/file_descriptor.h"
+#include "mcwutil/util/mapped_file.hpp"
+#include "mcwutil/util/file_descriptor.hpp"
 #include <fcntl.h>
 #include <limits>
 #include <sys/stat.h>

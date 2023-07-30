@@ -1,7 +1,7 @@
-#include "mcwutil/util/xml.h"
-#include "mcwutil/util/file_descriptor.h"
-#include "mcwutil/util/mapped_file.h"
-#include "mcwutil/util/string.h"
+#include "mcwutil/util/xml.hpp"
+#include "mcwutil/util/file_descriptor.hpp"
+#include "mcwutil/util/mapped_file.hpp"
+#include "mcwutil/util/string.hpp"
 #include <cassert>
 #include <cstdarg>
 #include <cstdio>

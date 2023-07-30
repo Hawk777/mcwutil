@@ -1,5 +1,5 @@
-#include "mcwutil/calc.h"
-#include "mcwutil/util/globals.h"
+#include "mcwutil/calc.hpp"
+#include "mcwutil/util/globals.hpp"
 #include <iostream>
 #include <stdexcept>
 #include <string>

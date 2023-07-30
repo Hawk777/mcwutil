@@ -1,9 +1,9 @@
-#include "mcwutil/calc.h"
-#include "mcwutil/nbt/nbt.h"
-#include "mcwutil/region/region.h"
-#include "mcwutil/util/globals.h"
-#include "mcwutil/util/xml.h"
-#include "mcwutil/zlib_utils.h"
+#include "mcwutil/calc.hpp"
+#include "mcwutil/nbt/nbt.hpp"
+#include "mcwutil/region/region.hpp"
+#include "mcwutil/util/globals.hpp"
+#include "mcwutil/util/xml.hpp"
+#include "mcwutil/zlib_utils.hpp"
 #include <exception>
 #include <iostream>
 #include <locale>
