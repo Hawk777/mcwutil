@@ -3,18 +3,18 @@
 
 #include <concepts>
 #include <cstddef>
+#include <cstdint>
 #include <iterator>
-#include <stdint.h>
 
 namespace mcwutil {
 /**
  * \brief Symbols related to converting between bytes and primitive data types.
  */
 namespace codec {
-uint32_t encode_float_to_u32(float x);
-float decode_u32_to_float(uint32_t x);
-uint64_t encode_double_to_u64(double x);
-double decode_u64_to_double(uint64_t x);
+std::uint32_t encode_float_to_u32(float x);
+float decode_u32_to_float(std::uint32_t x);
+std::uint64_t encode_double_to_u64(double x);
+double decode_u64_to_double(std::uint64_t x);
 
 /**
  * \brief Encodes an integer to a byte array.
@@ -30,9 +30,9 @@ double decode_u64_to_double(uint64_t x);
  */
 template<std::unsigned_integral T, std::size_t N = sizeof(T)>
 inline void encode_integer(void *b, T x) {
-	uint8_t *buf = static_cast<uint8_t *>(b);
+	std::uint8_t *buf = static_cast<std::uint8_t *>(b);
 	for(std::size_t i = N - 1; i < N; --i) {
-		buf[i] = static_cast<uint8_t>(x);
+		buf[i] = static_cast<std::uint8_t>(x);
 		x >>= 8;
 	}
 }
@@ -71,15 +71,15 @@ inline void encode_double(void *b, double x) {
  * \tparam N the number of bytes to decode, which defaults to the size of \p T.
  *
  * \tparam I the byte iterator from which to fetch source bytes, which defaults
- * to <code>const uint8_t *</code>.
+ * to <code>const std::uint8_t *</code>.
  *
  * \param[in] buffer the data to extract from.
  *
  * \return the integer.
  */
-template<std::unsigned_integral T, std::size_t N = sizeof(T), std::input_iterator I = const uint8_t *>
+template<std::unsigned_integral T, std::size_t N = sizeof(T), std::input_iterator I = const std::uint8_t *>
 inline T decode_integer(I buffer)
-	requires std::same_as<std::iter_value_t<I>, uint8_t>
+	requires std::same_as<std::iter_value_t<I>, std::uint8_t>
 {
 	T ret = 0;
 	for(std::size_t i = 0; i != N; ++i) {
@@ -96,17 +96,17 @@ inline T decode_integer(I buffer)
  * The floating-point number must be 4 bytes wide.
  *
  * \tparam I the byte iterator from which to fetch source bytes, which defaults
- * to <code>const uint8_t *</code>.
+ * to <code>const std::uint8_t *</code>.
  *
  * \param[in] buffer the data to extract from.
  *
  * \return the floating-point number.
  */
-template<std::input_iterator I = const uint8_t *>
+template<std::input_iterator I = const std::uint8_t *>
 inline float decode_float(I buffer)
-	requires std::same_as<std::iter_value_t<I>, uint8_t>
+	requires std::same_as<std::iter_value_t<I>, std::uint8_t>
 {
-	return decode_u32_to_float(decode_integer<uint32_t>(buffer));
+	return decode_u32_to_float(decode_integer<std::uint32_t>(buffer));
 }
 
 /**
@@ -115,17 +115,17 @@ inline float decode_float(I buffer)
  * The floating-point number must be 8 bytes wide.
  *
  * \tparam I the byte iterator from which to fetch source bytes, which defaults
- * to <code>const uint8_t *</code>.
+ * to <code>const std::uint8_t *</code>.
  *
  * \param[in] buffer the data to extract from.
  *
  * \return the floating-point number.
  */
-template<std::input_iterator I = const uint8_t *>
+template<std::input_iterator I = const std::uint8_t *>
 inline double decode_double(I buffer)
-	requires std::same_as<std::iter_value_t<I>, uint8_t>
+	requires std::same_as<std::iter_value_t<I>, std::uint8_t>
 {
-	return decode_u64_to_double(decode_integer<uint64_t>(buffer));
+	return decode_u64_to_double(decode_integer<std::uint64_t>(buffer));
 }
 }
 }

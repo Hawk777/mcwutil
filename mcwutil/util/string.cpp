@@ -168,8 +168,8 @@ std::string mcwutil::string::todecd(double value) {
  *
  * \return the integer value.
  */
-int8_t mcwutil::string::fromdecs8(std::string_view s) {
-	return fromdec<int8_t>(s);
+std::int8_t mcwutil::string::fromdecs8(std::string_view s) {
+	return fromdec<std::int8_t>(s);
 }
 
 /**
@@ -179,8 +179,8 @@ int8_t mcwutil::string::fromdecs8(std::string_view s) {
  *
  * \return the integer value.
  */
-int16_t mcwutil::string::fromdecs16(std::string_view s) {
-	return fromdec<int16_t>(s);
+std::int16_t mcwutil::string::fromdecs16(std::string_view s) {
+	return fromdec<std::int16_t>(s);
 }
 
 /**
@@ -190,8 +190,8 @@ int16_t mcwutil::string::fromdecs16(std::string_view s) {
  *
  * \return the integer value.
  */
-int32_t mcwutil::string::fromdecs32(std::string_view s) {
-	return fromdec<int32_t>(s);
+std::int32_t mcwutil::string::fromdecs32(std::string_view s) {
+	return fromdec<std::int32_t>(s);
 }
 
 /**
@@ -201,8 +201,8 @@ int32_t mcwutil::string::fromdecs32(std::string_view s) {
  *
  * \return the integer value.
  */
-int64_t mcwutil::string::fromdecs64(std::string_view s) {
-	return fromdec<int64_t>(s);
+std::int64_t mcwutil::string::fromdecs64(std::string_view s) {
+	return fromdec<std::int64_t>(s);
 }
 
 /**
@@ -212,8 +212,8 @@ int64_t mcwutil::string::fromdecs64(std::string_view s) {
  *
  * \return the integer value.
  */
-uint32_t mcwutil::string::fromdecu32(std::string_view s) {
-	return fromdec<uint32_t>(s);
+std::uint32_t mcwutil::string::fromdecu32(std::string_view s) {
+	return fromdec<std::uint32_t>(s);
 }
 
 /**

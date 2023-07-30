@@ -15,8 +15,8 @@ namespace {
  *
  * \return the packed 32-bit integer.
  */
-uint32_t pack_ses32(bool sign, uint8_t exponent, uint32_t significand) {
-	return (sign ? UINT32_C(0x80000000) : 0) | (static_cast<uint32_t>(exponent) << 23) | significand;
+std::uint32_t pack_ses32(bool sign, std::uint8_t exponent, std::uint32_t significand) {
+	return (sign ? UINT32_C(0x80000000) : 0) | (static_cast<std::uint32_t>(exponent) << 23) | significand;
 }
 
 /**
@@ -30,8 +30,8 @@ uint32_t pack_ses32(bool sign, uint8_t exponent, uint32_t significand) {
  *
  * \return the packed 64-bit integer.
  */
-uint64_t pack_ses64(bool sign, uint16_t exponent, uint64_t significand) {
-	return (sign ? UINT64_C(0x8000000000000000) : 0) | (static_cast<uint64_t>(exponent) << 52) | significand;
+std::uint64_t pack_ses64(bool sign, std::uint16_t exponent, std::uint64_t significand) {
+	return (sign ? UINT64_C(0x8000000000000000) : 0) | (static_cast<std::uint64_t>(exponent) << 52) | significand;
 }
 }
 }
@@ -43,7 +43,7 @@ uint64_t pack_ses64(bool sign, uint16_t exponent, uint64_t significand) {
  *
  * \return the encoded form.
  */
-uint32_t mcwutil::codec::encode_float_to_u32(float x) {
+std::uint32_t mcwutil::codec::encode_float_to_u32(float x) {
 	// Break down the number based on its coarse classification.
 	int classify = std::fpclassify(x);
 	if(classify == FP_NAN) {
@@ -64,7 +64,7 @@ uint32_t mcwutil::codec::encode_float_to_u32(float x) {
 		x = std::ldexp(x, 126 + 23);
 
 		// Encode the significand by converting the result to an integer.
-		uint32_t significand = static_cast<uint32_t>(x + 0.5f);
+		std::uint32_t significand = static_cast<std::uint32_t>(x + 0.5f);
 
 		// Encode the number.
 		return pack_ses32(sign, 0x00, significand);
@@ -76,11 +76,11 @@ uint32_t mcwutil::codec::encode_float_to_u32(float x) {
 		}
 
 		// Extract exponent.
-		int16_t exponent;
+		std::int16_t exponent;
 		if constexpr(std::numeric_limits<float>::radix == 2) {
-			exponent = static_cast<int16_t>(std::ilogb(x));
+			exponent = static_cast<std::int16_t>(std::ilogb(x));
 		} else {
-			exponent = static_cast<int16_t>(std::floor(std::log2(x)));
+			exponent = static_cast<std::int16_t>(std::floor(std::log2(x)));
 		}
 
 		// If exponent is below minimum limit, encode a zero.
@@ -103,13 +103,13 @@ uint32_t mcwutil::codec::encode_float_to_u32(float x) {
 		x = std::ldexp(x, 23);
 
 		// Encode the significand by converting the result to an integer.
-		uint32_t significand = static_cast<uint32_t>(x + 0.5f);
+		std::uint32_t significand = static_cast<std::uint32_t>(x + 0.5f);
 
 		// Bias the exponent.
-		exponent = static_cast<int16_t>(exponent + 127);
+		exponent = static_cast<std::int16_t>(exponent + 127);
 
 		// Encode the number.
-		return pack_ses32(sign, static_cast<uint8_t>(exponent), significand);
+		return pack_ses32(sign, static_cast<std::uint8_t>(exponent), significand);
 	}
 }
 
@@ -120,14 +120,14 @@ uint32_t mcwutil::codec::encode_float_to_u32(float x) {
  *
  * \return the floating-point number.
  */
-float mcwutil::codec::decode_u32_to_float(uint32_t x) {
+float mcwutil::codec::decode_u32_to_float(std::uint32_t x) {
 	// Extract the sign bit, biased exponent, and significand.
 	bool sign = !!(x & UINT32_C(0x80000000));
-	int8_t exponent = static_cast<uint8_t>((x >> 23) & 0xFF);
-	uint32_t significand = x & UINT32_C(0x007FFFFF);
+	std::int8_t exponent = static_cast<std::uint8_t>((x >> 23) & 0xFF);
+	std::uint32_t significand = x & UINT32_C(0x007FFFFF);
 
 	// Break down the possible exponents by class.
-	if(exponent == static_cast<int8_t>(0xFF)) {
+	if(exponent == static_cast<std::int8_t>(0xFF)) {
 		// Exponent 0xFF encodes NaNs and infinities.
 		if(significand) {
 			return NAN;
@@ -144,7 +144,7 @@ float mcwutil::codec::decode_u32_to_float(uint32_t x) {
 		return sign ? -value : value;
 	} else {
 		// Unbias the exponent.
-		exponent = static_cast<int8_t>(static_cast<uint8_t>(exponent) - 127);
+		exponent = static_cast<std::int8_t>(static_cast<std::uint8_t>(exponent) - 127);
 
 		// Shift the significand down into the fraction part and re-add the implicit leading 1 bit.
 		float value = 1.0f + std::ldexp(static_cast<float>(significand), -23);
@@ -164,7 +164,7 @@ float mcwutil::codec::decode_u32_to_float(uint32_t x) {
  *
  * \return the encoded form.
  */
-uint64_t mcwutil::codec::encode_double_to_u64(double x) {
+std::uint64_t mcwutil::codec::encode_double_to_u64(double x) {
 	// Break down the number based on its coarse classification.
 	int classify = std::fpclassify(x);
 	if(classify == FP_NAN) {
@@ -185,7 +185,7 @@ uint64_t mcwutil::codec::encode_double_to_u64(double x) {
 		x = std::ldexp(x, 1022 + 52);
 
 		// Encode the significand by converting the result to an integer.
-		uint64_t significand = static_cast<uint64_t>(x + 0.5);
+		std::uint64_t significand = static_cast<std::uint64_t>(x + 0.5);
 
 		// Encode the number.
 		return pack_ses64(sign, 0x000, significand);
@@ -197,11 +197,11 @@ uint64_t mcwutil::codec::encode_double_to_u64(double x) {
 		}
 
 		// Extract exponent.
-		int16_t exponent;
+		std::int16_t exponent;
 		if constexpr(std::numeric_limits<double>::radix == 2) {
-			exponent = static_cast<int16_t>(std::ilogb(x));
+			exponent = static_cast<std::int16_t>(std::ilogb(x));
 		} else {
-			exponent = static_cast<int16_t>(std::floor(std::log2(x)));
+			exponent = static_cast<std::int16_t>(std::floor(std::log2(x)));
 		}
 
 		// If exponent is below minimum limit, encode a zero.
@@ -224,10 +224,10 @@ uint64_t mcwutil::codec::encode_double_to_u64(double x) {
 		x = std::ldexp(x, 52);
 
 		// Encode the significand by converting the result to an integer.
-		uint64_t significand = static_cast<uint64_t>(x + 0.5);
+		std::uint64_t significand = static_cast<std::uint64_t>(x + 0.5);
 
 		// Bias the exponent.
-		exponent = static_cast<int16_t>(exponent + 1023);
+		exponent = static_cast<std::int16_t>(exponent + 1023);
 
 		// Encode the number.
 		return pack_ses64(sign, exponent, significand);
@@ -241,11 +241,11 @@ uint64_t mcwutil::codec::encode_double_to_u64(double x) {
  *
  * \return the floating-point number.
  */
-double mcwutil::codec::decode_u64_to_double(uint64_t x) {
+double mcwutil::codec::decode_u64_to_double(std::uint64_t x) {
 	// Extract the sign bit, biased exponent, and significand.
 	bool sign = !!(x & UINT64_C(0x8000000000000000));
-	int16_t exponent = (x >> 52) & 0x7FF;
-	uint64_t significand = x & UINT64_C(0x000FFFFFFFFFFFFF);
+	std::int16_t exponent = (x >> 52) & 0x7FF;
+	std::uint64_t significand = x & UINT64_C(0x000FFFFFFFFFFFFF);
 
 	// Break down the possible exponents by class.
 	if(exponent == 0x7FF) {
@@ -265,7 +265,7 @@ double mcwutil::codec::decode_u64_to_double(uint64_t x) {
 		return sign ? -value : value;
 	} else {
 		// Unbias the exponent.
-		exponent = static_cast<int16_t>(exponent - 1023);
+		exponent = static_cast<std::int16_t>(exponent - 1023);
 
 		// Shift the significand down into the fraction part and re-add the implicit leading 1 bit.
 		double value = 1.0 + std::ldexp(static_cast<double>(significand), -52);
