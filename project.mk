@@ -34,7 +34,7 @@ PROJECT_LIBS :=
 #
 # The flags to pass to the C++ compiler.
 #
-PROJECT_CXXFLAGS := -std=gnu++20 -Wall -Wextra -Wformat=2 -Wstrict-aliasing=2 -Wold-style-cast -Wconversion -Wundef -Wmissing-declarations -Wredundant-decls -march=native -O2 -fno-common -fstrict-aliasing -g -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS=1 -DHAVE_INLINE -I.
+PROJECT_CXXFLAGS := -std=gnu++20 -Wall -Wextra -Wformat=2 -Wstrict-aliasing=2 -Wold-style-cast -Wconversion -Wundef -Wmissing-declarations -Wredundant-decls -march=native -O2 -fno-common -fstrict-aliasing -g -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS=1 -I.
 
 #
 # Runs the unit tests.
