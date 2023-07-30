@@ -1,9 +1,9 @@
-#include "mcwutil/region/region.hpp"
-#include "mcwutil/util/codec.hpp"
-#include "mcwutil/util/file_descriptor.hpp"
-#include "mcwutil/util/globals.hpp"
-#include "mcwutil/util/string.hpp"
-#include "mcwutil/util/xml.hpp"
+#include <mcwutil/region/region.hpp>
+#include <mcwutil/util/codec.hpp>
+#include <mcwutil/util/file_descriptor.hpp>
+#include <mcwutil/util/globals.hpp>
+#include <mcwutil/util/string.hpp>
+#include <mcwutil/util/xml.hpp>
 #include <algorithm>
 #include <array>
 #include <cerrno>

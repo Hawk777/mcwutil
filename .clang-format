@@ -12,9 +12,9 @@ Cpp11BracedListStyle: true
 FixNamespaceComments: false
 IncludeBlocks: Merge
 IncludeCategories:
-  # local includes (with quotation marks) should be second (after the module’s
-  # own header)
-  - Regex: '^"'
+  # local includes (starting with mcwutil/) should be second (after the
+  # module’s own header)
+  - Regex: '^<mcwutil/'
     Priority: 2
   # system includes (with angle brackets) should be third
   - Regex: '^<'

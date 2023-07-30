@@ -1,10 +1,10 @@
-#include "mcwutil/nbt/nbt.hpp"
-#include "mcwutil/nbt/tags.hpp"
-#include "mcwutil/util/codec.hpp"
-#include "mcwutil/util/file_descriptor.hpp"
-#include "mcwutil/util/globals.hpp"
-#include "mcwutil/util/mapped_file.hpp"
-#include "mcwutil/util/string.hpp"
+#include <mcwutil/nbt/nbt.hpp>
+#include <mcwutil/nbt/tags.hpp>
+#include <mcwutil/util/codec.hpp>
+#include <mcwutil/util/file_descriptor.hpp>
+#include <mcwutil/util/globals.hpp>
+#include <mcwutil/util/mapped_file.hpp>
+#include <mcwutil/util/string.hpp>
 #include <cassert>
 #include <cstdlib>
 #include <fcntl.h>

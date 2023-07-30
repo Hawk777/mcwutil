@@ -1,4 +1,4 @@
-#include "mcwutil/util/globals.hpp"
+#include <mcwutil/util/globals.hpp>
 
 namespace mcwutil {
 /**

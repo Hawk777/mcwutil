@@ -1,5 +1,4 @@
-#include "mcwutil/util/codec.hpp"
-#include "tests/helpers.hpp"
+#include <mcwutil/util/codec.hpp>
 #include <array>
 #include <cmath>
 #include <cppunit/TestAssert.h>
@@ -7,6 +6,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include <limits>
 #include <ranges>
+#include <tests/helpers.hpp>
 
 namespace mcwutil::codec {
 namespace {
