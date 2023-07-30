@@ -13,7 +13,7 @@ EXECUTABLES_EXCLUDE_WORLD := cppunit
 # Directories will be searched recursively for source files.
 #
 SOURCES_mcwutil := mcwutil
-SOURCES_cppunit := cppunit mcwutil/util
+SOURCES_cppunit := mcwutil/util tests
 
 #
 # All the pkg-config packages used.

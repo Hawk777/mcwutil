@@ -1,5 +1,5 @@
 #include "mcwutil/util/codec.hpp"
-#include "cppunit/helpers.hpp"
+#include "tests/helpers.hpp"
 #include <array>
 #include <cmath>
 #include <cppunit/TestAssert.h>
