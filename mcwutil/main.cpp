@@ -1,7 +1,6 @@
 #include <mcwutil/calc.hpp>
 #include <mcwutil/nbt/nbt.hpp>
 #include <mcwutil/region/region.hpp>
-#include <mcwutil/util/globals.hpp>
 #include <mcwutil/util/xml.hpp>
 #include <mcwutil/zlib_utils.hpp>
 #include <exception>
@@ -16,8 +15,10 @@ namespace mcwutil {
 namespace {
 /**
  * \brief Displays the usage help text.
+ *
+ * \param[in] appname The name of the application.
  */
-void usage() {
+void usage(std::string_view appname) {
 	std::cerr << "Usage:\n";
 	std::cerr << appname << " command [arguments...]\n";
 	std::cerr << '\n';
@@ -52,12 +53,12 @@ int main_impl(int argc, char **argv) {
 	std::span<char *> args(argv, argc);
 
 	// Extract the application name.
-	appname = args.front();
+	std::string_view appname = args.front();
 	args = args.subspan(1);
 
 	// Extract the command name.
 	if(args.empty()) {
-		usage();
+		usage(appname);
 		return 1;
 	}
 	std::string_view command = args.front();
@@ -65,27 +66,27 @@ int main_impl(int argc, char **argv) {
 
 	// Dispatch.
 	if(command == "coord-calc") {
-		return calc::coord(args);
+		return calc::coord(appname, args);
 	} else if(command == "region-unpack") {
-		return region::unpack(args);
+		return region::unpack(appname, args);
 	} else if(command == "region-pack") {
-		return region::pack(args);
+		return region::pack(appname, args);
 	} else if(command == "zlib-decompress") {
-		return zlib::decompress(args);
+		return zlib::decompress(appname, args);
 	} else if(command == "zlib-compress") {
-		return zlib::compress(args);
+		return zlib::compress(appname, args);
 	} else if(command == "zlib-check") {
-		return zlib::check(args);
+		return zlib::check(appname, args);
 	} else if(command == "nbt-to-xml") {
-		return nbt::to_xml(args);
+		return nbt::to_xml(appname, args);
 	} else if(command == "nbt-from-xml") {
-		return nbt::from_xml(args);
+		return nbt::from_xml(appname, args);
 	} else if(command == "nbt-block-substitute") {
-		return nbt::block_substitute(args);
+		return nbt::block_substitute(appname, args);
 	} else if(command == "nbt-patch-barray") {
-		return nbt::patch_barray(args);
+		return nbt::patch_barray(appname, args);
 	} else {
-		usage();
+		usage(appname);
 	}
 
 	return 0;

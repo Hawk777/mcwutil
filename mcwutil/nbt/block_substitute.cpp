@@ -2,7 +2,6 @@
 #include <mcwutil/nbt/tags.hpp>
 #include <mcwutil/util/codec.hpp>
 #include <mcwutil/util/file_descriptor.hpp>
-#include <mcwutil/util/globals.hpp>
 #include <mcwutil/util/mapped_file.hpp>
 #include <mcwutil/util/string.hpp>
 #include <algorithm>
@@ -376,8 +375,10 @@ void handle_named(nbt::tag tag, uint8_t *&input_ptr, std::size_t &input_left, co
 
 /**
  * \brief Displays the usage help text.
+ *
+ * \param[in] appname The name of the application.
  */
-void usage() {
+void usage(std::string_view appname) {
 	std::cerr << "Usage:\n";
 	std::cerr << appname << " nbt-block-substitute infile outfile from1 to1 [from2 to2 ...]\n";
 	std::cerr << '\n';
@@ -397,14 +398,16 @@ void usage() {
 /**
  * \brief Entry point for the \c nbt-block-substitute utility.
  *
+ * \param[in] appname The name of the application.
+ *
  * \param[in] args the command-line arguments.
  *
  * \return the application exit code.
  */
-int mcwutil::nbt::block_substitute(std::span<char *> args) {
+int mcwutil::nbt::block_substitute(std::string_view appname, std::span<char *> args) {
 	// Check parameters.
 	if(args.size() < 4 || (args.size() % 2) != 0) {
-		usage();
+		usage(appname);
 		return 1;
 	}
 
@@ -415,7 +418,7 @@ int mcwutil::nbt::block_substitute(std::span<char *> args) {
 	}
 	for(std::size_t i = 2; i < args.size(); i += 2) {
 		if(!args[i][0] || !args[i + 1][0]) {
-			usage();
+			usage(appname);
 			return 1;
 		}
 		unsigned long from, to;
@@ -423,7 +426,7 @@ int mcwutil::nbt::block_substitute(std::span<char *> args) {
 			char *end;
 			from = std::strtoul(args[i], &end, 10);
 			if(*end) {
-				usage();
+				usage(appname);
 				return 1;
 			}
 		}
@@ -431,12 +434,12 @@ int mcwutil::nbt::block_substitute(std::span<char *> args) {
 			char *end;
 			to = std::strtoul(args[i + 1], &end, 10);
 			if(*end) {
-				usage();
+				usage(appname);
 				return 1;
 			}
 		}
 		if(from > 4095 || to > 4095) {
-			usage();
+			usage(appname);
 			return 1;
 		}
 		sub_table[from] = static_cast<uint16_t>(to);

@@ -1,7 +1,6 @@
 #include <mcwutil/region/region.hpp>
 #include <mcwutil/util/codec.hpp>
 #include <mcwutil/util/file_descriptor.hpp>
-#include <mcwutil/util/globals.hpp>
 #include <mcwutil/util/string.hpp>
 #include <mcwutil/util/xml.hpp>
 #include <cerrno>
@@ -24,11 +23,13 @@ using namespace std::literals::string_view_literals;
 /**
  * \brief Entry point for the \c region-unpack utility.
  *
+ * \param[in] appname The name of the application.
+ *
  * \param[in] args the command-line arguments.
  *
  * \return the application exit code.
  */
-int mcwutil::region::unpack(std::span<char *> args) {
+int mcwutil::region::unpack(std::string_view appname, std::span<char *> args) {
 	// Check parameters.
 	if(args.size() != 2) {
 		std::cerr << "Usage:\n";

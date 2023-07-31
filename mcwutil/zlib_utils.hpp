@@ -2,15 +2,16 @@
 #define ZLIB_UTILS_H
 
 #include <span>
+#include <string_view>
 
 namespace mcwutil {
 /**
  * \brief Symbols related to the ZLib compression format.
  */
 namespace zlib {
-int compress(std::span<char *> args);
-int decompress(std::span<char *> args);
-int check(std::span<char *> args);
+int compress(std::string_view appname, std::span<char *> args);
+int decompress(std::string_view appname, std::span<char *> args);
+int check(std::string_view appname, std::span<char *> args);
 }
 }
 

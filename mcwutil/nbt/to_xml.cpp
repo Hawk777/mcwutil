@@ -2,7 +2,6 @@
 #include <mcwutil/nbt/tags.hpp>
 #include <mcwutil/util/codec.hpp>
 #include <mcwutil/util/file_descriptor.hpp>
-#include <mcwutil/util/globals.hpp>
 #include <mcwutil/util/mapped_file.hpp>
 #include <mcwutil/util/string.hpp>
 #include <mcwutil/util/xml.hpp>
@@ -316,11 +315,13 @@ void parse_name_and_data(const uint8_t *&input_ptr, std::size_t &input_left, nbt
 /**
  * \brief Entry point for the \c nbt-to-xml utility.
  *
+ * \param[in] appname The name of the application.
+ *
  * \param[in] args the command-line arguments.
  *
  * \return the application exit code.
  */
-int mcwutil::nbt::to_xml(std::span<char *> args) {
+int mcwutil::nbt::to_xml(std::string_view appname, std::span<char *> args) {
 	// Check parameters.
 	if(args.size() != 2) {
 		std::cerr << "Usage:\n";

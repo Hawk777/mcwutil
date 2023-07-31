@@ -2,7 +2,6 @@
 #include <mcwutil/nbt/tags.hpp>
 #include <mcwutil/util/codec.hpp>
 #include <mcwutil/util/file_descriptor.hpp>
-#include <mcwutil/util/globals.hpp>
 #include <mcwutil/util/string.hpp>
 #include <mcwutil/util/xml.hpp>
 #include <algorithm>
@@ -463,11 +462,13 @@ void write_nbt(const file_descriptor &nbt_fd, const xmlDoc &doc) {
 /**
  * \brief Entry point for the \c nbt-from-xml utility.
  *
+ * \param[in] appname The name of the application.
+ *
  * \param[in] args the command-line arguments.
  *
  * \return the application exit code.
  */
-int mcwutil::nbt::from_xml(std::span<char *> args) {
+int mcwutil::nbt::from_xml(std::string_view appname, std::span<char *> args) {
 	// Check parameters.
 	if(args.size() != 2) {
 		std::cerr << "Usage:\n";

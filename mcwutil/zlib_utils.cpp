@@ -1,5 +1,4 @@
 #include <mcwutil/util/file_descriptor.hpp>
-#include <mcwutil/util/globals.hpp>
 #include <mcwutil/zlib_utils.hpp>
 #include <fcntl.h>
 #include <iostream>
@@ -11,11 +10,13 @@
 /**
  * \brief Entry point for the \c zlib-compress utility.
  *
+ * \param[in] appname The name of the application.
+ *
  * \param[in] args the command-line arguments.
  *
  * \return the application exit code.
  */
-int mcwutil::zlib::compress(std::span<char *> args) {
+int mcwutil::zlib::compress(std::string_view appname, std::span<char *> args) {
 	// Check parameters.
 	if(args.size() != 2) {
 		std::cerr << "Usage:\n";
@@ -64,11 +65,13 @@ int mcwutil::zlib::compress(std::span<char *> args) {
 /**
  * \brief Entry point for the \c zlib-decompress utility.
  *
+ * \param[in] appname The name of the application.
+ *
  * \param[in] args the command-line arguments.
  *
  * \return the application exit code.
  */
-int mcwutil::zlib::decompress(std::span<char *> args) {
+int mcwutil::zlib::decompress(std::string_view appname, std::span<char *> args) {
 	// Check parameters.
 	if(args.size() != 2) {
 		std::cerr << "Usage:\n";
@@ -127,11 +130,13 @@ int mcwutil::zlib::decompress(std::span<char *> args) {
 /**
  * \brief Entry point for the \c zlib-check utility.
  *
+ * \param[in] appname The name of the application.
+ *
  * \param[in] args the command-line arguments.
  *
  * \return the application exit code.
  */
-int mcwutil::zlib::check(std::span<char *> args) {
+int mcwutil::zlib::check(std::string_view appname, std::span<char *> args) {
 	// Check parameters.
 	if(args.size() != 1) {
 		std::cerr << "Usage:\n";

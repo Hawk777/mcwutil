@@ -1,5 +1,4 @@
 #include <mcwutil/calc.hpp>
-#include <mcwutil/util/globals.hpp>
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -58,8 +57,10 @@ int parse_int(const std::string &s) {
 
 /**
  * \brief Displays the usage help text.
+ *
+ * \param[in] appname The name of the application.
  */
-void usage() {
+void usage(std::string_view appname) {
 	std::cerr << "Usage:\n";
 	std::cerr << appname << " coord-calc X Z\n";
 	std::cerr << '\n';
@@ -75,14 +76,16 @@ void usage() {
 /**
  * \brief Entry point for the \c coord-calc utility.
  *
+ * \param[in] appname The name of the application.
+ *
  * \param[in] args the command-line arguments.
  *
  * \return the application exit code.
  */
-int mcwutil::calc::coord(std::span<char *> args) {
+int mcwutil::calc::coord(std::string_view appname, std::span<char *> args) {
 	// Check and parse parameters.
 	if(args.size() != 2) {
-		usage();
+		usage(appname);
 		return 1;
 	}
 	int x, z;
@@ -90,7 +93,7 @@ int mcwutil::calc::coord(std::span<char *> args) {
 		x = parse_int(args[0]);
 		z = parse_int(args[1]);
 	} catch(const std::invalid_argument &) {
-		usage();
+		usage(appname);
 		return 1;
 	}
 
