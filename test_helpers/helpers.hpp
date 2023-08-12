@@ -8,6 +8,7 @@
 #include <sstream>
 #include <string>
 #include <utility>
+#include <vector>
 
 namespace mcwutil {
 namespace test_helpers {
@@ -18,6 +19,11 @@ struct assertion_traits_can_delegate_to_span_impl {
 
 template<typename T, std::size_t N>
 struct assertion_traits_can_delegate_to_span_impl<std::array<T, N>> {
+	static constexpr bool value = true;
+};
+
+template<typename T>
+struct assertion_traits_can_delegate_to_span_impl<std::vector<T>> {
 	static constexpr bool value = true;
 };
 
