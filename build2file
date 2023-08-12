@@ -14,7 +14,7 @@ using in
 dir{.}: dir{mcwutil}
 mcwutil/
 {
-	import libs = libxml-2.0%lib{libxml2} zlib%lib{zlib}
+	import libs = libxml-2.0%lib{libxml2} zlib%lib{z}
 	import test_libs = cppunit%lib{cppunit}
 
 	libue{mcwutil}: {cxx hxx}{** -**.test... -main} $libs
