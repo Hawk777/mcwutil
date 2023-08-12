@@ -4,7 +4,6 @@
 #include <algorithm>
 #include <array>
 #include <cppunit/TestAssert.h>
-#include <iomanip>
 #include <span>
 #include <sstream>
 #include <string>
@@ -36,6 +35,14 @@ struct assertion_traits<std::span<T>> {
 	static std::string toString(const std::span<T> &x);
 };
 
+template<>
+struct assertion_traits<std::span<const uint8_t>> {
+	static bool equal(const std::span<const uint8_t> &x, const std::span<const uint8_t> &y);
+	static bool less(const std::span<const uint8_t> &x, const std::span<const uint8_t> &y);
+	static bool lessEqual(const std::span<const uint8_t> &x, const std::span<const uint8_t> &y);
+	static std::string toString(const std::span<const uint8_t> &x);
+};
+
 template<mcwutil::test_helpers::assertion_traits_can_delegate_to_span T>
 struct assertion_traits<T> {
 	static bool equal(const T &x, const T &y);
@@ -63,14 +70,13 @@ bool CppUnit::assertion_traits<std::span<T>>::lessEqual(const std::span<T> &x, c
 template<typename T>
 std::string CppUnit::assertion_traits<std::span<T>>::toString(const std::span<T> &x) {
 	std::ostringstream oss;
-	oss << std::hex;
 	oss << '{';
 	bool first = true;
 	for(const T &i : x) {
 		if(!first) {
 			oss << ", ";
 		}
-		oss << "0x" << static_cast<unsigned int>(i);
+		oss << i;
 		first = false;
 	}
 	oss << '}';
