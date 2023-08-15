@@ -338,6 +338,7 @@ int mcwutil::nbt::to_xml(std::string_view appname, std::span<char *> args) {
 	// Open and map NBT file.
 	file_descriptor input_fd = file_descriptor::create_open(args[0], O_RDONLY, 0);
 	mapped_file input_mapped(input_fd, PROT_READ);
+	static_assert(sizeof(uint8_t) == 1, "This code assumes 8-bit bytes.");
 
 	// Construct document.
 	auto nbt_document = xml::empty();

@@ -397,6 +397,7 @@ int mcwutil::nbt::patch_barray(std::string_view appname, std::span<char *> args)
 	// Open and map NBT file.
 	file_descriptor nbt_fd = file_descriptor::create_open(args[0], O_RDWR, 0);
 	mapped_file nbt_mapped(nbt_fd, PROT_READ | PROT_WRITE);
+	static_assert(sizeof(uint8_t) == 1, "This code assumes 8-bit bytes in mapped files.");
 
 	// Do the thing.
 	uint8_t *input_ptr = static_cast<uint8_t *>(nbt_mapped.data());

@@ -448,6 +448,7 @@ int mcwutil::nbt::block_substitute(std::string_view appname, std::span<char *> a
 	// Open and map input NBT file.
 	file_descriptor input_fd = file_descriptor::create_open(args[0], O_RDONLY, 0);
 	mapped_file input_mapped(input_fd, PROT_READ);
+	static_assert(sizeof(uint8_t) == 1, "This code assumes 8-bit bytes in mapped files.");
 
 	// Open the output file.
 	file_descriptor output_fd = file_descriptor::create_open(args[1], O_WRONLY | O_CREAT | O_TRUNC, 0666);
