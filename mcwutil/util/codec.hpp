@@ -29,7 +29,7 @@ double decode_u64_to_double(std::uint64_t x);
  * \param[in] x the integer to encode.
  */
 template<std::unsigned_integral T, std::size_t N = sizeof(T)>
-inline void encode_integer(void *b, T x) {
+void encode_integer(void *b, T x) {
 	std::uint8_t *buf = static_cast<std::uint8_t *>(b);
 	for(std::size_t i = N - 1; i < N; --i) {
 		buf[i] = static_cast<std::uint8_t>(x);
@@ -78,7 +78,7 @@ inline void encode_double(void *b, double x) {
  * \return the integer.
  */
 template<std::unsigned_integral T, std::size_t N = sizeof(T), std::input_iterator I = const std::uint8_t *>
-inline T decode_integer(I buffer)
+T decode_integer(I buffer)
 	requires std::same_as<std::iter_value_t<I>, std::uint8_t>
 {
 	T ret = 0;
@@ -103,7 +103,7 @@ inline T decode_integer(I buffer)
  * \return the floating-point number.
  */
 template<std::input_iterator I = const std::uint8_t *>
-inline float decode_float(I buffer)
+float decode_float(I buffer)
 	requires std::same_as<std::iter_value_t<I>, std::uint8_t>
 {
 	return decode_u32_to_float(decode_integer<std::uint32_t>(buffer));
@@ -122,7 +122,7 @@ inline float decode_float(I buffer)
  * \return the floating-point number.
  */
 template<std::input_iterator I = const std::uint8_t *>
-inline double decode_double(I buffer)
+double decode_double(I buffer)
 	requires std::same_as<std::iter_value_t<I>, std::uint8_t>
 {
 	return decode_u64_to_double(decode_integer<std::uint64_t>(buffer));
