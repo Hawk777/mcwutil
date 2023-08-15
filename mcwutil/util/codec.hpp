@@ -24,13 +24,12 @@ double decode_u64_to_double(std::uint64_t x);
  * \tparam N the number of bytes to encode into, which defaults to the size of
  * \p T.
  *
- * \param[out] b the buffer into which to encode.
+ * \param[out] buf the buffer into which to encode.
  *
  * \param[in] x the integer to encode.
  */
 template<std::unsigned_integral T, std::size_t N = sizeof(T)>
-void encode_integer(void *b, T x) {
-	std::uint8_t *buf = static_cast<std::uint8_t *>(b);
+void encode_integer(uint8_t *buf, T x) {
 	for(std::size_t i = N - 1; i < N; --i) {
 		buf[i] = static_cast<std::uint8_t>(x);
 		x >>= 8;
@@ -42,12 +41,12 @@ void encode_integer(void *b, T x) {
  *
  * The floating-point number will consume 4 bytes of storage.
  *
- * \param[out] b the buffer into which to encode.
+ * \param[out] buf the buffer into which to encode.
  *
  * \param[in] x the floating-point number to encode.
  */
-inline void encode_float(void *b, float x) {
-	encode_integer(b, encode_float_to_u32(x));
+inline void encode_float(uint8_t *buf, float x) {
+	encode_integer(buf, encode_float_to_u32(x));
 }
 
 /**
@@ -55,12 +54,12 @@ inline void encode_float(void *b, float x) {
  *
  * The floating-point number will consume 8 bytes of storage.
  *
- * \param[out] b the buffer into which to encode.
+ * \param[out] buf the buffer into which to encode.
  *
  * \param[in] x the floating-point number to encode.
  */
-inline void encode_double(void *b, double x) {
-	encode_integer(b, encode_double_to_u64(x));
+inline void encode_double(uint8_t *buf, double x) {
+	encode_integer(buf, encode_double_to_u64(x));
 }
 
 /**
