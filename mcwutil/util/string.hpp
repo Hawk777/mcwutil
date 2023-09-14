@@ -2,6 +2,7 @@
 #define UTIL_STRING_H
 
 #include <cstdint>
+#include <span>
 #include <string>
 #include <string_view>
 
@@ -25,6 +26,7 @@ float fromdecf(std::string_view s);
 double fromdecd(std::string_view s);
 std::u8string l2u(std::string_view lstr);
 std::string u2l(std::u8string_view ustr);
+bool utf8_valid(std::span<const uint8_t> bytes);
 }
 }
 

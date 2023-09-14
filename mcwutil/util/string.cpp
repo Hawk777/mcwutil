@@ -323,3 +323,23 @@ std::string mcwutil::string::u2l(std::u8string_view ustr) {
 	}
 	return ret;
 }
+
+/**
+ * \brief Checks whether a sequence of bytes is valid UTF-8.
+ *
+ * \param[in] bytes the bytes to check.
+ *
+ * \retval true \p bytes is valid UTF-8.
+ * \retval false \p bytes is not valid UTF-8.
+ */
+bool mcwutil::string::utf8_valid(std::span<const uint8_t> bytes) {
+	std::mbstate_t mbs{};
+	for(uint8_t i : bytes) {
+		char buffer[MB_CUR_MAX];
+		std::size_t written = std::c8rtomb(buffer, static_cast<char8_t>(i), &mbs);
+		if(written == static_cast<std::size_t>(-1)) {
+			return false;
+		}
+	}
+	return true;
+}
